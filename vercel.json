@@ -1,8 +1,5 @@
 {
-  "routes": [
-    {
-      "src": "/soporte",
-      "dest": "/api/soporte.js"
-    }
+  "rewrites": [
+    { "source": "/soporte", "destination": "/api/soporte.js" }
   ]
 }
