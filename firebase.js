@@ -1,10 +1,10 @@
 // filepath: c:\Users\Renzo\OneDrive\Escritorio\multiagente\firebase.js
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import firebase from "firebase/app";
+import "firebase/auth";
+import "firebase/firestore";
 
 // Configuración de Firebase
-export const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyBvzwAiEwWds_WnC_5Gfk_-ZN6PGfMrmD4",
   authDomain: "multiagente-login.firebaseapp.com",
   projectId: "multiagente-login",
@@ -15,6 +15,9 @@ export const firebaseConfig = {
 };
 
 // Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Exportar las instancias para usarlas en otros archivos
+export { auth, db };
