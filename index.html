@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Links Multiagente</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    textarea, input {
+      width: 100%;
+      margin-top: 5px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <h1>Generador de Links Multiagente</h1>
+  <form id="form">
+    <label for="numeros">Números de WhatsApp (separados por comas):</label>
+    <textarea id="numeros" placeholder="Ejemplo: 5492944585356,5491165388118"></textarea>
+
+    <label for="mensaje">Mensaje automático:</label>
+    <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
+
+    <button type="button" onclick="generarLink()">Generar Link</button>
+  </form>
+
+  <div class="output" id="output"></div>
+
+  <script>
+    function generarLink() {
+      const numeros = document.getElementById('numeros').value.split(',').map(num => num.trim());
+      const mensaje = document.getElementById('mensaje').value;
+
+      if (numeros.length === 0 || !mensaje) {
+        alert('Por favor, ingresa los números y el mensaje.');
+        return;
+      }
+
+      const link = `${window.location.origin}/soporte?numeros=${encodeURIComponent(numeros.join(','))}&mensaje=${encodeURIComponent(mensaje)}`;
+      document.getElementById('output').innerHTML = `
+        <p>Tu link generado:</p>
+        <a href="${link}" target="_blank">${link}</a>
+      `;
+    }
+  </script>
+</body>
+</html>

@@ -1,15 +1,15 @@
 export default function handler(req, res) {
-  const numeros = [
-    '5492944585356',
-    '5491165388118'
-  ];
+  const { numeros, mensaje } = req.query;
 
-  // Mantener un número aleatorio (porque Vercel no guarda estado)
-  const numero = numeros[Math.floor(Math.random() * numeros.length)];
-  const mensaje = 'Hola, necesito ayuda';
+  if (!numeros || !mensaje) {
+    res.status(400).json({ error: 'Faltan parámetros: números o mensaje' });
+    return;
+  }
+
+  const listaNumeros = numeros.split(',');
+  const numero = listaNumeros[Math.floor(Math.random() * listaNumeros.length)];
   const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
 
-  // Redirigir al número de WhatsApp
   res.writeHead(302, { Location: url });
   res.end();
 }
