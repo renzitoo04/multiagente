@@ -5,9 +5,22 @@
   <title>Iniciar sesión</title>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
-  <script src="./firebase.js"></script>
-  <script src="./login.js"></script>
+  <script>
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvzwAiEwWds_WnC_5Gfk_-ZN6PGfMrmD4",
+      authDomain: "multiagente-login.firebaseapp.com",
+      projectId: "multiagente-login",
+      storageBucket: "multiagente-login.appspot.com",
+      messagingSenderId: "298638656074",
+      appId: "1:298638656074:web:f4610a9dbbde82ea409cb3",
+      measurementId: "G-86LQC6LLPD"
+    };
+
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+  </script>
 </head>
 <body>
   <h2>Login de Usuario</h2>
@@ -17,6 +30,37 @@
     <button type="submit">Ingresar</button>
   </form>
   <p id="error-message" style="color:red;"></p>
+
+  <script>
+    // Manejar el envío del formulario
+    document.getElementById('login-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      // Obtener los valores de correo electrónico y contraseña
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      // Iniciar sesión con Firebase Authentication
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          // Inicio de sesión exitoso
+          const user = userCredential.user;
+          console.log('Usuario autenticado:', user);
+
+          // Redirigir a la página de inicio o realizar otra acción
+          window.location.href = 'pagina_principal.html';
+        })
+        .catch((error) => {
+          // Manejar errores de inicio de sesión
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.error('Error en el inicio de sesión:', errorCode, errorMessage);
+
+          // Mostrar mensaje de error al usuario
+          document.getElementById('error-message').innerText = 'Error en el inicio de sesión. Verifica tus credenciales.';
+        });
+    });
+  </script>
 </body>
 </html>
 
