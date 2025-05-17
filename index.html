@@ -20,7 +20,7 @@
       font-size: 16px;
     }
     button {
-      margin-top: 20px;
+      margin-top: 10px;
       padding: 10px 20px;
       font-size: 16px;
       background-color: #007bff;
@@ -37,13 +37,19 @@
       background-color: #f8f9fa;
       border: 1px solid #ddd;
     }
+    .numero-container {
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
   <h1>Generador de Links Multiagente</h1>
   <form id="form">
-    <label for="numeros">Números de WhatsApp (separados por comas):</label>
-    <textarea id="numeros" placeholder="Ejemplo: 5492944585356,5491165388118"></textarea>
+    <div id="numeros-container">
+      <label for="numero-1">Número de WhatsApp:</label>
+      <input type="text" id="numero-1" class="numero" placeholder="Ejemplo: 5492944585356">
+    </div>
+    <button type="button" onclick="agregarNumero()">Agregar otro número</button>
 
     <label for="mensaje">Mensaje automático:</label>
     <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
@@ -54,12 +60,28 @@
   <div class="output" id="output"></div>
 
   <script>
+    let contadorNumeros = 1;
+
+    function agregarNumero() {
+      contadorNumeros++;
+      const container = document.getElementById('numeros-container');
+      const nuevoCampo = document.createElement('div');
+      nuevoCampo.classList.add('numero-container');
+      nuevoCampo.innerHTML = `
+        <label for="numero-${contadorNumeros}">Número de WhatsApp:</label>
+        <input type="text" id="numero-${contadorNumeros}" class="numero" placeholder="Ejemplo: 5492944585356">
+      `;
+      container.appendChild(nuevoCampo);
+    }
+
     function generarLink() {
-      const numeros = document.getElementById('numeros').value.split(',').map(num => num.trim());
+      const numeros = Array.from(document.querySelectorAll('.numero'))
+        .map(input => input.value.trim())
+        .filter(num => num !== '');
       const mensaje = document.getElementById('mensaje').value;
 
       if (numeros.length === 0 || !mensaje) {
-        alert('Por favor, ingresa los números y el mensaje.');
+        alert('Por favor, ingresa al menos un número y el mensaje.');
         return;
       }
 
