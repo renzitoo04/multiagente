@@ -13,9 +13,22 @@
       display: block;
       margin-top: 10px;
     }
-    textarea, input {
-      width: 100%;
-      margin-top: 5px;
+    .numero-container {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .numero-container img {
+      width: 24px;
+      height: 16px;
+      margin-right: 10px;
+    }
+    .numero-container span {
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    input.numero {
+      flex: 1;
       padding: 10px;
       font-size: 16px;
     }
@@ -37,17 +50,17 @@
       background-color: #f8f9fa;
       border: 1px solid #ddd;
     }
-    .numero-container {
-      margin-top: 10px;
-    }
   </style>
 </head>
 <body>
   <h1>Generador de Links Multiagente</h1>
   <form id="form">
     <div id="numeros-container">
-      <label for="numero-1">Número de WhatsApp:</label>
-      <input type="text" id="numero-1" class="numero" placeholder="Ejemplo: 5492944585356">
+      <div class="numero-container" id="numero-container-1">
+        <img src="https://flagcdn.com/w40/ar.png" alt="Argentina">
+        <span>+54</span>
+        <input type="text" id="numero-1" class="numero" placeholder="Ejemplo: 2944585356">
+      </div>
     </div>
     <button type="button" onclick="agregarNumero()">Agregar otro número</button>
     <button type="button" onclick="quitarUltimoNumero()">Quitar último número</button>
@@ -70,8 +83,9 @@
       nuevoCampo.classList.add('numero-container');
       nuevoCampo.id = `numero-container-${contadorNumeros}`;
       nuevoCampo.innerHTML = `
-        <label for="numero-${contadorNumeros}">Número de WhatsApp:</label>
-        <input type="text" id="numero-${contadorNumeros}" class="numero" placeholder="Ejemplo: 5492944585356">
+        <img src="https://flagcdn.com/w40/ar.png" alt="Argentina">
+        <span>+54</span>
+        <input type="text" id="numero-${contadorNumeros}" class="numero" placeholder="Ejemplo: 2944585356">
       `;
       container.appendChild(nuevoCampo);
     }
@@ -91,8 +105,8 @@
 
     function generarLink() {
       const numeros = Array.from(document.querySelectorAll('.numero'))
-        .map(input => input.value.trim())
-        .filter(num => num !== '');
+        .map(input => `549${input.value.trim()}`) // Agrega el prefijo +54 automáticamente
+        .filter(num => num !== '549'); // Evita números vacíos
       const mensaje = document.getElementById('mensaje').value;
 
       if (numeros.length === 0 || !mensaje) {
