@@ -50,6 +50,7 @@
       <input type="text" id="numero-1" class="numero" placeholder="Ejemplo: 5492944585356">
     </div>
     <button type="button" onclick="agregarNumero()">Agregar otro número</button>
+    <button type="button" onclick="quitarUltimoNumero()">Quitar último número</button>
 
     <label for="mensaje">Mensaje automático:</label>
     <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
@@ -67,11 +68,25 @@
       const container = document.getElementById('numeros-container');
       const nuevoCampo = document.createElement('div');
       nuevoCampo.classList.add('numero-container');
+      nuevoCampo.id = `numero-container-${contadorNumeros}`;
       nuevoCampo.innerHTML = `
         <label for="numero-${contadorNumeros}">Número de WhatsApp:</label>
         <input type="text" id="numero-${contadorNumeros}" class="numero" placeholder="Ejemplo: 5492944585356">
       `;
       container.appendChild(nuevoCampo);
+    }
+
+    function quitarUltimoNumero() {
+      if (contadorNumeros > 1) {
+        const container = document.getElementById('numeros-container');
+        const ultimoCampo = document.getElementById(`numero-container-${contadorNumeros}`);
+        if (ultimoCampo) {
+          container.removeChild(ultimoCampo);
+          contadorNumeros--;
+        }
+      } else {
+        alert('Debe haber al menos un número.');
+      }
     }
 
     function generarLink() {
