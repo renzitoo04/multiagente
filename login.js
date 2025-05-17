@@ -1,18 +1,21 @@
-import { auth } from "./firebase.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { firebaseConfig } from "./firebase.js";
 
-// Manejar envío del formulario
-document.getElementById("login-form").addEventListener("submit", async (e) => {
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+document.getElementById("login-form").addEventListener("submit", (e) => {
   e.preventDefault();
-
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  try {
-    const userCredential = await auth.signInWithEmailAndPassword(email, password);
-    console.log("Usuario logueado:", userCredential.user);
-    window.location.href = "panel.html"; // Redirige al panel
-  } catch (error) {
-    console.error("Error al iniciar sesión:", error.message);
-    document.getElementById("error-message").textContent = "Error: " + error.message;
-  }
+  signInWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      window.location.href = "panel.html";
+    })
+    .catch((error) => {
+      document.getElementById("error-message").textContent = error.message;
+    });
 });
+
