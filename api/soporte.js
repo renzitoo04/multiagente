@@ -18,14 +18,19 @@ let indiceActual = 0;
 export default function handler(req, res) {
   const { numeros, mensaje, email, password } = req.query;
 
+  console.log("Datos recibidos:", { email, password });
+
   // Validar credenciales del usuario
   const usuario = usuarios.find(
     (u) => u.email === email && u.password === password
   );
 
   if (!usuario) {
+    console.log("Credenciales incorrectas para:", { email, password });
     return res.status(401).json({ error: "Credenciales incorrectas" });
   }
+
+  console.log("Usuario autenticado:", usuario);
 
   if (!numeros || !mensaje) {
     return res.status(400).json({ error: "Faltan parámetros obligatorios" });
