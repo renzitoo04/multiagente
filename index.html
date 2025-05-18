@@ -45,7 +45,7 @@
   </style>
 </head>
 <body>
-  <!-- Contenedor de inicio de sesión -->
+  <!--aca inicia la sesiot -->
   <div id="login-container" class="active">
     <h2>Iniciar sesión</h2>
     <label for="email">Correo electrónico:</label>
@@ -56,7 +56,7 @@
     <p id="login-error" style="color: red;"></p>
   </div>
 
-  <!-- Contenedor del generador de links -->
+  <!-- crea el link -->
   <div id="generador-container">
     <h1>Generador de Links Multiagente</h1>
     <form id="form">
@@ -78,7 +78,7 @@
     <div class="output" id="output"></div>
   </div>
 
-  <!-- Dentro del <body>, el resto del contenido queda igual -->
+
 
 <script>
   let contadorNumeros = 1;
@@ -143,7 +143,7 @@
     }
   }
 
-  function generarLink() {
+  async function generarLink() {
     const numeros = Array.from(document.querySelectorAll('.numero'))
       .map(input => input.value.trim())
       .filter(num => num !== '');
@@ -155,12 +155,27 @@
       return;
     }
 
-    const url = `/soporte?numeros=${encodeURIComponent(numeros.join(','))}&mensaje=${encodeURIComponent(mensaje)}&email=${encodeURIComponent(email)}`;
+    try {
+      const response = await fetch('/soporte', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ numeros, mensaje, email })
+      });
 
-    document.getElementById('output').innerHTML = `
-      <p>Tu link generado (rota por cada clic):</p>
-      <a href="${url}" target="_blank">${location.origin}${url}</a>
-    `;
+      const data = await response.json();
+
+      if (response.ok) {
+        const shortUrl = `${location.origin}/soporte?id=${data.id}`;
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado (más corto):</p>
+          <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+        `;
+      } else {
+        alert('Error: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Error generando link:', error);
+    }
   }
 </script>
 

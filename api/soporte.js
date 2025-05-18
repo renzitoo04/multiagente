@@ -16,13 +16,17 @@ const usuarios = [
   }
 ];
 
+// Rotación por email
 const indicesUsuarios = {};
 
-export default function handler(req, res) {
-  const { email, password, numeros, mensaje } = req.query;
+// Configuraciones guardadas por ID corto
+const configuraciones = {}; // { id: { numeros: [], mensaje, email } }
 
-  // INICIO DE SESIÓN
-  if (email && password) {
+export default function handler(req, res) {
+  const { email, password, id } = req.query;
+
+  // === 1. INICIO DE SESIÓN ===
+  if (email && password && req.method === 'GET') {
     const usuario = usuarios.find(
       (u) => u.email === email && u.password === password
     );
@@ -34,34 +38,56 @@ export default function handler(req, res) {
     return res.status(200).json({ success: true, limiteNumeros: usuario.limiteNumeros });
   }
 
-  // REDIRECCIÓN AL NÚMERO DE WHATSAPP
-  if (numeros && mensaje && email) {
-    const listaNumeros = numeros.split(",");
+  // === 2. GENERAR LINK CORTO (POST) ===
+  if (req.method === 'POST') {
+    const { numeros, mensaje, email } = req.body;
 
     const usuario = usuarios.find((u) => u.email === email);
     if (!usuario) {
       return res.status(401).json({ error: "Usuario no autenticado" });
     }
 
-    if (listaNumeros.length > usuario.limiteNumeros) {
-      return res
-        .status(400)
-        .json({ error: `Excediste el límite de números permitido (${usuario.limiteNumeros})` });
+    if (!numeros || !Array.isArray(numeros) || numeros.length === 0) {
+      return res.status(400).json({ error: "Números inválidos" });
     }
+
+    if (numeros.length > usuario.limiteNumeros) {
+      return res.status(400).json({ error: `Excediste el límite de números permitido (${usuario.limiteNumeros})` });
+    }
+
+    if (!mensaje || typeof mensaje !== 'string') {
+      return res.status(400).json({ error: "Mensaje inválido" });
+    }
+
+    const id = Math.random().toString(36).substring(2, 8); // genera ID corto
+    configuraciones[id] = { numeros, mensaje, email };
+
+    return res.status(200).json({ id });
+  }
+
+  // === 3. REDIRECCIÓN POR ID (GET) ===
+  if (req.method === 'GET' && id) {
+    const config = configuraciones[id];
+
+    if (!config) {
+      return res.status(404).json({ error: "ID no encontrado" });
+    }
+
+    const { numeros, mensaje, email } = config;
 
     if (!indicesUsuarios[email]) {
       indicesUsuarios[email] = 0;
     }
 
     const indice = indicesUsuarios[email];
-    const numeroActual = listaNumeros[indice];
+    const numeroActual = numeros[indice];
 
-    indicesUsuarios[email] = (indice + 1) % listaNumeros.length;
+    indicesUsuarios[email] = (indice + 1) % numeros.length;
 
     const link = `https://wa.me/${numeroActual}?text=${encodeURIComponent(mensaje)}`;
-
-    return res.redirect(302, link); // Redirección automática
+    return res.redirect(302, link);
   }
 
-  return res.status(400).json({ error: "Faltan parámetros obligatorios" });
+  // Si no coincide ningún caso válido
+  return res.status(400).json({ error: "Solicitud inválida o faltan parámetros" });
 }
