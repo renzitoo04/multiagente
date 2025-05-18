@@ -91,3 +91,4 @@ export default function handler(req, res) {
   // Si no coincide ningún caso válido
   return res.status(400).json({ error: "Solicitud inválida o faltan parámetros" });
 }
+
