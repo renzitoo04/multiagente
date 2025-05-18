@@ -4,32 +4,79 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generador de Links Multiagente</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #login-container, #generador-container {
+      display: none;
+    }
+    #login-container.active, #generador-container.active {
+      display: block;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+    }
+  </style>
 </head>
 <body>
-  <h1>Generador de Links Multiagente</h1>
-  <form id="form">
-    <div id="numeros-container">
-      <div class="numero-container" id="numero-container-1">
-        <span>+54</span>
-        <input type="text" id="numero-1" class="numero" placeholder="Ejemplo: 2944585356">
-      </div>
-    </div>
-    <button type="button" onclick="agregarNumero()">Agregar otro número</button>
-    <button type="button" onclick="quitarUltimoNumero()">Quitar último número</button>
-
-    <label for="mensaje">Mensaje automático:</label>
-    <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
-
+  <!-- Contenedor de inicio de sesión -->
+  <div id="login-container" class="active">
+    <h2>Iniciar sesión</h2>
     <label for="email">Correo electrónico:</label>
-    <input type="email" id="email" placeholder="Correo electrónico">
-
+    <input type="email" id="email" placeholder="Correo electrónico" required>
     <label for="password">Contraseña:</label>
-    <input type="password" id="password" placeholder="Contraseña">
+    <input type="password" id="password" placeholder="Contraseña" required>
+    <button onclick="login()">Iniciar sesión</button>
+    <p id="login-error" style="color: red;"></p>
+  </div>
 
-    <button type="button" onclick="generarLink()">Generar Link</button>
-  </form>
+  <!-- Contenedor del generador de links -->
+  <div id="generador-container">
+    <h1>Generador de Links Multiagente</h1>
+    <form id="form">
+      <div id="numeros-container">
+        <div class="numero-container" id="numero-container-1">
+          <span>+54</span>
+          <input type="text" id="numero-1" class="numero" placeholder="Ejemplo: 2944585356">
+        </div>
+      </div>
+      <button type="button" onclick="agregarNumero()">Agregar otro número</button>
+      <button type="button" onclick="quitarUltimoNumero()">Quitar último número</button>
 
-  <div class="output" id="output"></div>
+      <label for="mensaje">Mensaje automático:</label>
+      <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
+
+      <button type="button" onclick="generarLink()">Generar Link</button>
+    </form>
+
+    <div class="output" id="output"></div>
+  </div>
 
   <script>
     let contadorNumeros = 1;
@@ -60,21 +107,41 @@
       }
     }
 
+    async function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch(`/soporte?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          // Ocultar el formulario de inicio de sesión y mostrar el generador de links
+          document.getElementById('login-container').classList.remove('active');
+          document.getElementById('generador-container').classList.add('active');
+          alert(`Bienvenido. Límite de números: ${data.limiteNumeros}`);
+        } else {
+          document.getElementById('login-error').textContent = data.error;
+        }
+      } catch (error) {
+        console.error('Error al iniciar sesión:', error);
+        document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
+      }
+    }
+
     async function generarLink() {
       const numeros = Array.from(document.querySelectorAll('.numero'))
         .map(input => input.value.trim())
         .filter(num => num !== '');
       const mensaje = document.getElementById('mensaje').value;
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
 
-      if (numeros.length === 0 || !mensaje || !email || !password) {
+      if (numeros.length === 0 || !mensaje) {
         alert('Por favor, completa todos los campos.');
         return;
       }
 
       try {
-        const response = await fetch(`/soporte?numeros=${encodeURIComponent(numeros.join(','))}&mensaje=${encodeURIComponent(mensaje)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+        const response = await fetch(`/soporte?numeros=${encodeURIComponent(numeros.join(','))}&mensaje=${encodeURIComponent(mensaje)}`);
         const data = await response.json();
 
         if (response.ok) {
