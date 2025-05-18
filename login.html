@@ -11,8 +11,35 @@
     <input type="password" id="password" placeholder="Contraseña" required><br><br>
     <button type="submit">Ingresar</button>
   </form>
-  <p id="error-message" style="color:red;"></p>
+  <p id="mensaje" style="color: red;"></p>
 
-  <script type="module" src="./login.js"></script>
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          alert(`Bienvenido. Límite de números: ${data.limiteNumeros}`);
+          // Redirigir al panel
+          window.location.href = 'panel.html';
+        } else {
+          const error = await response.json();
+          document.getElementById('mensaje').textContent = error.message;
+        }
+      } catch (error) {
+        console.error('Error al iniciar sesión:', error);
+      }
+    });
+  </script>
 </body>
 </html>
