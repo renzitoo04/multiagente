@@ -80,8 +80,14 @@
 
   <script>
     let contadorNumeros = 1;
+    let limiteNumeros = 0; // Este valor será asignado después del inicio de sesión
 
     function agregarNumero() {
+      if (contadorNumeros >= limiteNumeros) {
+        alert(`Solo puedes agregar hasta ${limiteNumeros} números.`);
+        return;
+      }
+
       contadorNumeros++;
       const container = document.getElementById('numeros-container');
       const nuevoCampo = document.createElement('div');
@@ -119,7 +125,8 @@
           // Ocultar el formulario de inicio de sesión y mostrar el generador de links
           document.getElementById('login-container').classList.remove('active');
           document.getElementById('generador-container').classList.add('active');
-          alert(`Bienvenido. Límite de números: ${data.limiteNumeros}`);
+          limiteNumeros = data.limiteNumeros; // Asignar el límite de números permitido
+          alert(`Bienvenido. Límite de números: ${limiteNumeros}`);
         } else {
           document.getElementById('login-error').textContent = data.error;
         }
