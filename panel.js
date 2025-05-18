@@ -1,20 +1,35 @@
-import { auth, db } from './firebase.js';
-import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+// Configuración de Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyD4FEIDXnzrA14Ilzp6gjj3MgsFt4w8Rxw",
+  authDomain: "watlikn.firebaseapp.com",
+  projectId: "watlikn",
+  storageBucket: "watlikn.appspot.com",
+  messagingSenderId: "15043561405",
+  appId: "1:15043561405:web:fcf70add38abb37497f4d4",
+  measurementId: "G-N073G83V7M"
+};
 
-onAuthStateChanged(auth, async (user) => {
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Verificar si el usuario está autenticado
+auth.onAuthStateChanged(async (user) => {
   if (user) {
-    const docRef = doc(db, "usuarios", user.uid);
-    const docSnap = await getDoc(docRef);
+    const docRef = db.collection("usuarios").doc(user.uid);
+    const docSnap = await docRef.get();
 
-    if (docSnap.exists()) {
+    if (docSnap.exists) {
       const datosUsuario = docSnap.data();
-      document.body.innerHTML = `<h1>Bienvenido, ${datosUsuario.email}</h1>
-        <p>Límite de números: ${datosUsuario.limiteNumeros}</p>`;
+      document.getElementById("contenido").innerHTML = `
+        <h1>Bienvenido, ${datosUsuario.email}</h1>
+        <p>Límite de números: ${datosUsuario.limiteNumeros}</p>
+      `;
     } else {
-      console.log('No se encontraron datos del usuario');
+      console.log("No se encontraron datos del usuario");
     }
   } else {
-    window.location.href = 'login.html'; // Redirige al login si no está autenticado
+    window.location.href = "login.html"; // Redirige al login si no está autenticado
   }
 });
