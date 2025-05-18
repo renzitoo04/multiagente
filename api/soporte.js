@@ -2,7 +2,7 @@ const usuarios = [
   {
     email: "renzobianco@gmail.com",
     password: "renzoxdlol",
-    limiteNumeros: 5
+    limiteNumeros: 2
   },
   {
     email: "nuevo_usuario@gmail.com",
