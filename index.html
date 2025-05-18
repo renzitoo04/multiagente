@@ -8,162 +8,161 @@
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
-      background-color: #f4f4f9;
-      color: #333;
     }
-
-    h1, h2 {
-      text-align: center;
-      color: #444;
+    #login-container, #generador-container {
+      display: none;
     }
-
-    form {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    #login-container.active, #generador-container.active {
+      display: block;
     }
-
     label {
       display: block;
       margin-top: 10px;
-      font-weight: bold;
     }
-
     input {
-      width: 100%;
       padding: 10px;
-      margin-top: 5px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
       font-size: 16px;
+      margin-bottom: 10px;
+      width: 100%;
     }
-
     button {
-      display: inline-block;
       padding: 10px 20px;
-      margin: 5px 0;
       font-size: 16px;
-      font-weight: bold;
-      color: #fff;
       background-color: #007bff;
+      color: white;
       border: none;
-      border-radius: 4px;
       cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
     }
-
     button:hover {
       background-color: #0056b3;
-      transform: scale(1.05);
     }
-
-    button:active {
-      transform: scale(0.95);
-    }
-
     .output {
       margin-top: 20px;
       padding: 10px;
-      background-color: #e9ecef;
+      background-color: #f8f9fa;
       border: 1px solid #ddd;
-      border-radius: 4px;
-      text-align: center;
-    }
-
-    .output a {
-      color: #007bff;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .output a:hover {
-      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <h1>Generador de Links Multiagente</h1>
-  <form id="form">
-    <div id="numeros-container">
-      <label for="numero-1">Número 1:</label>
-      <input type="text" id="numero-1" class="numero" placeholder="Ejemplo: 2944585356">
-    </div>
-    <button type="button" onclick="agregarNumero()">Agregar otro número</button>
-    <button type="button" onclick="quitarUltimoNumero()">Quitar último número</button>
+  <!--aca inicia la sesiot -->
+  <div id="login-container" class="active">
+    <h2>Iniciar sesión</h2>
+    <label for="email">Correo electrónico:</label>
+    <input type="email" id="email" placeholder="Correo electrónico" required>
+    <label for="password">Contraseña:</label>
+    <input type="password" id="password" placeholder="Contraseña" required>
+    <button onclick="login()">Iniciar sesión</button>
+    <p id="login-error" style="color: red;"></p>
+  </div>
 
-    <label for="mensaje">Mensaje automático:</label>
-    <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
+  <!-- crea el link -->
+  <div id="generador-container">
+    <h1>Generador de Links Multiagente</h1>
+    <form id="form">
+      <div id="numeros-container">
+        <div class="numero-container" id="numero-container-1">
+          <span>+54</span>
+          <input type="text" id="numero-1" class="numero" placeholder="Ejemplo: 2944585356">
+        </div>
+      </div>
+      <button type="button" onclick="agregarNumero()">Agregar otro número</button>
+      <button type="button" onclick="quitarUltimoNumero()">Quitar último número</button>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" placeholder="Ejemplo: tuemail@ejemplo.com">
+      <label for="mensaje">Mensaje automático:</label>
+      <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
 
-    <button type="button" onclick="generarLink()">Generar Link</button>
-  </form>
+      <button type="button" onclick="generarLink()">Generar Link</button>
+    </form>
 
-  <div class="output" id="output"></div>
+    <div class="output" id="output"></div>
+  </div>
 
-  <script>
-    let contadorNumeros = 1;
 
-    function agregarNumero() {
-      contadorNumeros++;
+
+<script>
+  let contadorNumeros = 1;
+  let limiteNumeros = 0;
+
+  function agregarNumero() {
+    if (contadorNumeros >= limiteNumeros) {
+      alert(`Solo puedes agregar hasta ${limiteNumeros} números.`);
+      document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
+      return;
+    }
+
+    contadorNumeros++;
+    const container = document.getElementById('numeros-container');
+    const nuevoCampo = document.createElement('div');
+    nuevoCampo.classList.add('numero-container');
+    nuevoCampo.id = `numero-container-${contadorNumeros}`;
+    nuevoCampo.innerHTML = `
+      <span>+54</span>
+      <input type="text" id="numero-${contadorNumeros}" class="numero" placeholder="Ejemplo: 2944585356">
+    `;
+    container.appendChild(nuevoCampo);
+
+    if (contadorNumeros >= limiteNumeros) {
+      document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
+    }
+  }
+
+  function quitarUltimoNumero() {
+    if (contadorNumeros > 1) {
       const container = document.getElementById('numeros-container');
-      const nuevoCampo = document.createElement('div');
-      nuevoCampo.innerHTML = `
-        <label for="numero-${contadorNumeros}">Número ${contadorNumeros}:</label>
-        <input type="text" id="numero-${contadorNumeros}" class="numero" placeholder="Ejemplo: 2944585356">
-      `;
-      container.appendChild(nuevoCampo);
-    }
-
-    function quitarUltimoNumero() {
-      if (contadorNumeros > 1) {
-        const container = document.getElementById('numeros-container');
-        container.removeChild(container.lastElementChild);
+      const ultimoCampo = document.getElementById(`numero-container-${contadorNumeros}`);
+      if (ultimoCampo) {
+        container.removeChild(ultimoCampo);
         contadorNumeros--;
+        document.querySelector('button[onclick="agregarNumero()"]').disabled = false;
+      }
+    } else {
+      alert('Debe haber al menos un número.');
+    }
+  }
+
+  async function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    try {
+      const response = await fetch(`/soporte?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        document.getElementById('login-container').classList.remove('active');
+        document.getElementById('generador-container').classList.add('active');
+        limiteNumeros = data.limiteNumeros;
+        alert(`Bienvenido. Límite de números: ${limiteNumeros}`);
       } else {
-        alert('Debe haber al menos un número.');
+        document.getElementById('login-error').textContent = data.error;
       }
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
+    }
+  }
+
+  function generarLink() {
+    const numeros = Array.from(document.querySelectorAll('.numero'))
+      .map(input => input.value.trim())
+      .filter(num => num !== '');
+    const mensaje = document.getElementById('mensaje').value;
+    const email = document.getElementById('email').value;
+
+    if (numeros.length === 0 || !mensaje) {
+      alert('Por favor, completa todos los campos.');
+      return;
     }
 
-    async function generarLink() {
-      const numeros = Array.from(document.querySelectorAll('.numero'))
-        .map(input => input.value.trim())
-        .filter(num => num !== '');
-      const mensaje = document.getElementById('mensaje').value;
-      const email = document.getElementById('email').value;
+    const url = `/soporte?numeros=${encodeURIComponent(numeros.join(','))}&mensaje=${encodeURIComponent(mensaje)}&email=${encodeURIComponent(email)}`;
 
-      if (numeros.length === 0 || !mensaje) {
-        alert('Por favor, completa todos los campos.');
-        return;
-      }
+    document.getElementById('output').innerHTML = `
+      <p>Tu link generado (rota por cada clic):</p>
+      <a href="${url}" target="_blank">${location.origin}${url}</a>
+    `;
+  }
+</script>
 
-      try {
-        const response = await fetch('/soporte', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ numeros, mensaje, email })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          const shortUrl = `${location.origin}/soporte?id=${data.id}`;
-          document.getElementById('output').innerHTML = `
-            <p>Tu link generado (más corto):</p>
-            <a href="${shortUrl}" target="_blank">${shortUrl}</a>
-          `;
-        } else {
-          alert('Error: ' + data.error);
-        }
-      } catch (error) {
-        console.error('Error generando link:', error);
-      }
-    }
-  </script>
 </body>
 </html>
