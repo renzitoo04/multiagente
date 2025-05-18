@@ -168,10 +168,7 @@
     <form id="form">
       <div id="numeros-container">
         <div class="numero-container" id="numero-container-1">
-          <span class="prefijo">
-            <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera"> +54
-          </span>
-          <input type="text" id="numero-1" class="numero" placeholder="Ejemplo: 2944585356">
+          <input type="text" id="numero-1" class="numero" value="+54" placeholder="Ejemplo: 2944585356">
         </div>
       </div>
       <button type="button" onclick="agregarNumero()">Agregar otro número</button>
@@ -201,7 +198,6 @@
       <button type="button" onclick="generarLinkPrueba()">Generar Link</button>
     </form>
     <div class="output" id="output-prueba"></div>
-    <button onclick="volverAlLogin()">Volver</button>
   </div>
 
 <script>
@@ -221,10 +217,7 @@
     nuevoCampo.classList.add('numero-container');
     nuevoCampo.id = `numero-container-${contadorNumeros}`;
     nuevoCampo.innerHTML = `
-      <span class="prefijo">
-        <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera"> +54
-      </span>
-      <input type="text" id="numero-${contadorNumeros}" class="numero" placeholder="Ejemplo: 2944585356">
+      <input type="text" id="numero-${contadorNumeros}" class="numero" value="+54" placeholder="Ejemplo: 2944585356">
     `;
     container.appendChild(nuevoCampo);
 
