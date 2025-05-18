@@ -106,6 +106,47 @@
   .output a:hover {
     text-decoration: underline;
   }
+
+  .numero-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .prefijo {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+  }
+
+  .bandera {
+    width: 24px;
+    height: 16px;
+    margin-right: 5px;
+  }
+
+  .numero {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #3a506b;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #d4f8e8; /* Verde muy clarito */
+    color: #0a1128; /* Azul oscuro para el texto */
+  }
+
+  .numero::placeholder {
+    color: #6c757d; /* Color gris para el texto del placeholder */
+  }
+
+  .numero:focus {
+    outline: none;
+    border-color: #25d366; /* Verde de WhatsApp al enfocar */
+    box-shadow: 0 0 5px #25d366;
+  }
   </style>
 </head>
 <body>
@@ -118,7 +159,6 @@
     <label for="password">Contraseña:</label>
     <input type="password" id="password" placeholder="Contraseña" required>
     <button onclick="login()">Iniciar sesión</button>
-    <button onclick="probarMultiLink()">Probar MultiLink</button>
     <p id="login-error" style="color: red;"></p>
   </div>
 
@@ -128,7 +168,9 @@
     <form id="form">
       <div id="numeros-container">
         <div class="numero-container" id="numero-container-1">
-          <span>+54</span>
+          <span class="prefijo">
+            <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera"> +54
+          </span>
           <input type="text" id="numero-1" class="numero" placeholder="Ejemplo: 2944585356">
         </div>
       </div>
@@ -177,7 +219,12 @@
     const nuevoCampo = document.createElement('div');
     nuevoCampo.classList.add('numero-container');
     nuevoCampo.id = `numero-container-${contadorNumeros}`;
-    nuevoCampo.innerHTML = `<span>+54</span><input type="text" id="numero-${contadorNumeros}" class="numero" placeholder="Ejemplo: 2944585356">`;
+    nuevoCampo.innerHTML = `
+      <span class="prefijo">
+        <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera"> +54
+      </span>
+      <input type="text" id="numero-${contadorNumeros}" class="numero" placeholder="Ejemplo: 2944585356">
+    `;
     container.appendChild(nuevoCampo);
 
     if (contadorNumeros >= limiteNumeros) {
