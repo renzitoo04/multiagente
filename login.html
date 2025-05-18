@@ -5,18 +5,15 @@
   <title>Iniciar sesión</title>
 </head>
 <body>
-  <h2>Iniciar sesión</h2>
-  <form id="login-form">
-    <input type="email" id="email" placeholder="Correo electrónico" required><br><br>
-    <input type="password" id="password" placeholder="Contraseña" required><br><br>
-    <button type="submit">Iniciar sesión</button>
-  </form>
-  <p id="mensaje" style="color: red;"></p>
+  <div id="auth-container">
+    <h2>Iniciar sesión</h2>
+    <input type="email" id="email" placeholder="Correo electrónico">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button onclick="login()">Iniciar sesión</button>
+  </div>
 
   <script>
-    document.getElementById('login-form').addEventListener('submit', async (event) => {
-      event.preventDefault();
-
+    async function login() {
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
 
@@ -30,16 +27,15 @@
         if (response.ok) {
           const data = await response.json();
           alert(`Bienvenido. Límite de números: ${data.limiteNumeros}`);
-          // Redirigir al panel principal
           window.location.href = 'index.html';
         } else {
           const error = await response.json();
-          document.getElementById('mensaje').textContent = error.message;
+          alert('Error: ' + error.message);
         }
       } catch (error) {
         console.error('Error al iniciar sesión:', error);
       }
-    });
+    }
   </script>
 </body>
 </html>
