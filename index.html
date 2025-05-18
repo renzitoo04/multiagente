@@ -105,7 +105,7 @@
   </div>
 
   <!-- Contenedor principal del generador -->
-  <div id="generador-container">
+  <div id="generador-container" style="display: none;">
     <h1>Generador de Links Multiagente</h1>
     <form id="form">
       <div id="numeros-container">
@@ -190,8 +190,8 @@
       const data = await response.json();
 
       if (response.ok) {
-        document.getElementById('login-container').classList.remove('active');
-        document.getElementById('generador-container').classList.add('active');
+        document.getElementById('login-container').style.display = 'none'; // Oculta el contenedor de inicio de sesión
+        document.getElementById('generador-container').style.display = 'block'; // Muestra el generador de links
         limiteNumeros = data.limiteNumeros;
         alert(`Bienvenido. Límite de números: ${limiteNumeros}`);
       } else {
