@@ -25,6 +25,7 @@
     background-color: #1c2541; /* Azul más claro para el fondo del formulario */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center; /* Centra los botones dentro del formulario */
   }
 
   label {
@@ -59,7 +60,7 @@
   button {
     display: inline-block;
     padding: 10px 20px;
-    margin: 5px 0;
+    margin: 10px auto; /* Centra los botones verticalmente */
     font-size: 16px;
     font-weight: bold;
     color: #0a1128; /* Azul oscuro para el texto */
@@ -68,6 +69,8 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    display: block; /* Asegura que los botones ocupen toda la línea */
+    text-align: center; /* Centra el texto dentro del botón */
   }
 
   button:hover {
@@ -77,6 +80,11 @@
 
   button:active {
     transform: scale(0.95);
+  }
+
+  form button {
+    width: 100%; /* Hace que los botones ocupen todo el ancho del formulario */
+    max-width: 300px; /* Limita el ancho máximo de los botones */
   }
 
   .output {
