@@ -1,27 +1,54 @@
+// Lista de usuarios (puedes agregar más usuarios aquí)
+const usuarios = [
+  {
+    email: "renzobianco@gmail.com",
+    password: "renzoxdlol",
+    limiteNumeros: 5
+  },
+  {
+    email: "nuevo_usuario@gmail.com",
+    password: "contraseña123",
+    limiteNumeros: 10
+  }
+];
+
 // Variable global para mantener el índice actual
 let indiceActual = 0;
 
 export default function handler(req, res) {
-  const { numeros, mensaje } = req.query;
+  const { numeros, mensaje, email, password } = req.query;
+
+  // Validar credenciales del usuario
+  const usuario = usuarios.find(
+    (u) => u.email === email && u.password === password
+  );
+
+  if (!usuario) {
+    return res.status(401).json({ error: "Credenciales incorrectas" });
+  }
 
   if (!numeros || !mensaje) {
-    res.status(400).json({ error: 'Faltan parámetros: números o mensaje' });
-    return;
+    return res.status(400).json({ error: "Faltan parámetros obligatorios" });
   }
 
   // Convertir la lista de números en un array
-  const listaNumeros = numeros.split(',');
+  const listaNumeros = numeros.split(",");
 
-  // Seleccionar el número actual basado en el índice
-  const numero = listaNumeros[indiceActual];
+  // Validar el límite de números permitido
+  if (listaNumeros.length > usuario.limiteNumeros) {
+    return res
+      .status(400)
+      .json({ error: `Excediste el límite de números permitido (${usuario.limiteNumeros})` });
+  }
 
-  // Incrementar el índice para la próxima solicitud
+  // Generar el mensaje para el número actual
+  const numeroActual = listaNumeros[indiceActual];
+  const link = `https://wa.me/${numeroActual}?text=${encodeURIComponent(
+    mensaje
+  )}`;
+
+  // Incrementar el índice para el siguiente número
   indiceActual = (indiceActual + 1) % listaNumeros.length;
 
-  // Construir la URL de WhatsApp
-  const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-
-  // Redirigir al usuario a la URL de WhatsApp
-  res.writeHead(302, { Location: url });
-  res.end();
+  res.status(200).json({ link });
 }
