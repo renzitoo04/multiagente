@@ -78,101 +78,91 @@
     <div class="output" id="output"></div>
   </div>
 
-  <script>
-    let contadorNumeros = 1;
-    let limiteNumeros = 0; // Este valor será asignado después del inicio de sesión
+  <!-- Dentro del <body>, el resto del contenido queda igual -->
 
-    function agregarNumero() {
-      if (contadorNumeros >= limiteNumeros) {
-        alert(`Solo puedes agregar hasta ${limiteNumeros} números.`);
-        document.querySelector('button[onclick="agregarNumero()"]').disabled = true; // Deshabilitar el botón
-        return;
-      }
+<script>
+  let contadorNumeros = 1;
+  let limiteNumeros = 0;
 
-      contadorNumeros++;
+  function agregarNumero() {
+    if (contadorNumeros >= limiteNumeros) {
+      alert(`Solo puedes agregar hasta ${limiteNumeros} números.`);
+      document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
+      return;
+    }
+
+    contadorNumeros++;
+    const container = document.getElementById('numeros-container');
+    const nuevoCampo = document.createElement('div');
+    nuevoCampo.classList.add('numero-container');
+    nuevoCampo.id = `numero-container-${contadorNumeros}`;
+    nuevoCampo.innerHTML = `
+      <span>+54</span>
+      <input type="text" id="numero-${contadorNumeros}" class="numero" placeholder="Ejemplo: 2944585356">
+    `;
+    container.appendChild(nuevoCampo);
+
+    if (contadorNumeros >= limiteNumeros) {
+      document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
+    }
+  }
+
+  function quitarUltimoNumero() {
+    if (contadorNumeros > 1) {
       const container = document.getElementById('numeros-container');
-      const nuevoCampo = document.createElement('div');
-      nuevoCampo.classList.add('numero-container');
-      nuevoCampo.id = `numero-container-${contadorNumeros}`;
-      nuevoCampo.innerHTML = `
-        <span>+54</span>
-        <input type="text" id="numero-${contadorNumeros}" class="numero" placeholder="Ejemplo: 2944585356">
-      `;
-      container.appendChild(nuevoCampo);
-
-      // Si se alcanza el límite, deshabilitar el botón
-      if (contadorNumeros >= limiteNumeros) {
-        document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
+      const ultimoCampo = document.getElementById(`numero-container-${contadorNumeros}`);
+      if (ultimoCampo) {
+        container.removeChild(ultimoCampo);
+        contadorNumeros--;
+        document.querySelector('button[onclick="agregarNumero()"]').disabled = false;
       }
+    } else {
+      alert('Debe haber al menos un número.');
     }
+  }
 
-    function quitarUltimoNumero() {
-      if (contadorNumeros > 1) {
-        const container = document.getElementById('numeros-container');
-        const ultimoCampo = document.getElementById(`numero-container-${contadorNumeros}`);
-        if (ultimoCampo) {
-          container.removeChild(ultimoCampo);
-          contadorNumeros--;
+  async function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-          // Habilitar el botón si se quita un número
-          document.querySelector('button[onclick="agregarNumero()"]').disabled = false;
-        }
+    try {
+      const response = await fetch(`/soporte?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        document.getElementById('login-container').classList.remove('active');
+        document.getElementById('generador-container').classList.add('active');
+        limiteNumeros = data.limiteNumeros;
+        alert(`Bienvenido. Límite de números: ${limiteNumeros}`);
       } else {
-        alert('Debe haber al menos un número.');
+        document.getElementById('login-error').textContent = data.error;
       }
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
+    }
+  }
+
+  function generarLink() {
+    const numeros = Array.from(document.querySelectorAll('.numero'))
+      .map(input => input.value.trim())
+      .filter(num => num !== '');
+    const mensaje = document.getElementById('mensaje').value;
+    const email = document.getElementById('email').value;
+
+    if (numeros.length === 0 || !mensaje) {
+      alert('Por favor, completa todos los campos.');
+      return;
     }
 
-    async function login() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+    const url = `/soporte?numeros=${encodeURIComponent(numeros.join(','))}&mensaje=${encodeURIComponent(mensaje)}&email=${encodeURIComponent(email)}`;
 
-      try {
-        const response = await fetch(`/soporte?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
-        const data = await response.json();
+    document.getElementById('output').innerHTML = `
+      <p>Tu link generado (rota por cada clic):</p>
+      <a href="${url}" target="_blank">${location.origin}${url}</a>
+    `;
+  }
+</script>
 
-        if (response.ok) {
-          // Ocultar el formulario de inicio de sesión y mostrar el generador de links
-          document.getElementById('login-container').classList.remove('active');
-          document.getElementById('generador-container').classList.add('active');
-          limiteNumeros = data.limiteNumeros; // Asignar el límite de números permitido
-          alert(`Bienvenido. Límite de números: ${limiteNumeros}`);
-        } else {
-          document.getElementById('login-error').textContent = data.error;
-        }
-      } catch (error) {
-        console.error('Error al iniciar sesión:', error);
-        document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
-      }
-    }
-
-    async function generarLink() {
-      const numeros = Array.from(document.querySelectorAll('.numero'))
-        .map(input => input.value.trim())
-        .filter(num => num !== '');
-      const mensaje = document.getElementById('mensaje').value;
-      const email = document.getElementById('email').value; // Usar el email del usuario autenticado
-
-      if (numeros.length === 0 || !mensaje) {
-        alert('Por favor, completa todos los campos.');
-        return;
-      }
-
-      try {
-        const response = await fetch(`/soporte?numeros=${encodeURIComponent(numeros.join(','))}&mensaje=${encodeURIComponent(mensaje)}&email=${encodeURIComponent(email)}`);
-        const data = await response.json();
-
-        if (response.ok) {
-          document.getElementById('output').innerHTML = `
-            <p>Tu link generado:</p>
-            <a href="${data.link}" target="_blank">${data.link}</a>
-          `;
-        } else {
-          alert('Error: ' + data.error);
-        }
-      } catch (error) {
-        console.error('Error al generar el link:', error);
-      }
-    }
-  </script>
 </body>
 </html>

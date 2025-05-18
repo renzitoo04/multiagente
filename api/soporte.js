@@ -16,13 +16,12 @@ const usuarios = [
   }
 ];
 
-// Variable global para mantener el índice actual de cada usuario
 const indicesUsuarios = {};
 
 export default function handler(req, res) {
   const { email, password, numeros, mensaje } = req.query;
 
-  // Validar credenciales del usuario (inicio de sesión)
+  // INICIO DE SESIÓN
   if (email && password) {
     const usuario = usuarios.find(
       (u) => u.email === email && u.password === password
@@ -32,44 +31,37 @@ export default function handler(req, res) {
       return res.status(401).json({ error: "Credenciales incorrectas" });
     }
 
-    // Responder con el límite de números permitido
     return res.status(200).json({ success: true, limiteNumeros: usuario.limiteNumeros });
   }
 
-  // Validar parámetros para generación de links
+  // REDIRECCIÓN AL NÚMERO DE WHATSAPP
   if (numeros && mensaje && email) {
     const listaNumeros = numeros.split(",");
 
-    // Validar que el usuario exista
     const usuario = usuarios.find((u) => u.email === email);
     if (!usuario) {
       return res.status(401).json({ error: "Usuario no autenticado" });
     }
 
-    // Validar el límite de números permitido
     if (listaNumeros.length > usuario.limiteNumeros) {
       return res
         .status(400)
         .json({ error: `Excediste el límite de números permitido (${usuario.limiteNumeros})` });
     }
 
-    // Inicializar el índice del usuario si no existe
     if (!indicesUsuarios[email]) {
       indicesUsuarios[email] = 0;
     }
 
-    // Obtener el número actual basado en el índice del usuario
-    const numeroActual = listaNumeros[indicesUsuarios[email]];
-    const link = `https://wa.me/${numeroActual}?text=${encodeURIComponent(
-      mensaje
-    )}`;
+    const indice = indicesUsuarios[email];
+    const numeroActual = listaNumeros[indice];
 
-    // Incrementar el índice para el siguiente número
-    indicesUsuarios[email] = (indicesUsuarios[email] + 1) % listaNumeros.length;
+    indicesUsuarios[email] = (indice + 1) % listaNumeros.length;
 
-    return res.status(200).json({ link });
+    const link = `https://wa.me/${numeroActual}?text=${encodeURIComponent(mensaje)}`;
+
+    return res.redirect(302, link); // Redirección automática
   }
 
-  // Si faltan parámetros obligatorios
   return res.status(400).json({ error: "Faltan parámetros obligatorios" });
 }
