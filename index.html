@@ -85,6 +85,7 @@
     function agregarNumero() {
       if (contadorNumeros >= limiteNumeros) {
         alert(`Solo puedes agregar hasta ${limiteNumeros} números.`);
+        document.querySelector('button[onclick="agregarNumero()"]').disabled = true; // Deshabilitar el botón
         return;
       }
 
@@ -98,6 +99,11 @@
         <input type="text" id="numero-${contadorNumeros}" class="numero" placeholder="Ejemplo: 2944585356">
       `;
       container.appendChild(nuevoCampo);
+
+      // Si se alcanza el límite, deshabilitar el botón
+      if (contadorNumeros >= limiteNumeros) {
+        document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
+      }
     }
 
     function quitarUltimoNumero() {
@@ -107,6 +113,9 @@
         if (ultimoCampo) {
           container.removeChild(ultimoCampo);
           contadorNumeros--;
+
+          // Habilitar el botón si se quita un número
+          document.querySelector('button[onclick="agregarNumero()"]').disabled = false;
         }
       } else {
         alert('Debe haber al menos un número.');
