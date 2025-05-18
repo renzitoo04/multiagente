@@ -5,43 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generador de Links Multiagente</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    #login-container, #generador-container, #probar-multilink-container {
-      display: none;
-    }
-    #login-container.active, #generador-container.active, #probar-multilink-container.active {
-      display: block;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-    input {
-      padding: 10px;
-      font-size: 16px;
-      margin-bottom: 10px;
-      width: 100%;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .output {
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #f8f9fa;
-      border: 1px solid #ddd;
-    }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #0a1128; /* Fondo azul oscuro */
+    color: #ffffff; /* Texto blanco */
+  }
+
+  h1, h2 {
+    text-align: center;
+    color: #ffffff;
+  }
+
+  form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #1c2541; /* Azul más claro para el fondo del formulario */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #ffffff;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #3a506b;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #3a506b; /* Azul intermedio */
+    color: #ffffff;
+  }
+
+  button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #007bff; /* Azul brillante */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+
+  button:active {
+    transform: scale(0.95);
+  }
+
+  .output {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #1c2541; /* Azul más claro */
+    border: 1px solid #3a506b;
+    border-radius: 4px;
+    text-align: center;
+    color: #ffffff;
+  }
+
+  .output a {
+    color: #4fc3f7; /* Azul brillante para los links */
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .output a:hover {
+    text-decoration: underline;
+  }
   </style>
 </head>
 <body>
