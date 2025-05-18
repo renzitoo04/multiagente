@@ -16,8 +16,8 @@ const usuarios = [
   }
 ];
 
-// Variable global para mantener el índice actual
-let indiceActual = 0;
+// Variable global para mantener el índice actual de cada usuario
+const indicesUsuarios = {};
 
 export default function handler(req, res) {
   const { email, password, numeros, mensaje } = req.query;
@@ -53,14 +53,19 @@ export default function handler(req, res) {
         .json({ error: `Excediste el límite de números permitido (${usuario.limiteNumeros})` });
     }
 
-    // Generar el mensaje para el número actual
-    const numeroActual = listaNumeros[indiceActual];
+    // Inicializar el índice del usuario si no existe
+    if (!indicesUsuarios[email]) {
+      indicesUsuarios[email] = 0;
+    }
+
+    // Obtener el número actual basado en el índice del usuario
+    const numeroActual = listaNumeros[indicesUsuarios[email]];
     const link = `https://wa.me/${numeroActual}?text=${encodeURIComponent(
       mensaje
     )}`;
 
     // Incrementar el índice para el siguiente número
-    indiceActual = (indiceActual + 1) % listaNumeros.length;
+    indicesUsuarios[email] = (indicesUsuarios[email] + 1) % listaNumeros.length;
 
     return res.status(200).json({ link });
   }
