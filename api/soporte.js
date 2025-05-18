@@ -9,6 +9,11 @@ const usuarios = [
     email: "nuevo_usuario@gmail.com",
     password: "contraseña123",
     limiteNumeros: 10
+  },
+  {
+    email: "donarumamatias@gmail.com",
+    password: "contraseña12",
+    limiteNumeros: 3
   }
 ];
 
