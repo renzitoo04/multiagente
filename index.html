@@ -107,7 +107,7 @@
     text-decoration: underline;
   }
 
-  .numero-container {
+  .numero-container, #numero-prueba-container {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
@@ -191,9 +191,10 @@
     <h1>Probar MultiLink</h1>
     <form id="form-multilink">
       <div id="numero-prueba-container">
-        <label for="numero-prueba">Número:</label>
-        <span>+54</span>
-        <input type="text" id="numero-prueba" placeholder="Ejemplo: 2944585356">
+        <span class="prefijo">
+          <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera"> +54
+        </span>
+        <input type="text" id="numero-prueba" class="numero" placeholder="Ejemplo: 2944585356">
       </div>
       <label for="mensaje-prueba">Mensaje automático:</label>
       <input type="text" id="mensaje-prueba" placeholder="Ejemplo: Hola, necesito ayuda">
