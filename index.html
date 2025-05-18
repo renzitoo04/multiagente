@@ -91,14 +91,9 @@
     <input type="email" id="email" placeholder="Correo electrónico">
     <input type="password" id="password" placeholder="Contraseña">
     <button onclick="login()">Iniciar sesión</button>
-    <button onclick="register()">Registrarse</button>
   </div>
 
-  <script type="module">
-    import { auth, db } from './firebase.js';
-    import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-    import { doc, setDoc, getDoc } from "firebase/firestore";
-
+  <script>
     let contadorNumeros = 1;
 
     function agregarNumero() {
@@ -151,47 +146,23 @@
       const password = document.getElementById('password').value;
 
       try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        alert('Inicio de sesión exitoso');
-        cargarLimite(email); // Carga el límite del usuario al iniciar sesión
-      } catch (error) {
-        alert('Error al iniciar sesión: ' + error.message);
-      }
-    }
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
 
-    async function register() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        alert('Registro exitoso');
-        // Aquí puedes guardar el usuario en la base de datos
-      } catch (error) {
-        alert('Error al registrarse: ' + error.message);
-      }
-    }
-
-    async function actualizarLimite(email, limite) {
-      try {
-        await setDoc(doc(db, "usuarios", email), { limite });
-        alert('Límite actualizado correctamente');
-      } catch (error) {
-        alert('Error al actualizar el límite: ' + error.message);
-      }
-    }
-
-    async function cargarLimite(email) {
-      try {
-        const docSnap = await getDoc(doc(db, "usuarios", email));
-        if (docSnap.exists()) {
-          const limite = docSnap.data().limite;
-          generarCasilleros(limite);
+        if (response.ok) {
+          const data = await response.json();
+          alert(`Bienvenido. Límite de números: ${data.limiteNumeros}`);
+          generarCasilleros(data.limiteNumeros);
+          document.getElementById('auth-container').style.display = 'none';
         } else {
-          alert('No se encontró el usuario');
+          const error = await response.json();
+          alert('Error: ' + error.message);
         }
       } catch (error) {
-        alert('Error al cargar el límite: ' + error.message);
+        console.error('Error al iniciar sesión:', error);
       }
     }
 
