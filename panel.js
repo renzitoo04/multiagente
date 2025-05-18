@@ -1,42 +1,20 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { firebaseConfig } from "./firebase.js";
+import { auth, db } from './firebase.js';
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// Detectar usuario logueado
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    const uid = user.uid;
-    const userDocRef = doc(db, "usuarios", uid);
-    const userSnap = await getDoc(userDocRef);
+    const docRef = doc(db, "usuarios", user.uid);
+    const docSnap = await getDoc(docRef);
 
-    if (userSnap.exists()) {
-      const data = userSnap.data();
-      const maxNumeros = data.maxNumeros || 0;
-      const container = document.getElementById("numero-container");
-
-      if (maxNumeros === 0) {
-        document.getElementById("mensaje").textContent = "No tenés números disponibles. Contactanos para adquirir más.";
-        return;
-      }
-
-      for (let i = 0; i < maxNumeros; i++) {
-        const input = document.createElement("input");
-        input.type = "text";
-        input.placeholder = `Número ${i + 1}`;
-        container.appendChild(input);
-        container.appendChild(document.createElement("br"));
-      }
-
+    if (docSnap.exists()) {
+      const datosUsuario = docSnap.data();
+      document.body.innerHTML = `<h1>Bienvenido, ${datosUsuario.email}</h1>
+        <p>Límite de números: ${datosUsuario.limiteNumeros}</p>`;
     } else {
-      document.getElementById("mensaje").textContent = "Usuario no encontrado en la base de datos.";
+      console.log('No se encontraron datos del usuario');
     }
   } else {
-    window.location.href = "login.html"; // redirigir si no está logueado
+    window.location.href = 'login.html'; // Redirige al login si no está autenticado
   }
 });

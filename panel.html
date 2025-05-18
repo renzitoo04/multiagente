@@ -3,60 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Panel de Usuario</title>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBvzwAiEwWds_WnC_5Gfk_-ZN6PGfMrmD4",
-      authDomain: "multiagente-login.firebaseapp.com",
-      projectId: "multiagente-login",
-      storageBucket: "multiagente-login.appspot.com",
-      messagingSenderId: "298638656074",
-      appId: "1:298638656074:web:f4610a9dbbde82ea409cb3"
-    };
-    firebase.initializeApp(firebaseConfig);
-  </script>
 </head>
 <body>
-  <h2>Panel del Usuario</h2>
-  <div id="numero-container"></div>
-  <p id="mensaje" style="color: red;"></p>
-
-  <script>
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const uid = user.uid;
-        const userDocRef = db.collection("usuarios").doc(uid);
-        const docSnap = await userDocRef.get();
-
-        if (docSnap.exists) {
-          const data = docSnap.data();
-          const maxNumeros = data.maxNumeros || 0;
-
-          if (maxNumeros === 0) {
-            document.getElementById("mensaje").textContent = "No tenés números disponibles.";
-            return;
-          }
-
-          const container = document.getElementById("numero-container");
-          for (let i = 0; i < maxNumeros; i++) {
-            const input = document.createElement("input");
-            input.type = "text";
-            input.placeholder = `Número ${i + 1}`;
-            container.appendChild(input);
-            container.appendChild(document.createElement("br"));
-          }
-        } else {
-          document.getElementById("mensaje").textContent = "No se encontró información de tu cuenta.";
-        }
-      } else {
-        window.location.href = "login.html";
-      }
-    });
-  </script>
+  <div id="contenido"></div>
+  <script type="module" src="./panel.js"></script>
 </body>
 </html>
