@@ -81,10 +81,13 @@
 
   <!-- Contenedor para probar MultiLink -->
   <div id="probar-multilink-container" style="display: none;">
-    <h2>Probar MultiLink</h2>
+    <h1>Probar MultiLink</h1>
     <form id="form-multilink">
-      <label for="numero-prueba">Número:</label>
-      <input type="text" id="numero-prueba" placeholder="Ejemplo: 2944585356">
+      <div id="numero-prueba-container">
+        <label for="numero-prueba">Número:</label>
+        <span>+54</span>
+        <input type="text" id="numero-prueba" placeholder="Ejemplo: 2944585356">
+      </div>
       <label for="mensaje-prueba">Mensaje automático:</label>
       <input type="text" id="mensaje-prueba" placeholder="Ejemplo: Hola, necesito ayuda">
       <button type="button" onclick="generarLinkPrueba()">Generar Link</button>
@@ -96,6 +99,7 @@
 
 
 <script>
+  // Aquí va el código actualizado para las funciones JavaScript
   let contadorNumeros = 1;
   let limiteNumeros = 0;
 
