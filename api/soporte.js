@@ -13,7 +13,13 @@ const usuarios = [
     email: "donarumamatias@gmail.com",
     password: "contraseña12",
     limiteNumeros: 3
+  },
+  {
+  email: "prueba@multi.link",
+  password: "test",
+  limiteNumeros: 1
   }
+
 ];
 
 // Rotación por email

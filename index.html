@@ -45,7 +45,8 @@
   </style>
 </head>
 <body>
-  <!--aca inicia la sesiot -->
+
+  <!-- Contenedor de inicio de sesión -->
   <div id="login-container" class="active">
     <h2>Iniciar sesión</h2>
     <label for="email">Correo electrónico:</label>
@@ -57,7 +58,7 @@
     <p id="login-error" style="color: red;"></p>
   </div>
 
-  <!-- crea el link -->
+  <!-- Contenedor principal del generador -->
   <div id="generador-container">
     <h1>Generador de Links Multiagente</h1>
     <form id="form">
@@ -79,8 +80,8 @@
     <div class="output" id="output"></div>
   </div>
 
-  <!-- Contenedor para probar MultiLink -->
-  <div id="probar-multilink-container" style="display: none;">
+  <!-- Contenedor para prueba de MultiLink -->
+  <div id="probar-multilink-container">
     <h1>Probar MultiLink</h1>
     <form id="form-multilink">
       <div id="numero-prueba-container">
@@ -96,10 +97,7 @@
     <button onclick="volverAlLogin()">Volver</button>
   </div>
 
-
-
 <script>
-  // Aquí va el código actualizado para las funciones JavaScript
   let contadorNumeros = 1;
   let limiteNumeros = 0;
 
@@ -115,10 +113,7 @@
     const nuevoCampo = document.createElement('div');
     nuevoCampo.classList.add('numero-container');
     nuevoCampo.id = `numero-container-${contadorNumeros}`;
-    nuevoCampo.innerHTML = `
-      <span>+54</span>
-      <input type="text" id="numero-${contadorNumeros}" class="numero" placeholder="Ejemplo: 2944585356">
-    `;
+    nuevoCampo.innerHTML = `<span>+54</span><input type="text" id="numero-${contadorNumeros}" class="numero" placeholder="Ejemplo: 2944585356">`;
     container.appendChild(nuevoCampo);
 
     if (contadorNumeros >= limiteNumeros) {
@@ -200,7 +195,7 @@
   async function generarLinkPrueba() {
     const numero = document.getElementById('numero-prueba').value.trim();
     const mensaje = document.getElementById('mensaje-prueba').value;
-    const email = document.getElementById('email').value;
+    const email = "prueba@multi.link";
 
     if (!numero || !mensaje) {
       alert('Por favor, completa todos los campos.');
@@ -219,7 +214,7 @@
       if (response.ok) {
         const shortUrl = `${location.origin}/soporte?id=${data.id}`;
         document.getElementById('output-prueba').innerHTML = `
-          <p>Tu link de prueba generado (más corto):</p>
+          <p>Tu link de prueba generado:</p>
           <a href="${shortUrl}" target="_blank">${shortUrl}</a>
         `;
       } else {
@@ -233,6 +228,8 @@
   function probarMultiLink() {
     document.getElementById('login-container').classList.remove('active');
     document.getElementById('probar-multilink-container').classList.add('active');
+    document.getElementById('numero-prueba').value = '';
+    document.getElementById('mensaje-prueba').value = '';
   }
 
   function volverAlLogin() {
@@ -240,6 +237,5 @@
     document.getElementById('login-container').classList.add('active');
   }
 </script>
-
 </body>
 </html>
