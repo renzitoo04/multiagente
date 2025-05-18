@@ -9,10 +9,10 @@
       font-family: Arial, sans-serif;
       margin: 20px;
     }
-    #login-container, #generador-container {
+    #login-container, #generador-container, #probar-multilink-container {
       display: none;
     }
-    #login-container.active, #generador-container.active {
+    #login-container.active, #generador-container.active, #probar-multilink-container.active {
       display: block;
     }
     label {
@@ -53,6 +53,7 @@
     <label for="password">Contraseña:</label>
     <input type="password" id="password" placeholder="Contraseña" required>
     <button onclick="login()">Iniciar sesión</button>
+    <button onclick="probarMultiLink()">Probar MultiLink</button>
     <p id="login-error" style="color: red;"></p>
   </div>
 
@@ -76,6 +77,20 @@
     </form>
 
     <div class="output" id="output"></div>
+  </div>
+
+  <!-- Contenedor para probar MultiLink -->
+  <div id="probar-multilink-container" style="display: none;">
+    <h2>Probar MultiLink</h2>
+    <form id="form-multilink">
+      <label for="numero-prueba">Número:</label>
+      <input type="text" id="numero-prueba" placeholder="Ejemplo: 2944585356">
+      <label for="mensaje-prueba">Mensaje automático:</label>
+      <input type="text" id="mensaje-prueba" placeholder="Ejemplo: Hola, necesito ayuda">
+      <button type="button" onclick="generarLinkPrueba()">Generar Link</button>
+    </form>
+    <div class="output" id="output-prueba"></div>
+    <button onclick="volverAlLogin()">Volver</button>
   </div>
 
 
@@ -176,6 +191,49 @@
     } catch (error) {
       console.error('Error generando link:', error);
     }
+  }
+
+  async function generarLinkPrueba() {
+    const numero = document.getElementById('numero-prueba').value.trim();
+    const mensaje = document.getElementById('mensaje-prueba').value;
+    const email = document.getElementById('email').value;
+
+    if (!numero || !mensaje) {
+      alert('Por favor, completa todos los campos.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/soporte', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ numeros: [numero], mensaje, email })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const shortUrl = `${location.origin}/soporte?id=${data.id}`;
+        document.getElementById('output-prueba').innerHTML = `
+          <p>Tu link de prueba generado (más corto):</p>
+          <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+        `;
+      } else {
+        alert('Error: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Error generando link de prueba:', error);
+    }
+  }
+
+  function probarMultiLink() {
+    document.getElementById('login-container').classList.remove('active');
+    document.getElementById('probar-multilink-container').classList.add('active');
+  }
+
+  function volverAlLogin() {
+    document.getElementById('probar-multilink-container').classList.remove('active');
+    document.getElementById('login-container').classList.add('active');
   }
 </script>
 
