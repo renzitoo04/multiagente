@@ -107,25 +107,19 @@
     text-decoration: underline;
   }
 
-  .numero-container, #numero-prueba-container {
+  .numero-container {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
   }
 
-  .prefijo {
-    display: flex;
-    align-items: center;
+  .bandera-container {
     margin-right: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #ffffff;
   }
 
   .bandera {
     width: 24px;
     height: 16px;
-    margin-right: 5px;
   }
 
   .numero {
@@ -168,7 +162,10 @@
     <form id="form">
       <div id="numeros-container">
         <div class="numero-container" id="numero-container-1">
-          <input type="text" id="numero-1" class="numero" value="+54" placeholder="Ejemplo: 2944585356">
+          <span class="bandera-container">
+            <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
+          </span>
+          <input type="text" id="numero-1" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
         </div>
       </div>
       <button type="button" onclick="agregarNumero()">Agregar otro número</button>
@@ -217,7 +214,10 @@
     nuevoCampo.classList.add('numero-container');
     nuevoCampo.id = `numero-container-${contadorNumeros}`;
     nuevoCampo.innerHTML = `
-      <input type="text" id="numero-${contadorNumeros}" class="numero" value="+54" placeholder="Ejemplo: 2944585356">
+      <span class="bandera-container">
+        <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
+      </span>
+      <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
     `;
     container.appendChild(nuevoCampo);
 
