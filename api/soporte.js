@@ -1,4 +1,3 @@
-// Lista de usuarios (puedes agregar más usuarios aquí)
 const usuarios = [
   {
     email: "renzobianco@gmail.com",
@@ -23,7 +22,7 @@ let indiceActual = 0;
 export default function handler(req, res) {
   const { email, password, numeros, mensaje } = req.query;
 
-  // Validar credenciales del usuario
+  // Validar credenciales del usuario (inicio de sesión)
   if (email && password) {
     const usuario = usuarios.find(
       (u) => u.email === email && u.password === password
@@ -38,15 +37,16 @@ export default function handler(req, res) {
   }
 
   // Validar parámetros para generación de links
-  if (numeros && mensaje) {
+  if (numeros && mensaje && email) {
     const listaNumeros = numeros.split(",");
 
-    // Validar el límite de números permitido
+    // Validar que el usuario exista
     const usuario = usuarios.find((u) => u.email === email);
     if (!usuario) {
       return res.status(401).json({ error: "Usuario no autenticado" });
     }
 
+    // Validar el límite de números permitido
     if (listaNumeros.length > usuario.limiteNumeros) {
       return res
         .status(400)

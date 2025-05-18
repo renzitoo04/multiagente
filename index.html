@@ -150,6 +150,7 @@
         .map(input => input.value.trim())
         .filter(num => num !== '');
       const mensaje = document.getElementById('mensaje').value;
+      const email = document.getElementById('email').value; // Usar el email del usuario autenticado
 
       if (numeros.length === 0 || !mensaje) {
         alert('Por favor, completa todos los campos.');
@@ -157,7 +158,7 @@
       }
 
       try {
-        const response = await fetch(`/soporte?numeros=${encodeURIComponent(numeros.join(','))}&mensaje=${encodeURIComponent(mensaje)}`);
+        const response = await fetch(`/soporte?numeros=${encodeURIComponent(numeros.join(','))}&mensaje=${encodeURIComponent(mensaje)}&email=${encodeURIComponent(email)}`);
         const data = await response.json();
 
         if (response.ok) {
