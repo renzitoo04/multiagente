@@ -314,14 +314,8 @@
       const data = await response.json();
 
       if (response.ok) {
-        // Oculta el contenedor de inicio de sesión y el de "Probar MultiLink"
-        document.getElementById('login-container').style.display = 'none';
-        document.getElementById('probar-multilink-container').style.display = 'none';
-
-        // Muestra el generador principal
-        document.getElementById('generador-container').style.display = 'block';
-
-        // Configura el límite de números
+        document.getElementById('login-container').style.display = 'none'; // Oculta el contenedor de inicio de sesión
+        document.getElementById('generador-container').style.display = 'block'; // Muestra el generador de links
         limiteNumeros = data.limiteNumeros;
         alert(`Bienvenido. Límite de números: ${limiteNumeros}`);
       } else {
@@ -336,12 +330,13 @@
   async function generarLink() {
     const numeros = Array.from(document.querySelectorAll('.numero'))
       .map(input => input.value.trim())
-      .filter(num => num !== '');
+      .filter(num => num !== '' && num !== '+549'); // FILTRA el valor por defecto
+
     const mensaje = document.getElementById('mensaje').value.trim(); // Permitir mensaje vacío
     const email = document.getElementById('email').value;
 
     if (numeros.length === 0) {
-      alert('Por favor, ingresa al menos un número.');
+      alert('Por favor, ingresa al menos un número válido.');
       return;
     }
 
@@ -402,21 +397,10 @@
   }
 
   function probarMultiLink() {
-    // Asignar un límite de 1 y limpiar el generador principal
-    limiteNumeros = 1;
-    contadorNumeros = 1;
-
-    // Mostrar solo el generador principal
-    document.getElementById('login-container').style.display = 'none';
-    document.getElementById('generador-container').style.display = 'block';
-
-    // Limpiar campos
-    document.getElementById('numero-1').value = '+549';
-    document.getElementById('mensaje').value = '';
-    document.getElementById('output').innerHTML = '';
-
-    // Cargar email oculto de prueba
-    document.getElementById('email').value = 'prueba@multi.link';
+    document.getElementById('login-container').classList.remove('active');
+    document.getElementById('probar-multilink-container').classList.add('active');
+    document.getElementById('numero-prueba').value = '';
+    document.getElementById('mensaje-prueba').value = '';
   }
 
   function volverAlLogin() {
