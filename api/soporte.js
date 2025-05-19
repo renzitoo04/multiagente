@@ -18,6 +18,11 @@ const usuarios = [
   email: "prueba@multi.link",
   password: "test",
   limiteNumeros: 1
+  },
+  {
+  email: "tomas@gmail.com",
+  password: "tomas123",
+  limiteNumeros: 3
   }
 
 ];
