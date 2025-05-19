@@ -267,11 +267,6 @@
   let limiteNumeros = 0;
 
   function agregarNumero() {
-    if (contadorNumeros >= limiteNumeros) {
-      alert(`Solo puedes agregar hasta ${limiteNumeros} números.`);
-      return;
-    }
-
     contadorNumeros++;
     const container = document.getElementById('numeros-container');
     const nuevoCampo = document.createElement('div');
@@ -328,11 +323,6 @@
       .filter(num => num !== '');
     const mensaje = document.getElementById('mensaje').value.trim();
     const email = document.getElementById('email').value;
-
-    if (numeros.length > limiteNumeros) {
-      alert(`Excediste el límite de números permitido (${limiteNumeros}).`);
-      return;
-    }
 
     try {
       const response = await fetch('/soporte', {
