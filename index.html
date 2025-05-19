@@ -290,6 +290,9 @@
   </div>
 
 <script>
+  // Configuraciones guardadas por email
+  const configuraciones = {}; // { email: { numeros: [], mensaje, link } }
+
   let contadorNumeros = 1;
   let limiteNumeros = 0;
 
@@ -341,38 +344,28 @@
       const data = await response.json();
 
       if (response.ok) {
-        // Oculta el contenedor de inicio de sesión, "Probar MultiLink" y el texto de información
+        // Oculta el contenedor de inicio de sesión
         document.getElementById('login-container').style.display = 'none';
-        document.getElementById('probar-multilink-container').style.display = 'none';
-        document.querySelector('.info-container').style.display = 'none';
-
-        // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
 
         // Configura el límite de números
         limiteNumeros = data.limiteNumeros;
 
-        // Verificar si ya existe un link guardado
-        const linkGuardado = localStorage.getItem('linkGenerado');
-        const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
-        const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
+        // Si hay una configuración existente, mostrarla
+        if (data.configuracion) {
+          const { numeros, mensaje, link } = data.configuracion;
 
-        if (linkGuardado) {
           document.getElementById('output').innerHTML = `
             <p>Tu link generado (más corto):</p>
-            <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
+            <a href="${link}" target="_blank">${link}</a>
           `;
-
-          // Mostrar los detalles del link
           document.getElementById('detalles-link').style.display = 'block';
-          document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
-          document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
+          document.getElementById('numeros-generados').textContent = numeros.join(', ');
+          document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
           // Deshabilitar el botón de generación
           document.querySelector('button[onclick="generarLink()"]').disabled = true;
         }
-
-        alert(`Bienvenido. Límite de números: ${limiteNumeros}`);
       } else {
         document.getElementById('login-error').textContent = data.error;
       }
