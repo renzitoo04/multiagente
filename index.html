@@ -396,10 +396,21 @@
   }
 
   function probarMultiLink() {
-    document.getElementById('login-container').classList.remove('active');
-    document.getElementById('probar-multilink-container').classList.add('active');
-    document.getElementById('numero-prueba').value = '';
-    document.getElementById('mensaje-prueba').value = '';
+    // Asignar un límite de 1 y limpiar el generador principal
+    limiteNumeros = 1;
+    contadorNumeros = 1;
+
+    // Mostrar solo el generador principal
+    document.getElementById('login-container').style.display = 'none';
+    document.getElementById('generador-container').style.display = 'block';
+
+    // Limpiar campos
+    document.getElementById('numero-1').value = '+549';
+    document.getElementById('mensaje').value = '';
+    document.getElementById('output').innerHTML = '';
+
+    // Cargar email oculto de prueba
+    document.getElementById('email').value = 'prueba@multi.link';
   }
 
   function volverAlLogin() {
