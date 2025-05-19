@@ -290,9 +290,6 @@
   </div>
 
 <script>
-  // Configuraciones guardadas por email
-  const configuraciones = {}; // { email: { numeros: [], mensaje, link } }
-
   let contadorNumeros = 1;
   let limiteNumeros = 0;
 
@@ -353,7 +350,7 @@
 
         // Si hay una configuración existente, mostrarla
         if (data.configuracion) {
-          const { numeros, mensaje, link } = data.configuracion;
+          const { link, numeros, mensaje } = data.configuracion;
 
           document.getElementById('output').innerHTML = `
             <p>Tu link generado (más corto):</p>
@@ -392,22 +389,17 @@
       const response = await fetch('/soporte', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ numeros, mensaje, email })
+        body: JSON.stringify({ email, numeros, mensaje })
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        const shortUrl = `${location.origin}/soporte?id=${data.id}`;
+        const shortUrl = data.link;
         document.getElementById('output').innerHTML = `
           <p>Tu link generado (más corto):</p>
           <a href="${shortUrl}" target="_blank">${shortUrl}</a>
         `;
-
-        // Guardar el link, números y mensaje en localStorage
-        localStorage.setItem('linkGenerado', shortUrl);
-        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
-        localStorage.setItem('mensajeGenerado', mensaje);
 
         // Mostrar los detalles del link
         document.getElementById('detalles-link').style.display = 'block';
@@ -480,7 +472,7 @@
       if (index === 0) {
         input.value = '+549'; // Restablecer el primer número a su valor por defecto
       } else {
-        input.parentElement.remove(); // Eliminar los demás campos de número
+        input.value = ''; // Limpiar los demás campos de número
       }
     });
 
@@ -492,13 +484,6 @@
 
     // Habilitar el botón de generación
     document.querySelector('button[onclick="generarLink()"]').disabled = false;
-
-    // Limpiar el localStorage
-    localStorage.removeItem('linkGenerado');
-    localStorage.removeItem('numerosGenerados');
-    localStorage.removeItem('mensajeGenerado');
-
-    console.log('Generador reiniciado.');
   }
 </script>
 </body>

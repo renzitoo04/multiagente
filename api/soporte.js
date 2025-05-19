@@ -30,8 +30,8 @@ const usuarios = [
 // Rotación por email
 const indicesUsuarios = {};
 
-// Configuraciones guardadas por ID corto
-const configuraciones = {}; // { id: { numeros: [], mensaje, email } }
+// Objeto para almacenar configuraciones por usuario
+const configuraciones = {}; // { email: { link, numeros, mensaje } }
 
 export default function handler(req, res) {
   const { email, password, id } = req.query;
@@ -46,34 +46,39 @@ export default function handler(req, res) {
       return res.status(401).json({ error: "Credenciales incorrectas" });
     }
 
-    return res.status(200).json({ success: true, limiteNumeros: usuario.limiteNumeros });
+    // Recupera la configuración asociada al email
+    const configuracion = configuraciones[email] || null;
+
+    return res.status(200).json({
+      success: true,
+      limiteNumeros: usuario.limiteNumeros,
+      configuracion,
+    });
   }
 
   // === 2. GENERAR LINK CORTO (POST) ===
   if (req.method === 'POST') {
-    const { numeros, mensaje, email } = req.body;
+    const { email, numeros, mensaje } = req.body;
 
+    // Verifica si el usuario existe
     const usuario = usuarios.find((u) => u.email === email);
     if (!usuario) {
       return res.status(401).json({ error: "Usuario no autenticado" });
     }
 
-    if (!numeros || !Array.isArray(numeros) || numeros.length === 0) {
-      return res.status(400).json({ error: "Números inválidos" });
-    }
-
+    // Verifica el límite de números
     if (numeros.length > usuario.limiteNumeros) {
       return res.status(400).json({ error: `Excediste el límite de números permitido (${usuario.limiteNumeros})` });
     }
 
-    if (!mensaje || typeof mensaje !== 'string') {
-      return res.status(400).json({ error: "Mensaje inválido" });
-    }
+    // Genera el link
+    const id = Math.random().toString(36).substring(2, 8);
+    const link = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
-    const id = Math.random().toString(36).substring(2, 8); // genera ID corto
-    configuraciones[id] = { numeros, mensaje, email };
+    // Guarda la configuración asociada al email
+    configuraciones[email] = { link, numeros, mensaje };
 
-    return res.status(200).json({ id });
+    return res.status(200).json({ link });
   }
 
   // === 3. REDIRECCIÓN POR ID (GET) ===
