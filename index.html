@@ -343,6 +343,20 @@
       if (response.ok) {
         // Oculta el contenedor de inicio de sesión
         document.getElementById('login-container').style.display = 'none';
+
+        // Oculta el apartado de Probar MultiLink
+        const probarMultiLink = document.getElementById('probar-multilink-container');
+        if (probarMultiLink) {
+          probarMultiLink.style.display = 'none';
+        }
+
+        // Oculta el apartado de ¿Para qué sirve MultiLink?
+        const infoContainer = document.getElementById('info-container');
+        if (infoContainer) {
+          infoContainer.style.display = 'none';
+        }
+
+        // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
 
         // Configura el límite de números
