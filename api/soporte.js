@@ -98,30 +98,3 @@ export default function handler(req, res) {
   return res.status(400).json({ error: "Solicitud inválida o faltan parámetros" });
 }
 
-function reiniciarGenerador() {
-  // Limpiar el localStorage
-  localStorage.removeItem('linkGenerado');
-  localStorage.removeItem('numerosGenerados');
-  localStorage.removeItem('mensajeGenerado');
-
-  // Limpiar los campos
-  document.getElementById('output').innerHTML = '';
-  document.getElementById('detalles-link').style.display = 'none';
-  document.getElementById('mensaje').value = '';
-  document.querySelectorAll('.numero').forEach((input, index) => {
-    if (index === 0) {
-      input.value = '+549'; // Restablecer el primer número
-    } else {
-      input.parentElement.remove(); // Eliminar los campos adicionales
-    }
-  });
-
-  // Reiniciar el contador de números
-  contadorNumeros = 1;
-
-  // Habilitar el botón de generación
-  document.querySelector('button[onclick="generarLink()"]').disabled = false;
-
-  alert('El generador ha sido reiniciado. Ahora puedes crear un nuevo link.');
-}
-
