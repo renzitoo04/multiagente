@@ -28,6 +28,7 @@
   }
 
   h1, h2 {
+    font-size: 2rem; /* Tamaño de fuente uniforme */
     text-align: center;
     color: #ffffff;
   }
@@ -189,6 +190,14 @@
   .info-container ul li {
     margin-bottom: 10px;
   }
+
+  /* Estilo para la línea separadora */
+  .separador {
+    border: none;
+    height: 2px;
+    background-color: #1c2541; /* Azul oscuro */
+    margin: 20px 0;
+  }
   </style>
 </head>
 <body>
@@ -207,30 +216,8 @@
     <p id="login-error" style="color: red;"></p>
   </div>
 
-  <!-- Contenedor principal del generador -->
-  <div id="generador-container" style="display: none;">
-    <h1>Generador de Links Multiagente</h1>
-    <form id="form">
-      <div id="numeros-container">
-        <div class="numero-container" id="numero-container-1">
-          <span class="bandera-container">
-            <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
-          </span>
-          <input type="text" id="numero-1" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
-        </div>
-      </div>
-      <button type="button" onclick="agregarNumero()">Agregar otro número</button>
-      <button type="button" onclick="quitarUltimoNumero()">Quitar último número</button>
-
-      <!-- Campo de mensaje automático en el generador principal -->
-      <label for="mensaje">Mensaje automático:</label>
-      <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
-
-      <button type="button" onclick="generarLink()">Generar Link</button>
-    </form>
-
-    <div class="output" id="output"></div>
-  </div>
+  <!-- Línea separadora -->
+  <hr class="separador">
 
   <!-- Contenedor para prueba de MultiLink -->
   <div id="probar-multilink-container">
@@ -242,7 +229,6 @@
         </span>
         <input type="text" id="numero-prueba" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
       </div>
-      <!-- Campo de mensaje automático en "Probar MultiLink" -->
       <label for="mensaje-prueba">Mensaje automático:</label>
       <input type="text" id="mensaje-prueba" placeholder="Ejemplo: Hola, necesito ayuda">
       <button type="button" onclick="generarLinkPrueba()">Generar Link</button>
