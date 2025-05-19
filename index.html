@@ -332,6 +332,18 @@
 
         // Configura el límite de números
         limiteNumeros = data.limiteNumeros;
+
+        // Verificar si ya existe un link guardado
+        const linkGuardado = localStorage.getItem('linkGenerado');
+        if (linkGuardado) {
+          document.getElementById('output').innerHTML = `
+            <p>Tu link generado (más corto):</p>
+            <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
+          `;
+          // Deshabilitar el botón de generación
+          document.querySelector('button[onclick="generarLink()"]').disabled = true;
+        }
+
         alert(`Bienvenido. Límite de números: ${limiteNumeros}`);
       } else {
         document.getElementById('login-error').textContent = data.error;
@@ -370,6 +382,12 @@
           <p>Tu link generado (más corto):</p>
           <a href="${shortUrl}" target="_blank">${shortUrl}</a>
         `;
+
+        // Guardar el link en localStorage
+        localStorage.setItem('linkGenerado', shortUrl);
+
+        // Deshabilitar el botón de generación
+        document.querySelector('button[onclick="generarLink()"]').disabled = true;
       } else {
         alert('Error: ' + data.error);
       }
