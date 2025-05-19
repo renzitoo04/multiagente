@@ -171,7 +171,8 @@
       <button type="button" onclick="agregarNumero()">Agregar otro número</button>
       <button type="button" onclick="quitarUltimoNumero()">Quitar último número</button>
 
-      <label for="mensaje">Mensaje automático:</label>
+      <!-- Campo de mensaje automático en el generador principal -->
+      <label for="mensaje">Mensaje automático (opcional):</label>
       <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
 
       <button type="button" onclick="generarLink()">Generar Link</button>
@@ -190,7 +191,8 @@
         </span>
         <input type="text" id="numero-prueba" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
       </div>
-      <label for="mensaje-prueba">Mensaje automático:</label>
+      <!-- Campo de mensaje automático en "Probar MultiLink" -->
+      <label for="mensaje-prueba">Mensaje automático (opcional):</label>
       <input type="text" id="mensaje-prueba" placeholder="Ejemplo: Hola, necesito ayuda">
       <button type="button" onclick="generarLinkPrueba()">Generar Link</button>
     </form>
@@ -266,11 +268,11 @@
     const numeros = Array.from(document.querySelectorAll('.numero'))
       .map(input => input.value.trim())
       .filter(num => num !== '');
-    const mensaje = document.getElementById('mensaje').value;
+    const mensaje = document.getElementById('mensaje').value.trim(); // Permitir mensaje vacío
     const email = document.getElementById('email').value;
 
-    if (numeros.length === 0 || !mensaje) {
-      alert('Por favor, completa todos los campos.');
+    if (numeros.length === 0) {
+      alert('Por favor, ingresa al menos un número.');
       return;
     }
 
@@ -299,11 +301,11 @@
 
   async function generarLinkPrueba() {
     const numero = document.getElementById('numero-prueba').value.trim();
-    const mensaje = document.getElementById('mensaje-prueba').value;
+    const mensaje = document.getElementById('mensaje-prueba').value.trim(); // Permitir mensaje vacío
     const email = "prueba@multi.link";
 
-    if (!numero || !mensaje) {
-      alert('Por favor, completa todos los campos.');
+    if (!numero) {
+      alert('Por favor, ingresa un número.');
       return;
     }
 
