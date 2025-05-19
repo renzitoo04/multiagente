@@ -94,6 +94,11 @@ export default function handler(req, res) {
     return res.redirect(302, link);
   }
 
+  if (req.method === 'POST' && req.body.action === 'reiniciarGenerador') {
+    // Aquí podrías enviar un comando al frontend para ejecutar reiniciarGenerador()
+    return res.status(200).json({ message: 'Generador reiniciado desde el backend.' });
+  }
+
   // Si no coincide ningún caso válido
   return res.status(400).json({ error: "Solicitud inválida o faltan parámetros" });
 }

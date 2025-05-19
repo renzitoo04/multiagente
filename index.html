@@ -487,7 +487,7 @@
       if (index === 0) {
         input.value = '+549'; // Restablecer el primer número a su valor por defecto
       } else {
-        input.value = ''; // Limpiar los demás campos de número
+        input.parentElement.remove(); // Eliminar los demás campos de número
       }
     });
 
@@ -499,6 +499,13 @@
 
     // Habilitar el botón de generación
     document.querySelector('button[onclick="generarLink()"]').disabled = false;
+
+    // Limpiar el localStorage
+    localStorage.removeItem('linkGenerado');
+    localStorage.removeItem('numerosGenerados');
+    localStorage.removeItem('mensajeGenerado');
+
+    console.log('Generador reiniciado.');
   }
 </script>
 </body>
