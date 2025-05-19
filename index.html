@@ -189,6 +189,21 @@
   .info-container ul li {
     margin-bottom: 10px;
   }
+
+  .titulo-caja {
+    background-color: #1c2541; /* Azul más claro */
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+  }
+
+  .titulo-caja h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: #ffffff;
+  }
   </style>
 </head>
 <body>
@@ -234,7 +249,9 @@
 
   <!-- Contenedor para prueba de MultiLink -->
   <div id="probar-multilink-container">
-    <h1>Probar MultiLink</h1>
+    <div class="titulo-caja">
+      <h1>Probar MultiLink</h1>
+    </div>
     <form id="form-multilink">
       <div id="numero-prueba-container" class="numero-container">
         <span class="bandera-container">
@@ -242,7 +259,6 @@
         </span>
         <input type="text" id="numero-prueba" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
       </div>
-      <!-- Campo de mensaje automático en "Probar MultiLink" -->
       <label for="mensaje-prueba">Mensaje automático:</label>
       <input type="text" id="mensaje-prueba" placeholder="Ejemplo: Hola, necesito ayuda">
       <button type="button" onclick="generarLinkPrueba()">Generar Link</button>
