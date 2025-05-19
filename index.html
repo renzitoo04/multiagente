@@ -249,6 +249,7 @@
       <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
 
       <button type="button" onclick="generarLink()">Generar Link</button>
+      <button type="button" onclick="reiniciarGenerador()">Reiniciar Generador</button>
     </form>
 
     <div class="output" id="output"></div>
@@ -474,6 +475,31 @@
   function volverAlLogin() {
     document.getElementById('probar-multilink-container').classList.remove('active');
     document.getElementById('login-container').classList.add('active');
+  }
+
+  function reiniciarGenerador() {
+    // Reiniciar el contador de números
+    contadorNumeros = 1;
+    document.getElementById('mensaje').value = ''; // Limpiar el campo de mensaje
+
+    // Limpiar los números generados
+    const numerosInputs = document.querySelectorAll('.numero');
+    numerosInputs.forEach((input, index) => {
+      if (index === 0) {
+        input.value = '+549'; // Restablecer el primer número a su valor por defecto
+      } else {
+        input.value = ''; // Limpiar los demás campos de número
+      }
+    });
+
+    // Limpiar el output
+    document.getElementById('output').innerHTML = '';
+
+    // Ocultar detalles del link
+    document.getElementById('detalles-link').style.display = 'none';
+
+    // Habilitar el botón de generación
+    document.querySelector('button[onclick="generarLink()"]').disabled = false;
   }
 </script>
 </body>
