@@ -115,6 +115,25 @@ export default function handler(req, res) {
     return res.status(200).json({ link });
   }
 
+  // === 4. EDITAR NÚMERO (PUT) ===
+  if (req.method === 'PUT') {
+    const { email, index, nuevoNumero } = req.body;
+
+    // Encuentra la configuración asociada al email
+    const configuracion = Object.values(configuracionesPorID).find(
+      (config) => config.email === email
+    );
+
+    if (!configuracion) {
+      return res.status(404).json({ error: "Configuración no encontrada" });
+    }
+
+    // Actualiza el número en la posición especificada
+    configuracion.numeros[index] = nuevoNumero;
+
+    return res.status(200).json({ success: true, message: "Número actualizado correctamente." });
+  }
+
   return res.status(400).json({ error: "Solicitud inválida" });
 }
 
