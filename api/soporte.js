@@ -1,31 +1,19 @@
-const usuarios = [
-  {
-    email: "renzobianco@gmail.com",
-    password: "renzoxdlol",
-    limiteNumeros: 2
-  },
-  {
-    email: "nuevo_usuario@gmail.com",
-    password: "contraseña123",
-    limiteNumeros: 10
-  },
-  {
-    email: "donarumamatias@gmail.com",
-    password: "contraseña12",
-    limiteNumeros: 3
-  },
-  {
-  email: "prueba@multi.link",
-  password: "test",
-  limiteNumeros: 1
-  },
-  {
-  email: "tomas@gmail.com",
-  password: "tomas123",
-  limiteNumeros: 3
-  }
+import fs from 'fs';
+import path from 'path';
 
-];
+// Ruta al archivo JSON de usuarios
+const usuariosPath = path.join(process.cwd(), 'api', 'usuarios.json');
+
+// Función para leer usuarios desde el archivo JSON
+function leerUsuarios() {
+  const data = fs.readFileSync(usuariosPath, 'utf-8');
+  return JSON.parse(data);
+}
+
+// Función para guardar usuarios en el archivo JSON
+function guardarUsuarios(usuarios) {
+  fs.writeFileSync(usuariosPath, JSON.stringify(usuarios, null, 2), 'utf-8');
+}
 
 // Objeto para almacenar configuraciones por ID
 const configuracionesPorID = {}; // { id: { email, numeros, mensaje } }
@@ -36,10 +24,31 @@ const indicesRotacion = {}; // { id: índice_actual }
 export default function handler(req, res) {
   const { email, password, id } = req.query;
 
-  // === 1. INICIO DE SESIÓN ===
-  if (req.method === 'GET' && email && password) {
+  // === 1. AGREGAR NUEVO USUARIO ===
+  if (req.method === 'POST' && req.query.action === 'agregarUsuario') {
+    const usuarios = leerUsuarios();
+
+    // Verifica si el usuario ya existe
+    const usuarioExistente = usuarios.find((u) => u.email === email);
+    if (usuarioExistente) {
+      return res.status(400).json({ error: "El usuario ya existe." });
+    }
+
+    // Agrega el nuevo usuario
+    const nuevoUsuario = { email, password, limiteNumeros };
+    usuarios.push(nuevoUsuario);
+
+    // Guarda los usuarios actualizados en el archivo JSON
+    guardarUsuarios(usuarios);
+
+    return res.status(200).json({ success: true, message: "Usuario agregado correctamente." });
+  }
+
+  // === 2. INICIO DE SESIÓN ===
+  if (req.method === 'GET' && req.query.action === 'login') {
+    const usuarios = leerUsuarios();
     const usuario = usuarios.find(
-      (u) => u.email === email && u.password === password
+      (u) => u.email === req.query.email && u.password === req.query.password
     );
 
     if (!usuario) {
@@ -58,7 +67,7 @@ export default function handler(req, res) {
     });
   }
 
-  // === 2. ACCESO AL LINK GENERADO ===
+  // === 3. ACCESO AL LINK GENERADO ===
   if (req.method === 'GET' && id) {
     if (!configuracionesPorID[id]) {
       return res.status(404).json({ error: "ID no encontrado" });
@@ -82,7 +91,7 @@ export default function handler(req, res) {
     return res.redirect(302, whatsappLink);
   }
 
-  // === 3. GENERAR LINK CORTO (POST) ===
+  // === 4. GENERAR LINK CORTO (POST) ===
   if (req.method === 'POST') {
     const { email, numeros, mensaje } = req.body;
 
