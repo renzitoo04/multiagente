@@ -115,21 +115,6 @@ export default function handler(req, res) {
     return res.status(200).json({ link });
   }
 
-  // === 4. ACTUALIZAR LOS NÚMEROS DEL LINK ===
-  if (req.method === 'PATCH') {
-    const { id, numeros } = req.body;
-
-    // Verifica si el ID existe
-    if (!configuracionesPorID[id]) {
-      return res.status(404).json({ error: "ID no encontrado" });
-    }
-
-    // Actualiza los números en la configuración
-    configuracionesPorID[id].numeros = numeros;
-
-    return res.status(200).json({ success: true, numeros: configuracionesPorID[id].numeros });
-  }
-
   return res.status(400).json({ error: "Solicitud inválida" });
 }
 

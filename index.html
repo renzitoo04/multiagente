@@ -5,69 +5,212 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generador de Links Multiagente</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #0a1128; /* Fondo azul oscuro */
-      color: #ffffff; /* Texto blanco */
-    }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #0a1128; /* Fondo azul oscuro */
+    color: #ffffff; /* Texto blanco */
+  }
 
-    header {
-      background-color: #1c2541; /* Azul más claro */
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
+  header {
+    background-color: #1c2541; /* Azul más claro */
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
 
-    .titulo-principal {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #25d366; /* Verde de WhatsApp */
-      margin: 0;
-    }
+  .titulo-principal {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #25d366; /* Verde de WhatsApp */
+    margin: 0;
+  }
 
-    .detalles-link {
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #1c2541; /* Azul más claro */
-      border: 1px solid #3a506b;
-      border-radius: 4px;
-      color: #ffffff;
-    }
+  h1, h2 {
+    text-align: center;
+    color: #ffffff;
+  }
 
-    .detalles-link h3 {
-      margin-top: 0;
-      color: #25d366; /* Verde de WhatsApp */
-    }
+  form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #1c2541; /* Azul más claro para el fondo del formulario */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center; /* Centra los botones dentro del formulario */
+  }
 
-    .numero-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
+  label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #ffffff;
+  }
 
-    .numero-item input {
-      margin-right: 10px;
-      padding: 5px;
-      font-size: 14px;
-      flex: 1;
-    }
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #3a506b;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #d4f8e8; /* Verde muy clarito */
+    color: #0a1128; /* Azul oscuro para el texto */
+  }
 
-    .numero-item button {
-      padding: 5px 10px;
-      font-size: 14px;
-      cursor: pointer;
-      background-color: #25d366; /* Verde de WhatsApp */
-      color: #ffffff;
-      border: none;
-      border-radius: 4px;
-      transition: background-color 0.3s ease;
-    }
+  input::placeholder {
+    color: #6c757d; /* Color gris para el texto del placeholder */
+  }
 
-    .numero-item button:hover {
-      background-color: #1da851; /* Verde más oscuro */
-    }
+  input:focus {
+    outline: none;
+    border-color: #25d366; /* Verde de WhatsApp al enfocar */
+    box-shadow: 0 0 5px #25d366;
+  }
+
+  button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px auto; /* Centra los botones verticalmente */
+    font-size: 16px;
+    font-weight: bold;
+    color: #0a1128; /* Azul oscuro para el texto */
+    background-color: #25d366; /* Verde de WhatsApp */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: block; /* Asegura que los botones ocupen toda la línea */
+    text-align: center; /* Centra el texto dentro del botón */
+  }
+
+  button:hover {
+    background-color: #1da851; /* Verde más oscuro al pasar el mouse */
+    transform: scale(1.05);
+  }
+
+  button:active {
+    transform: scale(0.95);
+  }
+
+  form button {
+    width: 100%; /* Hace que los botones ocupen todo el ancho del formulario */
+    max-width: 300px; /* Limita el ancho máximo de los botones */
+  }
+
+  .output {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #1c2541; /* Azul más claro */
+    border: 1px solid #3a506b;
+    border-radius: 4px;
+    text-align: center;
+    color: #ffffff;
+  }
+
+  .output a {
+    color: #4fc3f7; /* Azul brillante para los links */
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .output a:hover {
+    text-decoration: underline;
+  }
+
+  .numero-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .bandera-container {
+    margin-right: 10px;
+  }
+
+  .bandera {
+    width: 24px;
+    height: 16px;
+  }
+
+  .numero {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #3a506b;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #d4f8e8; /* Verde muy clarito */
+    color: #0a1128; /* Azul oscuro para el texto */
+  }
+
+  .numero::placeholder {
+    color: #6c757d; /* Color gris para el texto del placeholder */
+  }
+
+  .numero:focus {
+    outline: none;
+    border-color: #25d366; /* Verde de WhatsApp al enfocar */
+    box-shadow: 0 0 5px #25d366;
+  }
+
+  .info-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #1c2541; /* Azul más claro */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    color: #ffffff;
+    text-align: left;
+  }
+
+  .info-title {
+    text-align: center;
+    color: #25d366; /* Verde de WhatsApp */
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+  }
+
+  .info-container p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .info-container ul {
+    list-style-type: disc;
+    margin-left: 20px;
+    margin-bottom: 20px;
+  }
+
+  .info-container ul li {
+    margin-bottom: 10px;
+  }
+
+  #probar-multilink-container {
+    margin-top: 50px; /* Aumenta la separación del título respecto al botón de iniciar sesión */
+  }
+
+  #probar-multilink-container h1 {
+    font-size: 1.6rem; /* Tamaño de fuente más pequeño */
+  }
+
+  .detalles-link {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #1c2541; /* Azul más claro */
+    border: 1px solid #3a506b;
+    border-radius: 4px;
+    color: #ffffff;
+  }
+
+  .detalles-link h3 {
+    margin-top: 0;
+    color: #25d366; /* Verde de WhatsApp */
+  }
   </style>
 </head>
 <body>
@@ -75,201 +218,316 @@
     <h1 class="titulo-principal">MultiLink</h1>
   </header>
 
+  <!-- Contenedor de inicio de sesión -->
+  <div id="login-container" class="active">
+    <h2>Iniciar sesión</h2>
+    <label for="email">Correo electrónico:</label>
+    <input type="email" id="email" placeholder="Correo electrónico" required>
+    <label for="password">Contraseña:</label>
+    <input type="password" id="password" placeholder="Contraseña" required>
+    <button onclick="login()">Iniciar sesión</button>
+    <p id="login-error" style="color: red;"></p>
+  </div>
+
   <!-- Contenedor principal del generador -->
-  <div id="generador-container">
+  <div id="generador-container" style="display: none;">
     <h1>Generador de Links Multiagente</h1>
     <form id="form">
       <div id="numeros-container">
         <div class="numero-container" id="numero-container-1">
+          <span class="bandera-container">
+            <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
+          </span>
           <input type="text" id="numero-1" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
         </div>
       </div>
       <button type="button" onclick="agregarNumero()">Agregar otro número</button>
       <button type="button" onclick="quitarUltimoNumero()">Quitar último número</button>
 
+      <!-- Campo de mensaje automático en el generador principal -->
       <label for="mensaje">Mensaje automático:</label>
       <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
 
       <button type="button" onclick="generarLink()">Generar Link</button>
     </form>
 
+    <div class="output" id="output"></div>
     <div class="detalles-link" id="detalles-link" style="display: none;">
       <h3>Detalles del Link Generado:</h3>
-      <p><strong>Link:</strong> <a href="#" id="link-generado" target="_blank"></a></p>
-      <div id="numeros-container"></div>
+      <p><strong>Números:</strong> <span id="numeros-generados"></span></p>
+      <p><strong>Mensaje Automático:</strong> <span id="mensaje-generado"></span></p>
     </div>
     <button onclick="cerrarSesion()">Cerrar Sesión</button>
-    <button onclick="actualizarLink()">Actualizar Link</button>
-    <button onclick="reiniciarGenerados()">Reiniciar Generados</button>
   </div>
 
-  <script>
-    let contadorNumeros = 1;
+  <!-- Contenedor para prueba de MultiLink -->
+  <div id="probar-multilink-container">
+    <h1>Probar MultiLink</h1>
+    <form id="form-multilink">
+      <div id="numero-prueba-container" class="numero-container">
+        <span class="bandera-container">
+          <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
+        </span>
+        <input type="text" id="numero-prueba" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
+      </div>
+      <!-- Campo de mensaje automático en "Probar MultiLink" -->
+      <label for="mensaje-prueba">Mensaje automático:</label>
+      <input type="text" id="mensaje-prueba" placeholder="Ejemplo: Hola, necesito ayuda">
+      <button type="button" onclick="generarLinkPrueba()">Generar Link</button>
+    </form>
+    <div class="output" id="output-prueba"></div>
+  </div>
 
-    function agregarNumero() {
-      contadorNumeros++;
-      const container = document.getElementById('numeros-container');
-      const nuevoCampo = document.createElement('div');
-      nuevoCampo.classList.add('numero-container');
-      nuevoCampo.id = `numero-container-${contadorNumeros}`;
-      nuevoCampo.innerHTML = `
-        <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
-      `;
-      container.appendChild(nuevoCampo);
+  <div class="info-container">
+    <h2 class="info-title">¿Para qué sirve MultiLink?</h2>
+    <p>MultiLink es una herramienta diseñada especialmente para creadores de contenido, emprendedores y vendedores que utilizan WhatsApp como canal principal de ventas o atención.</p>
+    <ul>
+      <li>Evitar bloqueos por exceso de mensajes en una sola línea</li>
+      <li>Distribuir el flujo de clientes entre diferentes operadores</li>
+      <li>Atender más rápido y de forma organizada</li>
+      <li>Adaptarse al crecimiento de tu negocio sin complicaciones</li>
+    </ul>
+    <p>Ya sea que vendas por whatsapp, Telegram, redes sociales o tiendas online, MultiLink te ayuda a optimizar tu atención al cliente y aumentar tus conversiones.</p>
+  </div>
+
+<script>
+  let contadorNumeros = 1;
+  let limiteNumeros = 0;
+
+  function agregarNumero() {
+    if (contadorNumeros >= limiteNumeros) {
+      alert(`Solo puedes agregar hasta ${limiteNumeros} números.`);
+      document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
+      return;
     }
 
-    function quitarUltimoNumero() {
-      if (contadorNumeros > 1) {
-        const container = document.getElementById('numeros-container');
-        const ultimoCampo = document.getElementById(`numero-container-${contadorNumeros}`);
-        if (ultimoCampo) {
-          container.removeChild(ultimoCampo);
-          contadorNumeros--;
+    contadorNumeros++;
+    const container = document.getElementById('numeros-container');
+    const nuevoCampo = document.createElement('div');
+    nuevoCampo.classList.add('numero-container');
+    nuevoCampo.id = `numero-container-${contadorNumeros}`;
+    nuevoCampo.innerHTML = `
+      <span class="bandera-container">
+        <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
+      </span>
+      <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
+    `;
+    container.appendChild(nuevoCampo);
+
+    if (contadorNumeros >= limiteNumeros) {
+      document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
+    }
+  }
+
+  function quitarUltimoNumero() {
+    if (contadorNumeros > 1) {
+      const container = document.getElementById('numeros-container');
+      const ultimoCampo = document.getElementById(`numero-container-${contadorNumeros}`);
+      if (ultimoCampo) {
+        container.removeChild(ultimoCampo);
+        contadorNumeros--;
+        document.querySelector('button[onclick="agregarNumero()"]').disabled = false;
+      }
+    } else {
+      alert('Debe haber al menos un número.');
+    }
+  }
+
+  async function login() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if (!email || !password) {
+      document.getElementById('login-error').textContent = 'Por favor, ingresa tu correo y contraseña.';
+      return;
+    }
+
+    try {
+      const response = await fetch(`/soporte?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        // Oculta el contenedor de inicio de sesión
+        document.getElementById('login-container').style.display = 'none';
+
+        // Muestra el generador principal
+        document.getElementById('generador-container').style.display = 'block';
+
+        // Configura el límite de números
+        limiteNumeros = data.limiteNumeros;
+
+        // Si hay una configuración existente, mostrarla
+        if (data.configuracion) {
+          const { link, numeros, mensaje } = data.configuracion;
+
+          document.getElementById('output').innerHTML = `
+            <p>Tu link generado (más corto):</p>
+            <a href="${link}" target="_blank">${link}</a>
+          `;
+          document.getElementById('detalles-link').style.display = 'block';
+          document.getElementById('numeros-generados').textContent = numeros.join(', ');
+          document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+
+          // Deshabilitar el botón de generación
+          document.querySelector('button[onclick="generarLink()"]').disabled = true;
         }
       } else {
-        alert('Debe haber al menos un número.');
+        document.getElementById('login-error').textContent = data.error;
       }
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
+    }
+  }
+
+  async function generarLink() {
+    const numeros = Array.from(document.querySelectorAll('.numero'))
+      .map(input => input.value.trim())
+      .filter(num => num !== '' && num !== '+549'); // FILTRA el valor por defecto
+
+    const mensaje = document.getElementById('mensaje').value.trim(); // Permitir mensaje vacío
+    const email = document.getElementById('email').value;
+
+    if (numeros.length === 0) {
+      alert('Por favor, ingresa al menos un número válido.');
+      return;
     }
 
-    async function generarLink() {
-      const numeros = Array.from(document.querySelectorAll('.numero'))
-        .map(input => input.value.trim())
-        .filter(num => num !== '');
+    try {
+      const response = await fetch('/soporte', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, numeros, mensaje })
+      });
 
-      const mensaje = document.getElementById('mensaje').value.trim();
+      const data = await response.json();
 
-      if (numeros.length === 0) {
-        alert('Por favor, ingresa al menos un número válido.');
-        return;
-      }
+      if (response.ok) {
+        const shortUrl = data.link;
 
-      try {
-        const response = await fetch('/soporte', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ numeros, mensaje })
-        });
+        // Mostrar el link generado
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado (más corto):</p>
+          <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+        `;
 
-        const data = await response.json();
-
-        if (response.ok) {
-          const link = data.link;
-          document.getElementById('link-generado').textContent = link;
-          document.getElementById('link-generado').href = link;
-          document.getElementById('detalles-link').style.display = 'block';
-        } else {
-          alert('Error: ' + data.error);
-        }
-      } catch (error) {
-        console.error('Error generando link:', error);
-      }
-    }
-
-    async function actualizarLink() {
-      const numeros = Array.from(document.querySelectorAll('.numero'))
-        .map(input => input.value.trim())
-        .filter(num => num !== '');
-
-      const mensaje = document.getElementById('mensaje').value.trim();
-
-      if (numeros.length === 0) {
-        alert('Por favor, ingresa al menos un número válido.');
-        return;
-      }
-
-      try {
-        const response = await fetch('/soporte', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ numeros, mensaje })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          const link = data.link;
-          document.getElementById('link-generado').textContent = link;
-          document.getElementById('link-generado').href = link;
-          alert('Link actualizado correctamente.');
-        } else {
-          alert('Error: ' + data.error);
-        }
-      } catch (error) {
-        console.error('Error actualizando link:', error);
-      }
-    }
-
-    function reiniciarGenerados() {
-      // Restablece el contenedor de números
-      const numerosContainer = document.getElementById('numeros-container');
-      numerosContainer.innerHTML = `
-        <div class="numero-container" id="numero-container-1">
-          <input type="text" id="numero-1" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
-        </div>
-      `;
-      contadorNumeros = 1; // Reinicia el contador de números
-
-      // Limpia el mensaje automático
-      document.getElementById('mensaje').value = '';
-
-      // Oculta el apartado de "Detalles del Link Generado"
-      const detallesLink = document.getElementById('detalles-link');
-      detallesLink.style.display = 'none';
-
-      // Limpia el link generado
-      document.getElementById('link-generado').textContent = '';
-      document.getElementById('link-generado').href = '#';
-
-      // Limpia el almacenamiento local
-      localStorage.removeItem('linkGenerado');
-      localStorage.removeItem('numerosGenerados');
-      localStorage.removeItem('mensajeGenerado');
-
-      alert('Formulario reiniciado.');
-    }
-
-    function mostrarDetallesLink(link, numeros, mensaje) {
-      const detallesLink = document.getElementById('detalles-link');
-      detallesLink.style.display = 'block'; // Asegúrate de que el contenedor sea visible
-      detallesLink.innerHTML = `
-        <h3>Detalles del Link Generado:</h3>
-        <p><strong>Link:</strong> <a href="${link}" target="_blank">${link}</a></p>
-        <p><strong>Mensaje Automático:</strong> ${mensaje || 'Sin mensaje'}</p>
-        <div id="numeros-container">
-          ${numeros
-            .map(
-              (numero, index) => `
-              <div class="numero-item">
-                <label for="numero-${index}">Número ${index + 1}:</label>
-                <input type="text" id="numero-${index}" value="${numero}" readonly />
-                <button onclick="habilitarEdicion(${index})">✏️ Editar</button>
-              </div>
-            `
-            )
-            .join('')}
-        </div>
-      `;
-    }
-
-    function habilitarEdicion(index) {
-      const numeroInput = document.getElementById(`numero-${index}`);
-      numeroInput.removeAttribute('readonly'); // Habilita la edición del campo
-      numeroInput.focus(); // Coloca el cursor en el campo
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const linkGuardado = localStorage.getItem('linkGenerado');
-      const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
-      const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
-
-      if (linkGuardado) {
         // Mostrar los detalles del link
-        mostrarDetallesLink(linkGuardado, numerosGuardados, mensajeGuardado);
+        document.getElementById('detalles-link').style.display = 'block';
+        document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+        document.getElementById('detalles-link').innerHTML += `
+          <p><strong>Link:</strong> <a href="${shortUrl}" target="_blank">${shortUrl}</a></p>
+        `;
 
         // Deshabilitar el botón de generación
         document.querySelector('button[onclick="generarLink()"]').disabled = true;
+
+        // Guardar los datos en localStorage
+        localStorage.setItem('linkGenerado', shortUrl);
+        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
+        localStorage.setItem('mensajeGenerado', mensaje);
+      } else {
+        alert('Error: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Error generando link:', error);
+    }
+  }
+
+  async function generarLinkPrueba() {
+    const numero = document.getElementById('numero-prueba').value.trim();
+    const mensaje = document.getElementById('mensaje-prueba').value.trim(); // Permitir mensaje vacío
+    const email = "prueba@multi.link";
+
+    if (!numero) {
+      alert('Por favor, ingresa un número.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/soporte', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ numeros: [numero], mensaje, email })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const shortUrl = `${location.origin}/soporte?id=${data.id}`;
+        document.getElementById('output-prueba').innerHTML = `
+          <p>Tu link de prueba generado:</p>
+          <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+        `;
+      } else {
+        alert('Error: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Error generando link de prueba:', error);
+    }
+  }
+
+  function probarMultiLink() {
+    document.getElementById('login-container').classList.remove('active');
+    document.getElementById('probar-multilink-container').classList.add('active');
+    document.getElementById('numero-prueba').value = '';
+    document.getElementById('mensaje-prueba').value = '';
+  }
+
+  function volverAlLogin() {
+    document.getElementById('probar-multilink-container').classList.remove('active');
+    document.getElementById('login-container').classList.add('active');
+  }
+
+  function reiniciarGenerador() {
+    // Reiniciar el contador de números
+    contadorNumeros = 1;
+    document.getElementById('mensaje').value = ''; // Limpiar el campo de mensaje
+
+    // Limpiar los números generados
+    const numerosInputs = document.querySelectorAll('.numero');
+    numerosInputs.forEach((input, index) => {
+      if (index === 0) {
+        input.value = '+549'; // Restablecer el primer número a su valor por defecto
+      } else {
+        input.value = ''; // Limpiar los demás campos de número
       }
     });
-  </script>
+
+    // Limpiar el output
+    document.getElementById('output').innerHTML = '';
+
+    // Ocultar detalles del link
+    document.getElementById('detalles-link').style.display = 'none';
+
+    // Habilitar el botón de generación
+    document.querySelector('button[onclick="generarLink()"]').disabled = false;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+  const linkGuardado = localStorage.getItem('linkGenerado');
+  const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
+  const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
+
+  if (linkGuardado) {
+    // Mostrar el link guardado
+    document.getElementById('output').innerHTML = `
+      <p>Tu link generado (más corto):</p>
+      <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
+    `;
+
+    // Mostrar los detalles del link
+    document.getElementById('detalles-link').style.display = 'block';
+    document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
+    document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
+    document.getElementById('detalles-link').innerHTML += `
+      <p><strong>Link:</strong> <a href="${linkGuardado}" target="_blank">${linkGuardado}</a></p>
+    `;
+
+    // Deshabilitar el botón de generación
+    document.querySelector('button[onclick="generarLink()"]').disabled = true;
+  }
+});
+</script>
 </body>
 </html>
