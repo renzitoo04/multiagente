@@ -286,6 +286,7 @@
       <p><strong>Mensaje Automático:</strong> <span id="mensaje-generado"></span></p>
     </div>
     <button onclick="cerrarSesion()">Cerrar Sesión</button>
+    <button onclick="actualizarLink()">Actualizar Link</button>
   </div>
 
   <!-- Contenedor para prueba de MultiLink -->
@@ -521,6 +522,40 @@
       }
     } catch (error) {
       console.error('Error al editar el número:', error);
+    }
+  }
+
+  async function actualizarLink() {
+    const numeros = Array.from(document.querySelectorAll('.numero'))
+      .map(input => input.value.trim())
+      .filter(num => num !== ''); // Asegúrate de que no haya números vacíos
+
+    const id = localStorage.getItem('linkID'); // Asegúrate de guardar el ID del link en localStorage
+
+    if (numeros.length === 0) {
+      alert('Por favor, ingresa al menos un número válido.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/soporte', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, numeros })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Link actualizado correctamente.');
+        // Actualiza los números en la interfaz
+        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
+        mostrarDetallesLink(localStorage.getItem('linkGenerado'), numeros, localStorage.getItem('mensajeGenerado'));
+      } else {
+        alert('Error: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Error al actualizar el link:', error);
     }
   }
 
