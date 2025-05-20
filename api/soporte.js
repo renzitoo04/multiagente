@@ -30,8 +30,8 @@ const usuarios = [
 // Rotación por email
 const indicesUsuarios = {};
 
-// Objeto para almacenar configuraciones por usuario
-const configuraciones = {}; // { email: { link, numeros, mensaje } }
+// Objeto para almacenar configuraciones por ID
+const configuracionesPorID = {}; // { id: { email, numeros, mensaje } }
 
 export default function handler(req, res) {
   const { email, password, id } = req.query;
@@ -71,45 +71,29 @@ export default function handler(req, res) {
       return res.status(400).json({ error: `Excediste el límite de números permitido (${usuario.limiteNumeros})` });
     }
 
-    // Genera el link
+    // Genera el ID y el link
     const id = Math.random().toString(36).substring(2, 8);
     const link = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
-    // Guarda la configuración asociada al email
-    configuraciones[email] = { link, numeros, mensaje };
+    // Guarda la configuración asociada al ID
+    configuracionesPorID[id] = { email, numeros, mensaje };
 
     return res.status(200).json({ link });
   }
 
-  // === 3. REDIRECCIÓN POR ID (GET) ===
-  if (req.method === 'GET' && id) {
-    const config = configuraciones[id];
+  if (req.method === 'GET') {
+    const { id } = req.query;
 
-    if (!config) {
+    // Verifica si el ID existe
+    if (!configuracionesPorID[id]) {
       return res.status(404).json({ error: "ID no encontrado" });
     }
 
-    const { numeros, mensaje, email } = config;
-
-    if (!indicesUsuarios[email]) {
-      indicesUsuarios[email] = 0;
-    }
-
-    const indice = indicesUsuarios[email];
-    const numeroActual = numeros[indice];
-
-    indicesUsuarios[email] = (indice + 1) % numeros.length;
-
-    const link = `https://wa.me/${numeroActual}?text=${encodeURIComponent(mensaje)}`;
-    return res.redirect(302, link);
+    // Recupera la configuración asociada al ID
+    const configuracion = configuracionesPorID[id];
+    return res.status(200).json(configuracion);
   }
 
-  if (req.method === 'POST' && req.body.action === 'reiniciarGenerador') {
-    // Aquí podrías enviar un comando al frontend para ejecutar reiniciarGenerador()
-    return res.status(200).json({ message: 'Generador reiniciado desde el backend.' });
-  }
-
-  // Si no coincide ningún caso válido
-  return res.status(400).json({ error: "Solicitud inválida o faltan parámetros" });
+  return res.status(400).json({ error: "Solicitud inválida" });
 }
 
