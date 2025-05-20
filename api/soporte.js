@@ -27,8 +27,8 @@ const usuarios = [
 
 ];
 
-// Objeto para almacenar configuraciones por ID
-const configuracionesPorID = {}; // { id: { email, numeros, mensaje, indice } }
+// Objeto para almacenar configuraciones por email
+const configuracionesPorEmail = {}; // { email: { link, numeros, mensaje, id } }
 
 // Objeto para manejar índices de rotación por ID
 const indicesRotacion = {}; // { id: índice_actual }
@@ -37,36 +37,7 @@ export default function handler(req, res) {
   const { email, password, id } = req.query;
 
   // === 1. INICIO DE SESIÓN ===
-  if (req.method === 'GET') {
-    // === Consultar por ID para acceder al link generado ===
-    if (id) {
-      if (!configuracionesPorID[id]) {
-        return res.status(404).json({ error: "ID no encontrado" });
-      }
-
-      const configuracion = configuracionesPorID[id];
-
-      // Manejar la rotación de números
-      if (!indicesRotacion[id]) {
-        indicesRotacion[id] = 0; // Inicializa el índice si no existe
-      }
-
-      const indiceActual = indicesRotacion[id];
-      const numeroActual = configuracion.numeros[indiceActual];
-
-      // Incrementa el índice para la próxima rotación
-      indicesRotacion[id] = (indiceActual + 1) % configuracion.numeros.length;
-
-      // Redirige al número actual de WhatsApp
-      const whatsappLink = `https://wa.me/${numeroActual}?text=${encodeURIComponent(configuracion.mensaje)}`;
-      return res.redirect(302, whatsappLink);
-    }
-
-    // === Login por email y contraseña ===
-    if (!email || !password) {
-      return res.status(400).json({ error: "Faltan credenciales" });
-    }
-
+  if (req.method === 'GET' && email && password) {
     const usuario = usuarios.find(
       (u) => u.email === email && u.password === password
     );
@@ -75,7 +46,8 @@ export default function handler(req, res) {
       return res.status(401).json({ error: "Credenciales incorrectas" });
     }
 
-    const configuracion = configuracionesPorID[email] || null;
+    // Recupera la configuración asociada al email
+    const configuracion = configuracionesPorEmail[email] || null;
 
     return res.status(200).json({
       success: true,
@@ -84,7 +56,31 @@ export default function handler(req, res) {
     });
   }
 
-  // === 2. GENERAR LINK CORTO (POST) ===
+  // === 2. ACCESO AL LINK GENERADO ===
+  if (req.method === 'GET' && id) {
+    if (!configuracionesPorEmail[id]) {
+      return res.status(404).json({ error: "ID no encontrado" });
+    }
+
+    const configuracion = configuracionesPorEmail[id];
+
+    // Manejar la rotación de números
+    if (!indicesRotacion[id]) {
+      indicesRotacion[id] = 0; // Inicializa el índice si no existe
+    }
+
+    const indiceActual = indicesRotacion[id];
+    const numeroActual = configuracion.numeros[indiceActual];
+
+    // Incrementa el índice para la próxima rotación
+    indicesRotacion[id] = (indiceActual + 1) % configuracion.numeros.length;
+
+    // Redirige al número actual de WhatsApp
+    const whatsappLink = `https://wa.me/${numeroActual}?text=${encodeURIComponent(configuracion.mensaje)}`;
+    return res.redirect(302, whatsappLink);
+  }
+
+  // === 3. GENERAR LINK CORTO (POST) ===
   if (req.method === 'POST') {
     const { email, numeros, mensaje } = req.body;
 
@@ -92,6 +88,11 @@ export default function handler(req, res) {
     const usuario = usuarios.find((u) => u.email === email);
     if (!usuario) {
       return res.status(401).json({ error: "Usuario no autenticado" });
+    }
+
+    // Verifica si ya existe un link generado para este usuario
+    if (configuracionesPorEmail[email]) {
+      return res.status(400).json({ error: "Ya has generado un link. No puedes generar otro." });
     }
 
     // Verifica el límite de números
@@ -103,8 +104,8 @@ export default function handler(req, res) {
     const id = Math.random().toString(36).substring(2, 8);
     const link = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
-    // Guarda la configuración asociada al ID
-    configuracionesPorID[id] = { email, numeros, mensaje };
+    // Guarda la configuración asociada al email
+    configuracionesPorEmail[email] = { link, numeros, mensaje, id };
 
     return res.status(200).json({ link });
   }
