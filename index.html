@@ -415,6 +415,9 @@
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+        document.getElementById('detalles-link').innerHTML += `
+          <p><strong>Link:</strong> <a href="${shortUrl}" target="_blank">${shortUrl}</a></p>
+        `;
 
         // Deshabilitar el botón de generación
         document.querySelector('button[onclick="generarLink()"]').disabled = true;
@@ -502,26 +505,29 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    const linkGuardado = localStorage.getItem('linkGenerado');
-    const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
-    const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
+  const linkGuardado = localStorage.getItem('linkGenerado');
+  const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
+  const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
 
-    if (linkGuardado) {
-      // Mostrar el link guardado
-      document.getElementById('output').innerHTML = `
-        <p>Tu link generado (más corto):</p>
-        <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
-      `;
+  if (linkGuardado) {
+    // Mostrar el link guardado
+    document.getElementById('output').innerHTML = `
+      <p>Tu link generado (más corto):</p>
+      <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
+    `;
 
-      // Mostrar los detalles del link
-      document.getElementById('detalles-link').style.display = 'block';
-      document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
-      document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
+    // Mostrar los detalles del link
+    document.getElementById('detalles-link').style.display = 'block';
+    document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
+    document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
+    document.getElementById('detalles-link').innerHTML += `
+      <p><strong>Link:</strong> <a href="${linkGuardado}" target="_blank">${linkGuardado}</a></p>
+    `;
 
-      // Deshabilitar el botón de generación
-      document.querySelector('button[onclick="generarLink()"]').disabled = true;
-    }
-  });
+    // Deshabilitar el botón de generación
+    document.querySelector('button[onclick="generarLink()"]').disabled = true;
+  }
+});
 </script>
 </body>
 </html>
