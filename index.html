@@ -567,7 +567,7 @@
 
     try {
       const response = await fetch('/soporte', {
-        method: 'PATCH',
+        method: 'POST', // Cambia a POST para generar un nuevo link
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, numeros, mensaje })
       });
@@ -575,13 +575,25 @@
       const data = await response.json();
 
       if (response.ok) {
+        const newLink = data.link;
+
         alert('Link actualizado correctamente.');
 
         // Actualiza los detalles del link
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+
+        // Muestra el nuevo link en el apartado "Detalles del Link"
+        document.getElementById('output').innerHTML = `
+          <p>Tu nuevo link generado:</p>
+          <a href="${newLink}" target="_blank">${newLink}</a>
+        `;
+
+        // Actualiza los números en el apartado "Editar Link"
         mostrarEditarLink(numeros);
 
         // Actualiza los datos en localStorage
+        localStorage.setItem('linkGenerado', newLink);
         localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
       } else {
         alert('Error: ' + data.error);

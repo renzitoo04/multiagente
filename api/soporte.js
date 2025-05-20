@@ -86,30 +86,15 @@ export default function handler(req, res) {
   if (req.method === 'POST') {
     const { email, numeros, mensaje } = req.body;
 
-    // Verifica si el usuario existe
-    const usuario = usuarios.find((u) => u.email === email);
-    if (!usuario) {
-      return res.status(401).json({ error: "Usuario no autenticado" });
+    if (!email || !numeros || numeros.length === 0) {
+      return res.status(400).json({ error: 'Datos inválidos' });
     }
 
-    // Verifica si ya existe un link generado para este usuario
-    const configuracionExistente = Object.values(configuracionesPorID).find(
-      (config) => config.email === email
-    );
-    if (configuracionExistente) {
-      return res.status(400).json({ error: "Ya has generado un link. No puedes generar otro." });
-    }
-
-    // Verifica el límite de números
-    if (numeros.length > usuario.limiteNumeros) {
-      return res.status(400).json({ error: `Excediste el límite de números permitido (${usuario.limiteNumeros})` });
-    }
-
-    // Genera el ID y el link
+    // Genera un nuevo link (puedes personalizar esta lógica)
     const id = Math.random().toString(36).substring(2, 8);
     const link = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
-    // Guarda la configuración asociada al ID
+    // Guarda la configuración en memoria o base de datos (si es necesario)
     configuracionesPorID[id] = { email, numeros, mensaje };
 
     return res.status(200).json({ link });
