@@ -211,6 +211,34 @@
     margin-top: 0;
     color: #25d366; /* Verde de WhatsApp */
   }
+
+  .numero-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .numero-item input {
+    margin-right: 10px;
+    padding: 5px;
+    font-size: 14px;
+    flex: 1;
+  }
+
+  .numero-item button {
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #25d366; /* Verde de WhatsApp */
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+
+  .numero-item button:hover {
+    background-color: #1da851; /* Verde más oscuro */
+  }
   </style>
 </head>
 <body>
@@ -536,6 +564,26 @@
 
     // Habilitar el botón de generación
     document.querySelector('button[onclick="generarLink()"]').disabled = false;
+  }
+
+  function mostrarDetallesLink(link, numeros, mensaje) {
+    const detallesLink = document.getElementById('detalles-link');
+    detallesLink.innerHTML = `
+      <p><strong>Link:</strong> <a href="${link}" target="_blank">${link}</a></p>
+      <p><strong>Mensaje Automático:</strong> ${mensaje || 'Sin mensaje'}</p>
+      <div id="numeros-container">
+        ${numeros
+          .map(
+            (numero, index) => `
+            <div class="numero-item">
+              <input type="text" id="numero-${index}" value="${numero}" />
+              <button onclick="editarNumero(${index})">✏️ Editar</button>
+            </div>
+          `
+          )
+          .join('')}
+      </div>
+    `;
   }
 
   document.addEventListener('DOMContentLoaded', () => {
