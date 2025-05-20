@@ -400,6 +400,9 @@
         // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
 
+        // Muestra el apartado "Editar Link"
+        document.getElementById('editar-link-container').style.display = 'block';
+
         // Configura el límite de números
         limiteNumeros = data.limiteNumeros;
 
@@ -414,6 +417,9 @@
           document.getElementById('detalles-link').style.display = 'block';
           document.getElementById('numeros-generados').textContent = numeros.join(', ');
           document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+
+          // Mostrar los números en el apartado "Editar Link"
+          mostrarEditarLink(numeros);
 
           // Deshabilitar el botón de generación
           document.querySelector('button[onclick="generarLink()"]').disabled = true;
