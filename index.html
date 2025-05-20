@@ -279,7 +279,6 @@
       <button type="button" onclick="generarLink()">Generar Link</button>
     </form>
 
-    <div class="output" id="output"></div>
     <div class="detalles-link" id="detalles-link" style="display: none;">
       <h3>Detalles del Link Generado:</h3>
       <p><strong>Números:</strong> <span id="numeros-generados"></span></p>
@@ -619,12 +618,6 @@
   const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
 
   if (linkGuardado) {
-    // Mostrar el link guardado
-    document.getElementById('output').innerHTML = `
-      <p>Tu link generado (más corto):</p>
-      <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
-    `;
-
     // Mostrar los detalles del link
     mostrarDetallesLink(linkGuardado, numerosGuardados, mensajeGuardado);
 
