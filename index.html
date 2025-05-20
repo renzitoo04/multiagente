@@ -211,6 +211,41 @@
     margin-top: 0;
     color: #25d366; /* Verde de WhatsApp */
   }
+
+  #editar-link-container {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #1c2541; /* Azul más claro */
+    border: 1px solid #3a506b;
+    border-radius: 4px;
+    color: #ffffff;
+  }
+
+  #editar-link-container h3 {
+    margin-top: 0;
+    color: #25d366; /* Verde de WhatsApp */
+  }
+
+  .numero-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .numero-item label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+
+  .numero-item input {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #3a506b;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #d4f8e8; /* Verde muy clarito */
+    color: #0a1128; /* Azul oscuro */
+  }
   </style>
 </head>
 <body>
@@ -276,6 +311,13 @@
       <button type="button" onclick="generarLinkPrueba()">Generar Link</button>
     </form>
     <div class="output" id="output-prueba"></div>
+  </div>
+
+  <!-- Contenedor para editar link -->
+  <div id="editar-link-container" style="display: none;">
+    <h3>Editar Link</h3>
+    <div id="editar-numeros-container"></div>
+    <button onclick="actualizarLink()">Actualizar Link</button>
   </div>
 
   <div class="info-container">
@@ -383,7 +425,7 @@
   async function generarLink() {
     const numeros = Array.from(document.querySelectorAll('.numero'))
       .map(input => input.value.trim())
-      .filter(num => num !== '' && num !== '+549'); // FILTRA el valor por defecto
+      .filter(num => num !== '' && num !== '+549'); // Filtra el valor por defecto
 
     const mensaje = document.getElementById('mensaje').value.trim(); // Permitir mensaje vacío
     const email = document.getElementById('email').value;
@@ -405,22 +447,13 @@
       if (response.ok) {
         const shortUrl = data.link;
 
-        // Mostrar el link generado
-        document.getElementById('output').innerHTML = `
-          <p>Tu link generado (más corto):</p>
-          <a href="${shortUrl}" target="_blank">${shortUrl}</a>
-        `;
-
         // Mostrar los detalles del link
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-        document.getElementById('detalles-link').innerHTML += `
-          <p><strong>Link:</strong> <a href="${shortUrl}" target="_blank">${shortUrl}</a></p>
-        `;
 
-        // Deshabilitar el botón de generación
-        document.querySelector('button[onclick="generarLink()"]').disabled = true;
+        // Mostrar los números en el apartado "Editar Link"
+        mostrarEditarLink(numeros);
 
         // Guardar los datos en localStorage
         localStorage.setItem('linkGenerado', shortUrl);
@@ -504,28 +537,73 @@
     document.querySelector('button[onclick="generarLink()"]').disabled = false;
   }
 
+  function mostrarEditarLink(numeros) {
+    const editarNumerosContainer = document.getElementById('editar-numeros-container');
+    editarNumerosContainer.innerHTML = numeros
+      .map(
+        (numero, index) => `
+        <div class="numero-item">
+          <label for="editar-numero-${index}">Número ${index + 1}:</label>
+          <input type="text" id="editar-numero-${index}" value="${numero}" />
+        </div>
+      `
+      )
+      .join('');
+    document.getElementById('editar-link-container').style.display = 'block';
+  }
+
+  async function actualizarLink() {
+    const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
+      .map(input => input.value.trim())
+      .filter(num => num !== ''); // Asegúrate de que no haya números vacíos
+
+    const mensaje = localStorage.getItem('mensajeGenerado') || ''; // Recupera el mensaje guardado
+    const email = document.getElementById('email').value; // Recupera el email del usuario
+
+    if (numeros.length === 0) {
+      alert('Por favor, ingresa al menos un número válido.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/soporte', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, numeros, mensaje })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Link actualizado correctamente.');
+
+        // Actualiza los detalles del link
+        document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        mostrarEditarLink(numeros);
+
+        // Actualiza los datos en localStorage
+        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
+      } else {
+        alert('Error: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Error actualizando el link:', error);
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
   const linkGuardado = localStorage.getItem('linkGenerado');
   const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
   const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
 
   if (linkGuardado) {
-    // Mostrar el link guardado
-    document.getElementById('output').innerHTML = `
-      <p>Tu link generado (más corto):</p>
-      <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
-    `;
-
     // Mostrar los detalles del link
     document.getElementById('detalles-link').style.display = 'block';
     document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
     document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
-    document.getElementById('detalles-link').innerHTML += `
-      <p><strong>Link:</strong> <a href="${linkGuardado}" target="_blank">${linkGuardado}</a></p>
-    `;
 
-    // Deshabilitar el botón de generación
-    document.querySelector('button[onclick="generarLink()"]').disabled = true;
+    // Mostrar los números en el apartado "Editar Link"
+    mostrarEditarLink(numerosGuardados);
   }
 });
 </script>
