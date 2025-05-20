@@ -37,7 +37,11 @@ export default function handler(req, res) {
   const { email, password, id } = req.query;
 
   // === 1. INICIO DE SESIÓN ===
-  if (email && password && req.method === 'GET') {
+  if (req.method === 'GET') {
+    if (!email || !password) {
+      return res.status(400).json({ error: "Faltan credenciales" });
+    }
+
     const usuario = usuarios.find(
       (u) => u.email === email && u.password === password
     );
@@ -47,7 +51,7 @@ export default function handler(req, res) {
     }
 
     // Recupera la configuración asociada al email
-    const configuracion = configuraciones[email] || null;
+    const configuracion = configuracionesPorID[email] || null;
 
     return res.status(200).json({
       success: true,
@@ -81,9 +85,8 @@ export default function handler(req, res) {
     return res.status(200).json({ link });
   }
 
-  if (req.method === 'GET') {
-    const { id } = req.query;
-
+  // === 3. RECUPERAR CONFIGURACIÓN POR ID ===
+  if (req.method === 'GET' && id) {
     // Verifica si el ID existe
     if (!configuracionesPorID[id]) {
       return res.status(404).json({ error: "ID no encontrado" });

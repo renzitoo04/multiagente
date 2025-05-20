@@ -333,8 +333,13 @@
   }
 
   async function login() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if (!email || !password) {
+      document.getElementById('login-error').textContent = 'Por favor, ingresa tu correo y contraseña.';
+      return;
+    }
 
     try {
       const response = await fetch(`/soporte?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
@@ -343,18 +348,6 @@
       if (response.ok) {
         // Oculta el contenedor de inicio de sesión
         document.getElementById('login-container').style.display = 'none';
-
-        // Oculta el apartado de Probar MultiLink
-        const probarMultiLink = document.getElementById('probar-multilink-container');
-        if (probarMultiLink) {
-          probarMultiLink.style.display = 'none';
-        }
-
-        // Oculta el apartado de ¿Para qué sirve MultiLink?
-        const infoContainer = document.getElementById('info-container');
-        if (infoContainer) {
-          infoContainer.style.display = 'none';
-        }
 
         // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
