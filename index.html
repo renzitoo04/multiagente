@@ -257,6 +257,7 @@
       <p><strong>Números:</strong> <span id="numeros-generados"></span></p>
       <p><strong>Mensaje Automático:</strong> <span id="mensaje-generado"></span></p>
     </div>
+    <button onclick="cerrarSesion()">Cerrar Sesión</button>
   </div>
 
   <!-- Contenedor para prueba de MultiLink -->
@@ -403,6 +404,8 @@
 
       if (response.ok) {
         const shortUrl = data.link;
+
+        // Mostrar el link generado
         document.getElementById('output').innerHTML = `
           <p>Tu link generado (más corto):</p>
           <a href="${shortUrl}" target="_blank">${shortUrl}</a>
@@ -415,6 +418,11 @@
 
         // Deshabilitar el botón de generación
         document.querySelector('button[onclick="generarLink()"]').disabled = true;
+
+        // Guardar los datos en localStorage
+        localStorage.setItem('linkGenerado', shortUrl);
+        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
+        localStorage.setItem('mensajeGenerado', mensaje);
       } else {
         alert('Error: ' + data.error);
       }
@@ -492,6 +500,28 @@
     // Habilitar el botón de generación
     document.querySelector('button[onclick="generarLink()"]').disabled = false;
   }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const linkGuardado = localStorage.getItem('linkGenerado');
+    const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
+    const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
+
+    if (linkGuardado) {
+      // Mostrar el link guardado
+      document.getElementById('output').innerHTML = `
+        <p>Tu link generado (más corto):</p>
+        <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
+      `;
+
+      // Mostrar los detalles del link
+      document.getElementById('detalles-link').style.display = 'block';
+      document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
+      document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
+
+      // Deshabilitar el botón de generación
+      document.querySelector('button[onclick="generarLink()"]').disabled = true;
+    }
+  });
 </script>
 </body>
 </html>
