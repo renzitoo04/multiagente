@@ -343,7 +343,7 @@
     }
 
     try {
-      const response = await fetch(`/soporte?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+      const response = await fetch(`/api/soporte?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
       const data = await response.json();
 
       if (response.ok) {
@@ -355,22 +355,6 @@
 
         // Configura el límite de números
         limiteNumeros = data.limiteNumeros;
-
-        // Si hay una configuración existente, mostrarla
-        if (data.configuracion) {
-          const { link, numeros, mensaje } = data.configuracion;
-
-          document.getElementById('output').innerHTML = `
-            <p>Tu link generado (más corto):</p>
-            <a href="${link}" target="_blank">${link}</a>
-          `;
-          document.getElementById('detalles-link').style.display = 'block';
-          document.getElementById('numeros-generados').textContent = numeros.join(', ');
-          document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
-          // Deshabilitar el botón de generación
-          document.querySelector('button[onclick="generarLink()"]').disabled = true;
-        }
       } else {
         document.getElementById('login-error').textContent = data.error;
       }

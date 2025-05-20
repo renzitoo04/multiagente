@@ -11,10 +11,14 @@ function leerUsuarios() {
 }
 
 export default function handler(req, res) {
-  const { email, password } = req.query;
+  const { email, password, action } = req.query;
 
   // === INICIO DE SESIÓN ===
-  if (req.method === 'GET' && req.query.action === 'login') {
+  if (req.method === 'GET' && action === 'login') {
+    if (!email || !password) {
+      return res.status(400).json({ error: "Faltan credenciales" });
+    }
+
     const usuarios = leerUsuarios();
 
     // Busca el usuario por email y contraseña
