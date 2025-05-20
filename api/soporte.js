@@ -38,27 +38,38 @@ export default function handler(req, res) {
 
   // === 1. INICIO DE SESIÓN ===
   if (req.method === 'GET') {
-    if (!email || !password) {
-      return res.status(400).json({ error: "Faltan credenciales" });
+  // === Consultar por ID para acceder al link generado ===
+  if (id) {
+    if (!configuracionesPorID[id]) {
+      return res.status(404).json({ error: "ID no encontrado" });
     }
 
-    const usuario = usuarios.find(
-      (u) => u.email === email && u.password === password
-    );
-
-    if (!usuario) {
-      return res.status(401).json({ error: "Credenciales incorrectas" });
-    }
-
-    // Recupera la configuración asociada al email
-    const configuracion = configuracionesPorID[email] || null;
-
-    return res.status(200).json({
-      success: true,
-      limiteNumeros: usuario.limiteNumeros,
-      configuracion,
-    });
+    const configuracion = configuracionesPorID[id];
+    return res.status(200).json(configuracion);
   }
+
+  // === Login por email y contraseña ===
+  if (!email || !password) {
+    return res.status(400).json({ error: "Faltan credenciales" });
+  }
+
+  const usuario = usuarios.find(
+    (u) => u.email === email && u.password === password
+  );
+
+  if (!usuario) {
+    return res.status(401).json({ error: "Credenciales incorrectas" });
+  }
+
+  const configuracion = configuracionesPorID[email] || null;
+
+  return res.status(200).json({
+    success: true,
+    limiteNumeros: usuario.limiteNumeros,
+    configuracion,
+  });
+}
+
 
   // === 2. GENERAR LINK CORTO (POST) ===
   if (req.method === 'POST') {
