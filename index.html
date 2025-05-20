@@ -412,7 +412,7 @@
   async function generarLink() {
     const numeros = Array.from(document.querySelectorAll('.numero'))
       .map(input => input.value.trim())
-      .filter(num => num !== '' && num !== '+549'); // FILTRA el valor por defecto
+      .filter(num => num !== ''); // Asegúrate de que no haya números vacíos
 
     const mensaje = document.getElementById('mensaje').value.trim(); // Permitir mensaje vacío
     const email = document.getElementById('email').value;
@@ -433,12 +433,6 @@
 
       if (response.ok) {
         const shortUrl = data.link;
-
-        // Mostrar el link generado
-        document.getElementById('output').innerHTML = `
-          <p>Tu link generado (más corto):</p>
-          <a href="${shortUrl}" target="_blank">${shortUrl}</a>
-        `;
 
         // Mostrar los detalles del link
         mostrarDetallesLink(shortUrl, numeros, mensaje);
