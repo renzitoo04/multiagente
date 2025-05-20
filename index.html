@@ -406,6 +406,9 @@
         // Configura el límite de números
         limiteNumeros = data.limiteNumeros;
 
+        // Guarda el email en localStorage para verificar sesión
+        localStorage.setItem('email', email);
+
         // Si hay una configuración existente, mostrarla
         if (data.configuracion) {
           const { link, numeros, mensaje } = data.configuracion;
@@ -619,7 +622,9 @@
   const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
   const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
 
-  if (linkGuardado) {
+  // Verifica si el usuario ha iniciado sesión
+  const email = localStorage.getItem('email');
+  if (email && linkGuardado) {
     // Mostrar los detalles del link
     document.getElementById('detalles-link').style.display = 'block';
     document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
@@ -627,6 +632,9 @@
 
     // Mostrar los números en el apartado "Editar Link"
     mostrarEditarLink(numerosGuardados);
+  } else {
+    // Asegúrate de que el apartado "Editar Link" esté oculto
+    document.getElementById('editar-link-container').style.display = 'none';
   }
 });
 </script>
