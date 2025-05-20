@@ -227,6 +227,49 @@
 
       alert('Formulario reiniciado.');
     }
+
+    function mostrarDetallesLink(link, numeros, mensaje) {
+      const detallesLink = document.getElementById('detalles-link');
+      detallesLink.style.display = 'block'; // Asegúrate de que el contenedor sea visible
+      detallesLink.innerHTML = `
+        <h3>Detalles del Link Generado:</h3>
+        <p><strong>Link:</strong> <a href="${link}" target="_blank">${link}</a></p>
+        <p><strong>Mensaje Automático:</strong> ${mensaje || 'Sin mensaje'}</p>
+        <div id="numeros-container">
+          ${numeros
+            .map(
+              (numero, index) => `
+              <div class="numero-item">
+                <label for="numero-${index}">Número ${index + 1}:</label>
+                <input type="text" id="numero-${index}" value="${numero}" readonly />
+                <button onclick="habilitarEdicion(${index})">✏️ Editar</button>
+              </div>
+            `
+            )
+            .join('')}
+        </div>
+      `;
+    }
+
+    function habilitarEdicion(index) {
+      const numeroInput = document.getElementById(`numero-${index}`);
+      numeroInput.removeAttribute('readonly'); // Habilita la edición del campo
+      numeroInput.focus(); // Coloca el cursor en el campo
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const linkGuardado = localStorage.getItem('linkGenerado');
+      const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
+      const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
+
+      if (linkGuardado) {
+        // Mostrar los detalles del link
+        mostrarDetallesLink(linkGuardado, numerosGuardados, mensajeGuardado);
+
+        // Deshabilitar el botón de generación
+        document.querySelector('button[onclick="generarLink()"]').disabled = true;
+      }
+    });
   </script>
 </body>
 </html>
