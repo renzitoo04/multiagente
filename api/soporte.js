@@ -115,6 +115,26 @@ export default function handler(req, res) {
     return res.status(200).json({ link });
   }
 
+  // === 4. ACTUALIZAR UN NÚMERO EXISTENTE ===
+  if (req.method === 'PATCH') {
+    const { id, index, nuevoNumero } = req.body;
+
+    // Verifica si el ID existe
+    if (!configuracionesPorID[id]) {
+      return res.status(404).json({ error: "ID no encontrado" });
+    }
+
+    // Verifica si el índice es válido
+    if (!configuracionesPorID[id].numeros[index]) {
+      return res.status(400).json({ error: "Índice inválido" });
+    }
+
+    // Actualiza el número en la configuración
+    configuracionesPorID[id].numeros[index] = nuevoNumero;
+
+    return res.status(200).json({ success: true, numeros: configuracionesPorID[id].numeros });
+  }
+
   return res.status(400).json({ error: "Solicitud inválida" });
 }
 

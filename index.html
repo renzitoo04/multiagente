@@ -467,6 +467,40 @@
     }
   }
 
+  async function editarNumero(index) {
+    const numeroInput = document.getElementById(`numero-${index}`);
+    const nuevoNumero = numeroInput.value.trim();
+    const id = localStorage.getItem('linkID'); // Asegúrate de guardar el ID del link en localStorage
+
+    if (!nuevoNumero) {
+      alert('El número no puede estar vacío.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/soporte', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, index, nuevoNumero })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Número actualizado correctamente.');
+        // Actualiza el número en la interfaz
+        const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
+        numerosGuardados[index] = nuevoNumero;
+        localStorage.setItem('numerosGenerados', JSON.stringify(numerosGuardados));
+        mostrarDetallesLink(localStorage.getItem('linkGenerado'), numerosGuardados, localStorage.getItem('mensajeGenerado'));
+      } else {
+        alert('Error: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Error al editar el número:', error);
+    }
+  }
+
   function probarMultiLink() {
     document.getElementById('login-container').classList.remove('active');
     document.getElementById('probar-multilink-container').classList.add('active');
