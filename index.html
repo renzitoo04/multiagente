@@ -305,7 +305,6 @@
         </span>
         <input type="text" id="numero-prueba" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
       </div>
-      <!-- Campo de mensaje automático en "Probar MultiLink" -->
       <label for="mensaje-prueba">Mensaje automático:</label>
       <input type="text" id="mensaje-prueba" placeholder="Ejemplo: Hola, necesito ayuda">
       <button type="button" onclick="generarLinkPrueba()">Generar Link</button>
@@ -391,6 +390,9 @@
       if (response.ok) {
         // Oculta el contenedor de inicio de sesión
         document.getElementById('login-container').style.display = 'none';
+
+        // Oculta el contenedor de "Probar MultiLink"
+        document.getElementById('probar-multilink-container').style.display = 'none';
 
         // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
