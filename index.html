@@ -576,6 +576,7 @@
           .map(
             (numero, index) => `
             <div class="numero-item">
+              <label for="numero-${index}">Número ${index + 1}:</label>
               <input type="text" id="numero-${index}" value="${numero}" />
               <button onclick="editarNumero(${index})">✏️ Editar</button>
             </div>
