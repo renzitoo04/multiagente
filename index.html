@@ -400,14 +400,8 @@
         // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
 
-        // Muestra el apartado "Editar Link"
-        document.getElementById('editar-link-container').style.display = 'block';
-
         // Configura el límite de números
         limiteNumeros = data.limiteNumeros;
-
-        // Guarda el email en localStorage para verificar sesión
-        localStorage.setItem('email', email);
 
         // Si hay una configuración existente, mostrarla
         if (data.configuracion) {
@@ -420,9 +414,6 @@
           document.getElementById('detalles-link').style.display = 'block';
           document.getElementById('numeros-generados').textContent = numeros.join(', ');
           document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
-          // Mostrar los números en el apartado "Editar Link"
-          mostrarEditarLink(numeros);
 
           // Deshabilitar el botón de generación
           document.querySelector('button[onclick="generarLink()"]').disabled = true;
@@ -622,9 +613,7 @@
   const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
   const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
 
-  // Verifica si el usuario ha iniciado sesión
-  const email = localStorage.getItem('email');
-  if (email && linkGuardado) {
+  if (linkGuardado) {
     // Mostrar los detalles del link
     document.getElementById('detalles-link').style.display = 'block';
     document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
@@ -632,9 +621,6 @@
 
     // Mostrar los números en el apartado "Editar Link"
     mostrarEditarLink(numerosGuardados);
-  } else {
-    // Asegúrate de que el apartado "Editar Link" esté oculto
-    document.getElementById('editar-link-container').style.display = 'none';
   }
 });
 </script>
