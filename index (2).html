@@ -211,24 +211,6 @@
     margin-top: 0;
     color: #25d366; /* Verde de WhatsApp */
   }
-
-  .numero-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-
-  .numero-item input {
-    margin-right: 10px;
-    padding: 5px;
-    font-size: 14px;
-  }
-
-  .numero-item button {
-    padding: 5px 10px;
-    font-size: 14px;
-    cursor: pointer;
-  }
   </style>
 </head>
 <body>
@@ -520,60 +502,6 @@
 
     // Habilitar el botón de generación
     document.querySelector('button[onclick="generarLink()"]').disabled = false;
-  }
-
-  function mostrarDetallesLink(link, numeros, mensaje) {
-    const detallesLink = document.getElementById('detalles-link');
-    detallesLink.innerHTML = `
-      <p><strong>Link:</strong> <a href="${link}" target="_blank">${link}</a></p>
-      <p><strong>Mensaje Automático:</strong> ${mensaje || 'Sin mensaje'}</p>
-      <div id="numeros-container">
-        ${numeros
-          .map(
-            (numero, index) => `
-            <div class="numero-item">
-              <input type="text" id="numero-${index}" value="${numero}" />
-              <button onclick="editarNumero(${index})">✏️ Editar</button>
-            </div>
-          `
-          )
-          .join('')}
-      </div>
-    `;
-  }
-
-  async function editarNumero(index) {
-    const numeroInput = document.getElementById(`numero-${index}`);
-    const nuevoNumero = numeroInput.value.trim();
-    const email = document.getElementById('email').value;
-
-    if (!nuevoNumero) {
-      alert('El número no puede estar vacío.');
-      return;
-    }
-
-    try {
-      const response = await fetch('/soporte', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, index, nuevoNumero })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert('Número actualizado correctamente.');
-        // Actualiza el número en la interfaz
-        const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
-        numerosGuardados[index] = nuevoNumero;
-        localStorage.setItem('numerosGenerados', JSON.stringify(numerosGuardados));
-        mostrarDetallesLink(localStorage.getItem('linkGenerado'), numerosGuardados, localStorage.getItem('mensajeGenerado'));
-      } else {
-        alert('Error: ' + data.error);
-      }
-    } catch (error) {
-      console.error('Error al editar el número:', error);
-    }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
