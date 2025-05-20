@@ -100,6 +100,7 @@
     </div>
     <button onclick="cerrarSesion()">Cerrar Sesión</button>
     <button onclick="actualizarLink()">Actualizar Link</button>
+    <button onclick="reiniciarGenerados()">Reiniciar Generados</button>
   </div>
 
   <script>
@@ -196,6 +197,35 @@
       } catch (error) {
         console.error('Error actualizando link:', error);
       }
+    }
+
+    function reiniciarGenerados() {
+      // Restablece el contenedor de números
+      const numerosContainer = document.getElementById('numeros-container');
+      numerosContainer.innerHTML = `
+        <div class="numero-container" id="numero-container-1">
+          <input type="text" id="numero-1" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
+        </div>
+      `;
+      contadorNumeros = 1; // Reinicia el contador de números
+
+      // Limpia el mensaje automático
+      document.getElementById('mensaje').value = '';
+
+      // Oculta el apartado de "Detalles del Link Generado"
+      const detallesLink = document.getElementById('detalles-link');
+      detallesLink.style.display = 'none';
+
+      // Limpia el link generado
+      document.getElementById('link-generado').textContent = '';
+      document.getElementById('link-generado').href = '#';
+
+      // Limpia el almacenamiento local
+      localStorage.removeItem('linkGenerado');
+      localStorage.removeItem('numerosGenerados');
+      localStorage.removeItem('mensajeGenerado');
+
+      alert('Formulario reiniciado.');
     }
   </script>
 </body>
