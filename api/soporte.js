@@ -27,8 +27,8 @@ const usuarios = [
 
 ];
 
-// Objeto para almacenar configuraciones por email
-const configuracionesPorEmail = {}; // { email: { link, numeros, mensaje, id } }
+// Objeto para almacenar configuraciones por ID
+const configuracionesPorID = {}; // { id: { email, numeros, mensaje } }
 
 // Objeto para manejar índices de rotación por ID
 const indicesRotacion = {}; // { id: índice_actual }
@@ -47,7 +47,9 @@ export default function handler(req, res) {
     }
 
     // Recupera la configuración asociada al email
-    const configuracion = configuracionesPorEmail[email] || null;
+    const configuracion = Object.values(configuracionesPorID).find(
+      (config) => config.email === email
+    );
 
     return res.status(200).json({
       success: true,
@@ -58,11 +60,11 @@ export default function handler(req, res) {
 
   // === 2. ACCESO AL LINK GENERADO ===
   if (req.method === 'GET' && id) {
-    if (!configuracionesPorEmail[id]) {
+    if (!configuracionesPorID[id]) {
       return res.status(404).json({ error: "ID no encontrado" });
     }
 
-    const configuracion = configuracionesPorEmail[id];
+    const configuracion = configuracionesPorID[id];
 
     // Manejar la rotación de números
     if (!indicesRotacion[id]) {
@@ -91,7 +93,10 @@ export default function handler(req, res) {
     }
 
     // Verifica si ya existe un link generado para este usuario
-    if (configuracionesPorEmail[email]) {
+    const configuracionExistente = Object.values(configuracionesPorID).find(
+      (config) => config.email === email
+    );
+    if (configuracionExistente) {
       return res.status(400).json({ error: "Ya has generado un link. No puedes generar otro." });
     }
 
@@ -104,8 +109,8 @@ export default function handler(req, res) {
     const id = Math.random().toString(36).substring(2, 8);
     const link = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
-    // Guarda la configuración asociada al email
-    configuracionesPorEmail[email] = { link, numeros, mensaje, id };
+    // Guarda la configuración asociada al ID
+    configuracionesPorID[id] = { email, numeros, mensaje };
 
     return res.status(200).json({ link });
   }
