@@ -440,12 +440,7 @@
         `;
 
         // Mostrar los detalles del link
-        document.getElementById('detalles-link').style.display = 'block';
-        document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-        document.getElementById('detalles-link').innerHTML += `
-          <p><strong>Link:</strong> <a href="${shortUrl}" target="_blank">${shortUrl}</a></p>
-        `;
+        mostrarDetallesLink(shortUrl, numeros, mensaje);
 
         // Deshabilitar el botón de generación
         document.querySelector('button[onclick="generarLink()"]').disabled = true;
@@ -568,7 +563,9 @@
 
   function mostrarDetallesLink(link, numeros, mensaje) {
     const detallesLink = document.getElementById('detalles-link');
+    detallesLink.style.display = 'block'; // Asegúrate de que el contenedor sea visible
     detallesLink.innerHTML = `
+      <h3>Detalles del Link Generado:</h3>
       <p><strong>Link:</strong> <a href="${link}" target="_blank">${link}</a></p>
       <p><strong>Mensaje Automático:</strong> ${mensaje || 'Sin mensaje'}</p>
       <div id="numeros-container">
@@ -600,12 +597,7 @@
     `;
 
     // Mostrar los detalles del link
-    document.getElementById('detalles-link').style.display = 'block';
-    document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
-    document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
-    document.getElementById('detalles-link').innerHTML += `
-      <p><strong>Link:</strong> <a href="${linkGuardado}" target="_blank">${linkGuardado}</a></p>
-    `;
+    mostrarDetallesLink(linkGuardado, numerosGuardados, mensajeGuardado);
 
     // Deshabilitar el botón de generación
     document.querySelector('button[onclick="generarLink()"]').disabled = true;
