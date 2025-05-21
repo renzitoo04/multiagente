@@ -397,6 +397,9 @@
         // Configura el límite de números
         limiteNumeros = data.limiteNumeros;
 
+        // Guarda el correo del usuario en localStorage
+        localStorage.setItem('usuarioEmail', email);
+
         // Si hay una configuración existente, mostrarla
         if (data.configuracion) {
           const { link, numeros, mensaje } = data.configuracion;
@@ -411,7 +414,7 @@
           // Mostrar los números en el apartado "Editar Link"
           mostrarEditarLink(numeros);
 
-          // Guardar los datos en localStorage para mantener la sesión
+          // Guardar los datos en localStorage
           localStorage.setItem('linkGenerado', link);
           localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
           localStorage.setItem('mensajeGenerado', mensaje);
@@ -465,6 +468,7 @@
         localStorage.setItem('linkGenerado', link);
         localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
         localStorage.setItem('mensajeGenerado', mensaje);
+        localStorage.setItem('usuarioEmail', email); // Guarda el correo del usuario
       } else {
         alert('Error: ' + data.error);
       }
@@ -612,8 +616,11 @@
   const linkGuardado = localStorage.getItem('linkGenerado');
   const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
   const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
+  const usuarioEmailGuardado = localStorage.getItem('usuarioEmail'); // Correo del usuario que generó el link
+  const emailActual = document.getElementById('email')?.value || ''; // Correo del usuario actual
 
-  if (linkGuardado) {
+  // Verifica si el usuario actual coincide con el que generó el link
+  if (linkGuardado && usuarioEmailGuardado === emailActual) {
     // Mostrar los detalles del link
     document.getElementById('detalles-link').style.display = 'block';
     document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
@@ -621,6 +628,10 @@
 
     // Mostrar los números en el apartado "Editar Link"
     mostrarEditarLink(numerosGuardados);
+  } else {
+    // Ocultar el apartado "Detalles del Link" si no coincide
+    document.getElementById('detalles-link').style.display = 'none';
+    document.getElementById('editar-link-container').style.display = 'none';
   }
 });
 </script>
