@@ -90,24 +90,14 @@ export default function handler(req, res) {
       return res.status(400).json({ error: 'Datos inválidos' });
     }
 
-    // Busca si ya existe una configuración para este email
-    const linkViejo = Object.keys(configuracionesPorID).find(
-      (id) => configuracionesPorID[id].email === email
-    );
-
-    // Si existe un link viejo, elimínalo
-    if (linkViejo) {
-      delete configuracionesPorID[linkViejo];
-    }
-
     // Genera un nuevo ID y link
     const id = Math.random().toString(36).substring(2, 8);
-    const link = `https://multilink.com/soporte?id=${id}`;
+    const link = `https://multilink.com/soporte?id=${id}`; // Asegúrate de que el link se genere correctamente
 
     // Guarda la nueva configuración
     configuracionesPorID[id] = { email, numeros, mensaje };
 
-    return res.status(200).json({ link });
+    return res.status(200).json({ link }); // Devuelve el link generado
   }
 
   // === 4. ACTUALIZAR NÚMEROS DEL LINK EXISTENTE (PATCH) ===

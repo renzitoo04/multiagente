@@ -471,7 +471,7 @@
         mostrarEditarLink(numeros);
 
         // Guardar los datos en localStorage para mantener la sesión
-        localStorage.setItem('linkGenerado', link);
+        localStorage.setItem('linkGenerado', link); // Guarda el link generado
         localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
         localStorage.setItem('mensajeGenerado', mensaje);
         localStorage.setItem('usuarioEmail', email); // Guarda el correo del usuario
@@ -608,7 +608,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-  const linkGuardado = localStorage.getItem('linkGenerado');
+  const linkGuardado = localStorage.getItem('linkGenerado'); // Recupera el link guardado
   const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
   const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
   const usuarioEmailGuardado = localStorage.getItem('usuarioEmail'); // Correo del usuario que generó el link
