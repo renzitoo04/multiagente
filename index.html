@@ -457,32 +457,24 @@
       const data = await response.json();
 
       if (response.ok) {
-        const linkOriginal = data.link;
+        const link = data.link;
 
-        // Acorta el link usando Bitly
-        const linkAcortado = await acortarLink(linkOriginal);
-
-        // Guarda el link acortado en localStorage
-        localStorage.setItem('linkGenerado', linkAcortado);
-        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
-        localStorage.setItem('mensajeGenerado', mensaje);
-
-        // Muestra el link acortado en el DOM
-        document.getElementById('output').innerHTML = `
-          <p>Tu link generado:</p>
-          <a href="${linkAcortado}" target="_blank">${linkAcortado}</a>
-        `;
-
-        // Muestra los detalles del link
+        // Mostrar los detalles del link
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
-        // Muestra el apartado "Editar Link"
+        // Mostrar el apartado "Editar Link"
         document.getElementById('editar-link-container').style.display = 'block';
 
-        // Muestra los números en el apartado "Editar Link"
+        // Mostrar los números en el apartado "Editar Link"
         mostrarEditarLink(numeros);
+
+        // Guardar los datos en localStorage para mantener la sesión
+        localStorage.setItem('linkGenerado', link);
+        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
+        localStorage.setItem('mensajeGenerado', mensaje);
+        localStorage.setItem('usuarioEmail', email); // Guarda el correo del usuario
       } else {
         alert('Error: ' + data.error);
       }
@@ -601,13 +593,6 @@
 
         // Actualiza los detalles del link
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = localStorage.getItem('mensajeGenerado') || 'Sin mensaje';
-
-        // Muestra el link guardado en el apartado "Detalles del Link"
-        document.getElementById('output').innerHTML = `
-          <p>Tu link generado:</p>
-          <a href="${link}" target="_blank">${link}</a>
-        `;
 
         // Actualiza los números en el apartado "Editar Link"
         mostrarEditarLink(numeros);

@@ -95,10 +95,13 @@ export default async function handler(req, res) {
     const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
     try {
+      // Acorta el link usando Bitly
+      const link = await acortarLink(linkOriginal);
+
       // Guarda la nueva configuración
       configuracionesPorID[id] = { email, numeros, mensaje };
 
-      return res.status(200).json({ link: linkOriginal });
+      return res.status(200).json({ link });
     } catch (error) {
       console.error('Error generando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor' });
@@ -151,46 +154,6 @@ async function acortarLink(linkOriginal) {
   } catch (error) {
     console.error('Error en la función acortarLink:', error);
     return linkOriginal; // Devuelve el link original si ocurre un error
-  }
-}
-
-async function actualizarLink() {
-  const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
-    .map(input => input.value.trim())
-    .filter(num => num !== ''); // Asegúrate de que no haya números vacíos
-
-  const link = localStorage.getItem('linkGenerado'); // Recupera el link guardado
-
-  if (numeros.length === 0) {
-    alert('Por favor, ingresa al menos un número válido.');
-    return;
-  }
-
-  try {
-    const response = await fetch('/soporte', {
-      method: 'PATCH', // Cambia a PATCH para actualizar el link existente
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ link, numeros })
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      alert('Link actualizado correctamente.');
-
-      // Actualiza los detalles del link
-      document.getElementById('numeros-generados').textContent = numeros.join(', ');
-
-      // Actualiza los números en el apartado "Editar Link"
-      mostrarEditarLink(numeros);
-
-      // Guarda los números actualizados en localStorage
-      localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
-    } else {
-      alert('Error: ' + data.error);
-    }
-  } catch (error) {
-    console.error('Error actualizando el link:', error);
   }
 }
 
