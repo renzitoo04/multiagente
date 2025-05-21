@@ -34,55 +34,6 @@ const configuracionesPorID = {}; // { id: { email, numeros, mensaje } }
 const indicesRotacion = {}; // { id: índice_actual }
 
 export default function handler(req, res) {
-  const { email, password, id } = req.query;
-
-  // === 1. INICIO DE SESIÓN ===
-  if (req.method === 'GET' && email && password) {
-    const usuario = usuarios.find(
-      (u) => u.email === email && u.password === password
-    );
-
-    if (!usuario) {
-      return res.status(401).json({ error: "Credenciales incorrectas" });
-    }
-
-    // Recupera la configuración asociada al email
-    const configuracion = Object.values(configuracionesPorID).find(
-      (config) => config.email === email
-    );
-
-    return res.status(200).json({
-      success: true,
-      limiteNumeros: usuario.limiteNumeros,
-      configuracion,
-    });
-  }
-
-  // === 2. ACCESO AL LINK GENERADO ===
-  if (req.method === 'GET' && id) {
-    if (!configuracionesPorID[id]) {
-      return res.status(404).json({ error: "ID no encontrado" });
-    }
-
-    const configuracion = configuracionesPorID[id];
-
-    // Manejar la rotación de números
-    if (!indicesRotacion[id]) {
-      indicesRotacion[id] = 0; // Inicializa el índice si no existe
-    }
-
-    const indiceActual = indicesRotacion[id];
-    const numeroActual = configuracion.numeros[indiceActual];
-
-    // Incrementa el índice para la próxima rotación
-    indicesRotacion[id] = (indiceActual + 1) % configuracion.numeros.length;
-
-    // Redirige al número actual de WhatsApp
-    const whatsappLink = `https://wa.me/${numeroActual}?text=${encodeURIComponent(configuracion.mensaje)}`;
-    return res.redirect(302, whatsappLink);
-  }
-
-  // === 3. GENERAR LINK CORTO (POST) ===
   if (req.method === 'POST') {
     const { email, numeros, mensaje } = req.body;
 
@@ -90,17 +41,7 @@ export default function handler(req, res) {
       return res.status(400).json({ error: 'Datos inválidos' });
     }
 
-    // Busca si ya existe una configuración para este email
-    const linkViejo = Object.keys(configuracionesPorID).find(
-      (id) => configuracionesPorID[id].email === email
-    );
-
-    // Si existe un link viejo, elimínalo
-    if (linkViejo) {
-      delete configuracionesPorID[linkViejo];
-    }
-
-    // Genera un nuevo ID y link
+    // Genera un nuevo ID y link si no existe
     const id = Math.random().toString(36).substring(2, 8);
     const link = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
@@ -110,6 +51,24 @@ export default function handler(req, res) {
     return res.status(200).json({ link });
   }
 
-  return res.status(400).json({ error: "Solicitud inválida" });
+  if (req.method === 'PATCH') {
+    const { link, numeros } = req.body;
+
+    // Busca el link en las configuraciones
+    const id = Object.keys(configuracionesPorID).find(
+      (key) => `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${key}` === link
+    );
+
+    if (!id) {
+      return res.status(404).json({ error: 'Link no encontrado' });
+    }
+
+    // Actualiza los números asociados al link
+    configuracionesPorID[id].numeros = numeros;
+
+    return res.status(200).json({ success: true });
+  }
+
+  return res.status(405).json({ error: 'Método no permitido' });
 }
 
