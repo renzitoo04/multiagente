@@ -457,24 +457,34 @@
       const data = await response.json();
 
       if (response.ok) {
-        const link = data.link;
+        const link = data.link; // Obtén el link generado desde la respuesta del backend
 
-        // Mostrar los detalles del link
+        if (!link) {
+          alert('Error: No se pudo generar el link.');
+          return;
+        }
+
+        // Guarda el link generado en localStorage
+        localStorage.setItem('linkGenerado', link);
+        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
+        localStorage.setItem('mensajeGenerado', mensaje);
+
+        // Muestra el link generado en el DOM
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${link}" target="_blank">${link}</a>
+        `;
+
+        // Muestra los detalles del link
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
-        // Mostrar el apartado "Editar Link"
+        // Muestra el apartado "Editar Link"
         document.getElementById('editar-link-container').style.display = 'block';
 
-        // Mostrar los números en el apartado "Editar Link"
+        // Muestra los números en el apartado "Editar Link"
         mostrarEditarLink(numeros);
-
-        // Guardar los datos en localStorage para mantener la sesión
-        localStorage.setItem('linkGenerado', link);
-        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
-        localStorage.setItem('mensajeGenerado', mensaje);
-        localStorage.setItem('usuarioEmail', email); // Guarda el correo del usuario
       } else {
         alert('Error: ' + data.error);
       }
