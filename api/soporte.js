@@ -102,7 +102,7 @@ export default function handler(req, res) {
 
     // Genera un nuevo ID y link
     const id = Math.random().toString(36).substring(2, 8);
-    const link = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
+    const link = `https://multilink.com/soporte?id=${id}`; // Cambia el dominio aquí
 
     // Guarda la nueva configuración
     configuracionesPorID[id] = { email, numeros, mensaje };
@@ -116,7 +116,7 @@ export default function handler(req, res) {
 
     // Busca el ID del link en las configuraciones
     const id = Object.keys(configuracionesPorID).find(
-      (key) => `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${key}` === link
+      (key) => `https://multilink.com/soporte?id=${key}` === link // Cambia el dominio aquí
     );
 
     if (!id) {
