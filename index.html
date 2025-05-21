@@ -593,6 +593,13 @@
 
         // Actualiza los detalles del link
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = localStorage.getItem('mensajeGenerado') || 'Sin mensaje';
+
+        // Muestra el link guardado en el apartado "Detalles del Link"
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${link}" target="_blank">${link}</a>
+        `;
 
         // Actualiza los números en el apartado "Editar Link"
         mostrarEditarLink(numeros);
