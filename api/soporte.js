@@ -125,6 +125,12 @@ export default function handler(req, res) {
       return res.status(400).json({ error: 'Debe proporcionar al menos un número válido.' });
     }
 
+    // Valida que todos los números sean válidos
+    const numerosValidos = numeros.every(num => /^\+?[1-9]\d{1,14}$/.test(num));
+    if (!numerosValidos) {
+      return res.status(400).json({ error: 'Uno o más números no son válidos.' });
+    }
+
     // Actualiza los números asociados al link
     configuracionesPorID[id].numeros = numeros;
 
