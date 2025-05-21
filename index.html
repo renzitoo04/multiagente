@@ -462,12 +462,12 @@
         // Acorta el link usando Bitly
         const linkAcortado = await acortarLink(linkOriginal);
 
-        // Guarda el link generado en localStorage
+        // Guarda el link acortado en localStorage
         localStorage.setItem('linkGenerado', linkAcortado);
         localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
         localStorage.setItem('mensajeGenerado', mensaje);
 
-        // Muestra el link generado en el DOM
+        // Muestra el link acortado en el DOM
         document.getElementById('output').innerHTML = `
           <p>Tu link generado:</p>
           <a href="${linkAcortado}" target="_blank">${linkAcortado}</a>
