@@ -573,7 +573,7 @@
       .filter(num => num !== ''); // Asegúrate de que no haya números vacíos
 
     const mensaje = localStorage.getItem('mensajeGenerado') || ''; // Recupera el mensaje guardado
-    const email = document.getElementById('email').value; // Recupera el email del usuario
+    const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario desde localStorage
 
     if (numeros.length === 0) {
       alert('Por favor, ingresa al menos un número válido.');
@@ -607,9 +607,10 @@
         // Actualiza los números en el apartado "Editar Link"
         mostrarEditarLink(numeros);
 
-        // Actualiza los datos en localStorage
+        // Guarda el nuevo link y los datos en localStorage
         localStorage.setItem('linkGenerado', newLink);
         localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
+        localStorage.setItem('mensajeGenerado', mensaje);
       } else {
         alert('Error: ' + data.error);
       }
@@ -623,19 +624,24 @@
   const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
   const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
   const usuarioEmailGuardado = localStorage.getItem('usuarioEmail'); // Correo del usuario que generó el link
-  const emailActual = document.getElementById('email')?.value || ''; // Correo del usuario actual
 
-  // Verifica si el usuario actual coincide con el que generó el link
-  if (linkGuardado && usuarioEmailGuardado === emailActual) {
+  // Verifica si hay un link guardado y si el usuario actual coincide
+  if (linkGuardado && usuarioEmailGuardado) {
     // Mostrar los detalles del link
     document.getElementById('detalles-link').style.display = 'block';
     document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
     document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
 
+    // Mostrar el link guardado
+    document.getElementById('output').innerHTML = `
+      <p>Tu link generado:</p>
+      <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
+    `;
+
     // Mostrar los números en el apartado "Editar Link"
     mostrarEditarLink(numerosGuardados);
   } else {
-    // Ocultar el apartado "Detalles del Link" si no coincide
+    // Ocultar el apartado "Detalles del Link" si no hay datos
     document.getElementById('detalles-link').style.display = 'none';
     document.getElementById('editar-link-container').style.display = 'none';
   }
