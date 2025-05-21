@@ -391,12 +391,6 @@
         // Oculta el contenedor de inicio de sesión
         document.getElementById('login-container').style.display = 'none';
 
-        // Oculta el contenedor de "Probar MultiLink"
-        document.getElementById('probar-multilink-container').style.display = 'none';
-
-        // Oculta el apartado "¿Para qué sirve MultiLink?"
-        document.querySelector('.info-container').style.display = 'none';
-
         // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
 
@@ -407,16 +401,20 @@
         if (data.configuracion) {
           const { link, numeros, mensaje } = data.configuracion;
 
-          document.getElementById('output').innerHTML = `
-            <p>Tu link generado (más corto):</p>
-            <a href="${link}" target="_blank">${link}</a>
-          `;
           document.getElementById('detalles-link').style.display = 'block';
           document.getElementById('numeros-generados').textContent = numeros.join(', ');
           document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
-          // Deshabilitar el botón de generación
-          document.querySelector('button[onclick="generarLink()"]').disabled = true;
+          // Mostrar el apartado "Editar Link"
+          document.getElementById('editar-link-container').style.display = 'block';
+
+          // Mostrar los números en el apartado "Editar Link"
+          mostrarEditarLink(numeros);
+
+          // Guardar los datos en localStorage para mantener la sesión
+          localStorage.setItem('linkGenerado', link);
+          localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
+          localStorage.setItem('mensajeGenerado', mensaje);
         }
       } else {
         document.getElementById('login-error').textContent = data.error;
@@ -450,18 +448,21 @@
       const data = await response.json();
 
       if (response.ok) {
-        const shortUrl = data.link;
+        const link = data.link;
 
         // Mostrar los detalles del link
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
+        // Mostrar el apartado "Editar Link"
+        document.getElementById('editar-link-container').style.display = 'block';
+
         // Mostrar los números en el apartado "Editar Link"
         mostrarEditarLink(numeros);
 
-        // Guardar los datos en localStorage
-        localStorage.setItem('linkGenerado', shortUrl);
+        // Guardar los datos en localStorage para mantener la sesión
+        localStorage.setItem('linkGenerado', link);
         localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
         localStorage.setItem('mensajeGenerado', mensaje);
       } else {
@@ -554,7 +555,6 @@
       `
       )
       .join('');
-    document.getElementById('editar-link-container').style.display = 'block';
   }
 
   async function actualizarLink() {
