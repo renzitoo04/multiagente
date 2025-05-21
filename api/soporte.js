@@ -90,15 +90,19 @@ export default function handler(req, res) {
       return res.status(400).json({ error: 'Datos inválidos' });
     }
 
-    // Valida que todos los números sean válidos
-    const numerosValidos = numeros.every(num => /^\+?[1-9]\d{1,14}$/.test(num));
-    if (!numerosValidos) {
-      return res.status(400).json({ error: 'Uno o más números no son válidos.' });
+    // Busca si ya existe una configuración para este email
+    const linkViejo = Object.keys(configuracionesPorID).find(
+      (id) => configuracionesPorID[id].email === email
+    );
+
+    // Si existe un link viejo, elimínalo
+    if (linkViejo) {
+      delete configuracionesPorID[linkViejo];
     }
 
     // Genera un nuevo ID y link
     const id = Math.random().toString(36).substring(2, 8);
-    const link = `https://multilink.com/soporte?id=${id}`;
+    const link = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
     // Guarda la nueva configuración
     configuracionesPorID[id] = { email, numeros, mensaje };
@@ -112,7 +116,7 @@ export default function handler(req, res) {
 
     // Busca el ID del link en las configuraciones
     const id = Object.keys(configuracionesPorID).find(
-      (key) => `https://multilink.com/soporte?id=${key}` === link
+      (key) => `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${key}` === link
     );
 
     if (!id) {
@@ -121,12 +125,6 @@ export default function handler(req, res) {
 
     if (!numeros || numeros.length === 0) {
       return res.status(400).json({ error: 'Debe proporcionar al menos un número válido.' });
-    }
-
-    // Valida que todos los números sean válidos
-    const numerosValidos = numeros.every(num => /^\+?[1-9]\d{1,14}$/.test(num));
-    if (!numerosValidos) {
-      return res.status(400).json({ error: 'Uno o más números no son válidos.' });
     }
 
     // Actualiza los números asociados al link
