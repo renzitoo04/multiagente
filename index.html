@@ -573,7 +573,6 @@
       .filter(num => num !== ''); // Asegúrate de que no haya números vacíos
 
     const link = localStorage.getItem('linkGenerado'); // Recupera el link guardado
-    const mensaje = localStorage.getItem('mensajeGenerado') || ''; // Recupera el mensaje guardado
 
     if (numeros.length === 0) {
       alert('Por favor, ingresa al menos un número válido.');
