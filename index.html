@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generador de Links Multiagente</title>
+  <title>Generador de Links</title>
   <style>
   body {
     font-family: Arial, sans-serif;
@@ -283,7 +283,7 @@
       <label for="mensaje">Mensaje automático:</label>
       <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
 
-      <button type="button" onclick="generarLink()">Generar Link</button>
+      <button onclick="generarLink()">Generar Link</button>
     </form>
 
     <div class="output" id="output"></div>
@@ -457,12 +457,7 @@
       const data = await response.json();
 
       if (response.ok) {
-        const link = data.link; // Obtén el link generado desde la respuesta del backend
-
-        if (!link) {
-          alert('Error: No se pudo generar el link.');
-          return;
-        }
+        const link = data.link;
 
         // Guarda el link generado en localStorage
         localStorage.setItem('linkGenerado', link);

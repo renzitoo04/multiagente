@@ -95,10 +95,13 @@ export default async function handler(req, res) {
     const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
     try {
+      // Acorta el link usando Bitly
+      const linkAcortado = await acortarLink(linkOriginal);
+
       // Guarda la nueva configuración
       configuracionesPorID[id] = { email, numeros, mensaje };
 
-      return res.status(200).json({ link: linkOriginal }); // Devuelve el link generado
+      return res.status(200).json({ link: linkAcortado }); // Devuelve el link acortado
     } catch (error) {
       console.error('Error generando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor' });
