@@ -328,7 +328,7 @@
       <li>Atender más rápido y de forma organizada</li>
       <li>Adaptarse al crecimiento de tu negocio sin complicaciones</li>
     </ul>
-    <p>Ya sea que vendas por whatsapp, Telegram, redes sociales o tiendas online, MultiLink te ayuda a optimizar tu atención al cliente y aumentar tus conversiones.</p>
+    <p>Ya sea que vendas por WhatsApp, Telegram, redes sociales o tiendas online, MultiLink te ayuda a optimizar tu atención al cliente y aumentar tus conversiones.</p>
   </div>
 
 <script>
@@ -390,6 +390,12 @@
       if (response.ok) {
         // Oculta el contenedor de inicio de sesión
         document.getElementById('login-container').style.display = 'none';
+
+        // Oculta el contenedor de "Probar MultiLink"
+        document.getElementById('probar-multilink-container').style.display = 'none';
+
+        // Oculta el apartado "¿Para qué sirve MultiLink?"
+        document.querySelector('.info-container').style.display = 'none';
 
         // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
