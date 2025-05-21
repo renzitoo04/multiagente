@@ -581,7 +581,7 @@
 
     try {
       const response = await fetch('/soporte', {
-        method: 'PATCH', // Cambia a PATCH para actualizar el link existente
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link, numeros })
       });

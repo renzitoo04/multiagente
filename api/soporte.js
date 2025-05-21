@@ -101,7 +101,7 @@ export default async function handler(req, res) {
       // Guarda la nueva configuración
       configuracionesPorID[id] = { email, numeros, mensaje };
 
-      return res.status(200).json({ link });
+      return res.status(200).json({ link, id }); // Devuelve el link y el ID
     } catch (error) {
       console.error('Error generando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor' });
@@ -154,6 +154,60 @@ async function acortarLink(linkOriginal) {
   } catch (error) {
     console.error('Error en la función acortarLink:', error);
     return linkOriginal; // Devuelve el link original si ocurre un error
+  }
+}
+
+async function generarLink() {
+  const numeros = Array.from(document.querySelectorAll('.numero'))
+    .map(input => input.value.trim())
+    .filter(num => num !== '' && num !== '+549'); // Filtra el valor por defecto
+
+  const mensaje = document.getElementById('mensaje').value.trim(); // Permitir mensaje vacío
+  const email = document.getElementById('email').value;
+
+  if (numeros.length === 0) {
+    alert('Por favor, ingresa al menos un número válido.');
+    return;
+  }
+
+  try {
+    const response = await fetch('/soporte', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, numeros, mensaje })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      const link = data.link;
+
+      // Guarda el link generado en localStorage
+      localStorage.setItem('linkGenerado', link);
+      localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
+      localStorage.setItem('mensajeGenerado', mensaje);
+
+      // Muestra el link generado en el DOM
+      document.getElementById('output').innerHTML = `
+        <p>Tu link generado:</p>
+        <a href="${link}" target="_blank">${link}</a>
+      `;
+
+      // Muestra los detalles del link
+      document.getElementById('detalles-link').style.display = 'block';
+      document.getElementById('numeros-generados').textContent = numeros.join(', ');
+      document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+
+      // Muestra el apartado "Editar Link"
+      document.getElementById('editar-link-container').style.display = 'block';
+
+      // Muestra los números en el apartado "Editar Link"
+      mostrarEditarLink(numeros);
+    } else {
+      alert('Error: ' + data.error);
+    }
+  } catch (error) {
+    console.error('Error generando link:', error);
   }
 }
 
