@@ -114,12 +114,10 @@ export default function handler(req, res) {
   if (req.method === 'PATCH') {
     const { link, numeros } = req.body;
 
-    // Busca el ID del link en las configuraciones
-    const id = Object.keys(configuracionesPorID).find(
-      (key) => `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${key}` === link
-    );
+    // Extrae el ID del link
+    const id = link.split('id=')[1]; // Obtiene el ID después de "id="
 
-    if (!id) {
+    if (!id || !configuracionesPorID[id]) {
       return res.status(404).json({ error: 'Link no encontrado' });
     }
 
