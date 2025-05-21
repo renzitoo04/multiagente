@@ -112,12 +112,10 @@ export default async function handler(req, res) {
   if (req.method === 'PATCH') {
     const { link, numeros } = req.body;
 
-    // Busca el ID del link en las configuraciones
-    const id = Object.keys(configuracionesPorID).find(
-      (key) => `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${key}` === link
-    );
+    // Extrae el ID del link
+    const id = link.split('id=')[1]; // Obtiene el ID después de "id="
 
-    if (!id) {
+    if (!id || !configuracionesPorID[id]) {
       return res.status(404).json({ error: 'Link no encontrado' });
     }
 
@@ -156,6 +154,46 @@ async function acortarLink(linkOriginal) {
   } catch (error) {
     console.error('Error en la función acortarLink:', error);
     return linkOriginal; // Devuelve el link original si ocurre un error
+  }
+}
+
+async function actualizarLink() {
+  const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
+    .map(input => input.value.trim())
+    .filter(num => num !== ''); // Asegúrate de que no haya números vacíos
+
+  const link = localStorage.getItem('linkGenerado'); // Recupera el link guardado
+
+  if (numeros.length === 0) {
+    alert('Por favor, ingresa al menos un número válido.');
+    return;
+  }
+
+  try {
+    const response = await fetch('/soporte', {
+      method: 'PATCH', // Cambia a PATCH para actualizar el link existente
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ link, numeros })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert('Link actualizado correctamente.');
+
+      // Actualiza los detalles del link
+      document.getElementById('numeros-generados').textContent = numeros.join(', ');
+
+      // Actualiza los números en el apartado "Editar Link"
+      mostrarEditarLink(numeros);
+
+      // Guarda los números actualizados en localStorage
+      localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
+    } else {
+      alert('Error: ' + data.error);
+    }
+  } catch (error) {
+    console.error('Error actualizando el link:', error);
   }
 }
 
