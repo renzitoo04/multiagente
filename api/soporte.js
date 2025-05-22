@@ -33,7 +33,7 @@ const configuracionesPorID = {}; // { id: { email, numeros, mensaje } }
 // Objeto para manejar índices de rotación por ID
 const indicesRotacion = {}; // { id: índice_actual }
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
   const { email, password, id } = req.query;
 
   // === 1. INICIO DE SESIÓN ===
@@ -100,14 +100,22 @@ export default function handler(req, res) {
       delete configuracionesPorID[linkViejo];
     }
 
-    // Genera un nuevo ID y link
+    // Genera un nuevo ID y link original
     const id = Math.random().toString(36).substring(2, 8);
-    const link = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
+    const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
-    // Guarda la nueva configuración
-    configuracionesPorID[id] = { email, numeros, mensaje };
+    try {
+      // Acorta el link usando Bitly
+      const linkAcortado = await acortarLink(linkOriginal);
 
-    return res.status(200).json({ link });
+      // Guarda la nueva configuración
+      configuracionesPorID[id] = { email, numeros, mensaje };
+
+      return res.status(200).json({ link: linkAcortado }); // Devuelve el link acortado
+    } catch (error) {
+      console.error('Error generando el link:', error);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
   }
 
   // === 4. ACTUALIZAR NÚMEROS DEL LINK EXISTENTE (PATCH) ===
@@ -134,5 +142,30 @@ export default function handler(req, res) {
   }
 
   return res.status(400).json({ error: "Solicitud inválida" });
+}
+
+async function acortarLink(linkOriginal) {
+  const bitlyToken = 'f0eba299d0f6afb470ecaae24209b03b8548e8a4'; // Token de Bitly
+  try {
+    const response = await fetch('https://api-ssl.bitly.com/v4/shorten', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${bitlyToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ long_url: linkOriginal }),
+    });
+
+    if (!response.ok) {
+      console.error('Error acortando el link:', await response.text());
+      return linkOriginal; // Devuelve el link original si falla
+    }
+
+    const data = await response.json();
+    return data.link; // Devuelve el link acortado
+  } catch (error) {
+    console.error('Error en la función acortarLink:', error);
+    return linkOriginal; // Devuelve el link original si ocurre un error
+  }
 }
 
