@@ -90,16 +90,6 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Datos inválidos' });
     }
 
-    // Busca si ya existe una configuración para este email
-    const linkViejo = Object.keys(configuracionesPorID).find(
-      (id) => configuracionesPorID[id].email === email
-    );
-
-    // Si existe un link viejo, elimínalo
-    if (linkViejo) {
-      delete configuracionesPorID[linkViejo];
-    }
-
     // Genera un nuevo ID y link original
     const id = Math.random().toString(36).substring(2, 8);
     const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
@@ -168,7 +158,8 @@ async function acortarLink(linkOriginal) {
     });
 
     if (!response.ok) {
-      console.error('Error acortando el link:', await response.text());
+      const errorText = await response.text();
+      console.error('Error acortando el link:', errorText);
       return linkOriginal; // Devuelve el link original si falla
     }
 
