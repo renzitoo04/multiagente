@@ -34,27 +34,30 @@ const configuracionesPorID = {}; // { id: { email, numeros, mensaje } }
 const indicesRotacion = {}; // { id: índice_actual }
 
 async function acortarLink(linkOriginal) {
-  const bitlyToken = 'f0eba299d0f6afb470ecaae24209b03b8548e8a4'; // Token de Bitly
+  const tinyUrlToken = 'apvW0ktGoIEIlrA5PBzjTFb2v4IS4e3gYkptQei0qYYzSXNukYvK2GwLXKVP'; // Token de TinyURL
   try {
-    const response = await fetch('https://api-ssl.bitly.com/v4/shorten', {
+    const response = await fetch(`https://api.tinyurl.com/create`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${bitlyToken}`,
+        'Authorization': `Bearer ${tinyUrlToken}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ long_url: linkOriginal }),
+      body: JSON.stringify({
+        url: linkOriginal,
+        domain: 'tiny.one', // Puedes usar 'tiny.one' o 'tinyurl.com'
+      }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Error acortando el link:', errorText);
+      console.error('Error acortando el link con TinyURL:', errorText);
       return linkOriginal; // Devuelve el link original si falla
     }
 
     const data = await response.json();
-    return data.link; // Devuelve el link acortado
+    return data.data.tiny_url; // Devuelve el link acortado
   } catch (error) {
-    console.error('Error en la función acortarLink:', error);
+    console.error('Error en la función acortarLink con TinyURL:', error);
     return linkOriginal; // Devuelve el link original si ocurre un error
   }
 }
@@ -122,7 +125,7 @@ export default async function handler(req, res) {
     const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
     try {
-      // Acorta el link usando Bitly
+      // Acorta el link usando TinyURL
       const linkAcortado = await acortarLink(linkOriginal);
 
       // Guarda la nueva configuración
