@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generador de Links</title>
+  <title>Generador de Links Multiagente</title>
   <style>
   body {
     font-family: Arial, sans-serif;
@@ -283,7 +283,7 @@
       <label for="mensaje">Mensaje automático:</label>
       <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
 
-      <button onclick="generarLink()">Generar Link</button>
+      <button type="button" onclick="generarLink()">Generar Link</button>
     </form>
 
     <div class="output" id="output"></div>
@@ -459,27 +459,22 @@
       if (response.ok) {
         const link = data.link;
 
-        // Guarda el link generado en localStorage
-        localStorage.setItem('linkGenerado', link);
-        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
-        localStorage.setItem('mensajeGenerado', mensaje);
-
-        // Muestra el link generado en el DOM
-        document.getElementById('output').innerHTML = `
-          <p>Tu link generado:</p>
-          <a href="${link}" target="_blank">${link}</a>
-        `;
-
-        // Muestra los detalles del link
+        // Mostrar los detalles del link
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
-        // Muestra el apartado "Editar Link"
+        // Mostrar el apartado "Editar Link"
         document.getElementById('editar-link-container').style.display = 'block';
 
-        // Muestra los números en el apartado "Editar Link"
+        // Mostrar los números en el apartado "Editar Link"
         mostrarEditarLink(numeros);
+
+        // Guardar los datos en localStorage para mantener la sesión
+        localStorage.setItem('linkGenerado', link);
+        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
+        localStorage.setItem('mensajeGenerado', mensaje);
+        localStorage.setItem('usuarioEmail', email); // Guarda el correo del usuario
       } else {
         alert('Error: ' + data.error);
       }
@@ -586,7 +581,7 @@
 
     try {
       const response = await fetch('/soporte', {
-        method: 'PATCH',
+        method: 'PATCH', // Cambia a PATCH para actualizar el link existente
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link, numeros })
       });
@@ -598,6 +593,13 @@
 
         // Actualiza los detalles del link
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = localStorage.getItem('mensajeGenerado') || 'Sin mensaje';
+
+        // Muestra el link guardado en el apartado "Detalles del Link"
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${link}" target="_blank">${link}</a>
+        `;
 
         // Actualiza los números en el apartado "Editar Link"
         mostrarEditarLink(numeros);
