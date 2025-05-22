@@ -138,7 +138,18 @@ export default async function handler(req, res) {
     // Actualiza los números asociados al link
     configuracionesPorID[id].numeros = numeros;
 
-    return res.status(200).json({ success: true, link });
+    try {
+      // Genera el link original
+      const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
+
+      // Acorta el link usando Bitly
+      const linkAcortado = await acortarLink(linkOriginal);
+
+      return res.status(200).json({ success: true, link: linkAcortado }); // Devuelve el link acortado
+    } catch (error) {
+      console.error('Error actualizando el link:', error);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
   }
 
   return res.status(400).json({ error: "Solicitud inválida" });
