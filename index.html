@@ -246,6 +246,15 @@
     background-color: #d4f8e8; /* Verde muy clarito */
     color: #0a1128; /* Azul oscuro */
   }
+
+  #acortar-link-container {
+    display: none;
+    margin-top: 20px;
+  }
+
+  #acortar-link-container h3 {
+    color: #25d366; /* Verde de WhatsApp */
+  }
   </style>
 </head>
 <body>
@@ -317,6 +326,17 @@
     <h3>Editar Link</h3>
     <div id="editar-numeros-container"></div>
     <button onclick="actualizarLink()">Actualizar Link</button>
+  </div>
+
+  <!-- Contenedor para acortar link manualmente -->
+  <div id="acortar-link-container" style="display: none; margin-top: 20px;">
+    <h3>Acortar Link</h3>
+    <form id="acortar-link-form">
+      <label for="link-original">Ingresa un link para acortar:</label>
+      <input type="text" id="link-original" placeholder="Ejemplo: https://www.ejemplo.com" />
+      <button type="button" onclick="acortarLinkManual()">Acortar Link</button>
+    </form>
+    <div id="acortar-link-output" class="output"></div>
   </div>
 
   <div class="info-container">
@@ -581,7 +601,7 @@
 
     try {
       const response = await fetch('/soporte', {
-        method: 'PATCH', // Cambia a PATCH para actualizar el link existente
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ link, numeros })
       });
@@ -593,16 +613,12 @@
 
         // Actualiza los detalles del link
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = localStorage.getItem('mensajeGenerado') || 'Sin mensaje';
 
-        // Muestra el link guardado en el apartado "Detalles del Link"
+        // Muestra el link actualizado en el DOM
         document.getElementById('output').innerHTML = `
-          <p>Tu link generado:</p>
-          <a href="${link}" target="_blank">${link}</a>
+          <p>Tu link actualizado:</p>
+          <a href="${data.link}" target="_blank">${data.link}</a>
         `;
-
-        // Actualiza los números en el apartado "Editar Link"
-        mostrarEditarLink(numeros);
 
         // Guarda los números actualizados en localStorage
         localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
@@ -611,6 +627,36 @@
       }
     } catch (error) {
       console.error('Error actualizando el link:', error);
+    }
+  }
+
+  async function acortarLinkManual() {
+    const linkOriginal = document.getElementById('link-original').value.trim();
+
+    if (!linkOriginal) {
+      alert('Por favor, ingresa un link para acortar.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/acortar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ link: linkOriginal })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        document.getElementById('acortar-link-output').innerHTML = `
+          <p>Link acortado con éxito:</p>
+          <a href="${data.link}" target="_blank">${data.link}</a>
+        `;
+      } else {
+        alert('Error: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Error al acortar el link:', error);
     }
   }
 

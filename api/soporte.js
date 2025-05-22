@@ -142,12 +142,10 @@ export default async function handler(req, res) {
   if (req.method === 'PATCH') {
     const { link, numeros } = req.body;
 
-    // Busca el ID del link en las configuraciones
-    const id = Object.keys(configuracionesPorID).find(
-      (key) => `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${key}` === link
-    );
+    // Extrae el ID del link
+    const id = link.split('id=')[1]; // Obtiene el ID después de "id="
 
-    if (!id) {
+    if (!id || !configuracionesPorID[id]) {
       return res.status(404).json({ error: 'Link no encontrado' });
     }
 
@@ -162,7 +160,7 @@ export default async function handler(req, res) {
       // Genera el link original
       const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
-      // Acorta el link usando Bitly
+      // Acorta el link usando TinyURL
       const linkAcortado = await acortarLink(linkOriginal);
 
       return res.status(200).json({ success: true, link: linkAcortado }); // Devuelve el link acortado
@@ -172,6 +170,115 @@ export default async function handler(req, res) {
     }
   }
 
+  // === 5. ACORTAR LINK MANUAL (POST) ===
+  if (req.method === 'POST' && req.url === '/soporte/acortar') {
+    const { linkOriginal } = req.body;
+
+    if (!linkOriginal) {
+      return res.status(400).json({ error: 'Debe proporcionar un link válido.' });
+    }
+
+    try {
+      const linkAcortado = await acortarLink(linkOriginal);
+      return res.status(200).json({ link: linkAcortado });
+    } catch (error) {
+      console.error('Error acortando el link:', error);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  }
+
   return res.status(400).json({ error: "Solicitud inválida" });
+}
+
+async function acortarLinkManual() {
+  const linkOriginal = document.getElementById('link-original').value.trim();
+
+  if (!linkOriginal) {
+    alert('Por favor, ingresa un link válido.');
+    return;
+  }
+
+  try {
+    const response = await fetch('/soporte/acortar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ linkOriginal }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Muestra el link acortado en el DOM
+      document.getElementById('acortar-link-output').innerHTML = `
+        <p>Tu link acortado:</p>
+        <a href="${data.link}" target="_blank">${data.link}</a>
+      `;
+    } else {
+      alert('Error: ' + data.error);
+    }
+  } catch (error) {
+    console.error('Error acortando el link:', error);
+    alert('Error al acortar el link. Inténtalo de nuevo.');
+  }
+}
+
+// Mostrar el apartado "Acortar Link" después de iniciar sesión
+function mostrarAcortarLink() {
+  document.getElementById('acortar-link-container').style.display = 'block';
+}
+
+// Llama a esta función después de iniciar sesión
+async function login() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  if (!email || !password) {
+    document.getElementById('login-error').textContent = 'Por favor, ingresa tu correo y contraseña.';
+    return;
+  }
+
+  try {
+    const response = await fetch(`/soporte?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+    const data = await response.json();
+
+    if (response.ok) {
+      // Oculta el contenedor de inicio de sesión
+      document.getElementById('login-container').style.display = 'none';
+
+      // Muestra el generador principal
+      document.getElementById('generador-container').style.display = 'block';
+
+      // Muestra el apartado "Acortar Link"
+      mostrarAcortarLink();
+
+      // Configura el límite de números
+      limiteNumeros = data.limiteNumeros;
+
+      // Si hay una configuración existente, mostrarla
+      if (data.configuracion) {
+        const { link, numeros, mensaje } = data.configuracion;
+
+        document.getElementById('detalles-link').style.display = 'block';
+        document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+
+        // Mostrar el apartado "Editar Link"
+        document.getElementById('editar-link-container').style.display = 'block';
+
+        // Mostrar los números en el apartado "Editar Link"
+        mostrarEditarLink(numeros);
+
+        // Guardar los datos en localStorage
+        localStorage.setItem('linkGenerado', link);
+        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
+        localStorage.setItem('mensajeGenerado', mensaje);
+      }
+    } else {
+      document.getElementById('login-error').textContent = data.error;
+    }
+  } catch (error) {
+    console.error('Error al iniciar sesión:', error);
+    document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
+  }
 }
 
