@@ -479,12 +479,23 @@
         // Guardar datos en localStorage
         localStorage.setItem(`linkGenerado_${email}`, link);
         localStorage.setItem(`linkID_${email}`, id);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
 
         // Mostrar el link generado
         document.getElementById('output').innerHTML = `
           <p>Tu link generado:</p>
           <a href="${link}" target="_blank">${link}</a>
         `;
+
+        // Mostrar los detalles del link
+        document.getElementById('detalles-link').style.display = 'block';
+        document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+
+        // Mostrar el apartado "Editar Link"
+        document.getElementById('editar-link-container').style.display = 'block';
+        mostrarEditarLink(numeros);
       } else {
         alert('Error: ' + data.error);
       }
