@@ -79,7 +79,7 @@ export default async function handler(req, res) {
     // Recupera la configuración asociada al email
     const configuracion = Object.values(configuracionesPorID).find(
       (config) => config.email === email
-    );
+    ) || null;
 
     return res.status(200).json({
       success: true,
