@@ -87,12 +87,18 @@ export default async function handler(req, res) {
   }
 
   // === 2. ACCESO AL LINK GENERADO ===
-  if (req.method === 'GET' && id) {
+  if (req.method === 'GET' && req.query.id) {
+    const { id } = req.query;
+
+    console.log('ID recibido:', id); // Log para verificar el ID recibido
+
     if (!configuracionesPorID[id]) {
+      console.error('ID no encontrado en configuracionesPorID:', id);
       return res.status(404).json({ error: "ID no encontrado" });
     }
 
     const configuracion = configuracionesPorID[id];
+    console.log('Configuración encontrada:', configuracion); // Log para verificar la configuración
 
     // Manejar la rotación de números
     if (!indicesRotacion[id]) {
@@ -102,11 +108,17 @@ export default async function handler(req, res) {
     const indiceActual = indicesRotacion[id];
     const numeroActual = configuracion.numeros[indiceActual];
 
+    if (!numeroActual) {
+      console.error('Número actual no encontrado para el ID:', id);
+      return res.status(500).json({ error: "Número no encontrado" });
+    }
+
     // Incrementa el índice para la próxima rotación
     indicesRotacion[id] = (indiceActual + 1) % configuracion.numeros.length;
 
     // Redirige al número actual de WhatsApp
-    const whatsappLink = `https://wa.me/${numeroActual}?text=${encodeURIComponent(configuracion.mensaje)}`;
+    const whatsappLink = `https://wa.me/${numeroActual}?text=${encodeURIComponent(configuracion.mensaje || '')}`;
+    console.log('Redirigiendo a:', whatsappLink); // Log para verificar el link de redirección
     return res.redirect(302, whatsappLink);
   }
 
@@ -116,15 +128,6 @@ export default async function handler(req, res) {
 
   if (!email || !numeros || numeros.length === 0) {
     return res.status(400).json({ error: 'Datos inválidos' });
-  }
-
-  // Verifica si el usuario ya tiene un link generado
-  const configuracionExistente = Object.values(configuracionesPorID).find(
-    (config) => config.email === email
-  );
-
-  if (configuracionExistente) {
-    return res.status(403).json({ error: 'Ya tienes un link generado. Solo puedes actualizarlo.' });
   }
 
   // Genera un nuevo ID y link original

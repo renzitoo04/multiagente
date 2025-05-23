@@ -466,7 +466,7 @@
       .filter(num => num !== '');
 
     const mensaje = document.getElementById('mensaje').value.trim();
-    const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
+    const email = localStorage.getItem('usuarioEmail');
 
     if (!email) {
       alert('Por favor, inicia sesión antes de generar un link.');
@@ -479,9 +479,6 @@
     }
 
     try {
-      // Muestra un mensaje de carga mientras se genera el link
-      document.getElementById('output').innerHTML = `<p>Generando link...</p>`;
-
       const response = await fetch('/soporte', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -491,39 +488,23 @@
       const data = await response.json();
 
       if (response.ok) {
-        const link = data.link; // Obtén el link del backend
-        const id = data.id; // Obtén el ID del backend
+        const link = data.link;
+        const id = data.id;
 
-        // Guardar datos en localStorage con el email como prefijo
+        // Guardar datos en localStorage
         localStorage.setItem(`linkGenerado_${email}`, link);
         localStorage.setItem(`linkID_${email}`, id);
-        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
-        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
 
-        // Muestra el link generado en el DOM
+        // Mostrar el link generado
         document.getElementById('output').innerHTML = `
           <p>Tu link generado:</p>
           <a href="${link}" target="_blank">${link}</a>
         `;
-
-        // Muestra los detalles del link
-        document.getElementById('detalles-link').style.display = 'block';
-        document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
-        // Muestra el apartado "Editar Link"
-        document.getElementById('editar-link-container').style.display = 'block';
-        mostrarEditarLink(numeros);
-
-        // Deshabilitar el botón de "Generar Link"
-        document.querySelector('button[onclick="generarLink()"]').disabled = true;
       } else {
         alert('Error: ' + data.error);
-        document.getElementById('output').innerHTML = ''; // Limpia el mensaje de carga si hay un error
       }
     } catch (error) {
       console.error('Error generando link:', error);
-      document.getElementById('output').innerHTML = `<p>Error al generar el link. Inténtalo de nuevo.</p>`;
     }
   }
 
