@@ -39,6 +39,16 @@
     "email": "agustin@gmail.com",
     "password": "agustin123",
     "limiteNumeros": 2
+  },
+  {
+    "email": "agustina@gmail.com",
+    "password": "agustina123",
+    "limiteNumeros": 2
+  },
+  {
+    "email": "ema@gmail.com",
+    "password": "ema123",
+    "limiteNumeros": 2
   }
 
 ]
