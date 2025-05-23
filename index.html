@@ -401,15 +401,6 @@
         // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
 
-        // Oculta el apartado "Editar Link"
-        document.getElementById('editar-link-container').style.display = 'none';
-
-        // Oculta el apartado "¿Para qué sirve?"
-        const infoContainer = document.querySelector('.info-container');
-        if (infoContainer) {
-          infoContainer.style.display = 'none';
-        }
-
         // Configura el límite de números
         limiteNumeros = data.limiteNumeros;
 
@@ -432,9 +423,14 @@
             <p>Tu link generado:</p>
             <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
           `;
+
+          // Mostrar el apartado "Editar Link"
+          document.getElementById('editar-link-container').style.display = 'block';
+          mostrarEditarLink(numerosGuardados);
         } else {
           // Ocultar las secciones si no hay datos
           document.getElementById('detalles-link').style.display = 'none';
+          document.getElementById('editar-link-container').style.display = 'none';
         }
       } else {
         document.getElementById('login-error').textContent = data.error;
@@ -663,16 +659,14 @@
       <p>Tu link generado:</p>
       <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
     `;
+
+    // Mostrar el apartado "Editar Link"
+    document.getElementById('editar-link-container').style.display = 'block';
+    mostrarEditarLink(numerosGuardados);
   } else {
     // Ocultar las secciones si no hay datos
     document.getElementById('detalles-link').style.display = 'none';
     document.getElementById('editar-link-container').style.display = 'none';
-  }
-
-  // Ocultar el apartado "¿Para qué sirve?" al cargar la página
-  const infoContainer = document.querySelector('.info-container');
-  if (infoContainer) {
-    infoContainer.style.display = 'none';
   }
 });
 
@@ -697,15 +691,6 @@
         // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
 
-        // Oculta el apartado "Editar Link"
-        document.getElementById('editar-link-container').style.display = 'none';
-
-        // Oculta el apartado "¿Para qué sirve?"
-        const infoContainer = document.querySelector('.info-container');
-        if (infoContainer) {
-          infoContainer.style.display = 'none';
-        }
-
         // Configura el límite de números
         limiteNumeros = data.limiteNumeros;
 
@@ -728,9 +713,14 @@
             <p>Tu link generado:</p>
             <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
           `;
+
+          // Mostrar el apartado "Editar Link"
+          document.getElementById('editar-link-container').style.display = 'block';
+          mostrarEditarLink(numerosGuardados);
         } else {
           // Ocultar las secciones si no hay datos
           document.getElementById('detalles-link').style.display = 'none';
+          document.getElementById('editar-link-container').style.display = 'none';
         }
       } else {
         document.getElementById('login-error').textContent = data.error;
