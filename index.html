@@ -491,6 +491,8 @@
         // Guardar datos en localStorage
         localStorage.setItem('linkGenerado', link);
         localStorage.setItem('linkID', id);
+        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
+        localStorage.setItem('mensajeGenerado', mensaje);
 
         // Muestra el link generado en el DOM
         document.getElementById('output').innerHTML = `
@@ -502,6 +504,10 @@
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+
+        // Muestra el apartado "Editar Link"
+        document.getElementById('editar-link-container').style.display = 'block';
+        mostrarEditarLink(numeros);
       } else {
         alert('Error: ' + data.error);
         document.getElementById('output').innerHTML = ''; // Limpia el mensaje de carga si hay un error
@@ -603,6 +609,11 @@
 
     const link = localStorage.getItem('linkGenerado'); // Recupera el link guardado
 
+    if (!link) {
+      alert('No se encontró un link guardado. Por favor, genera un link primero.');
+      return;
+    }
+
     if (numeros.length === 0) {
       alert('Por favor, ingresa al menos un número válido.');
       return;
@@ -612,7 +623,7 @@
       const response = await fetch('/soporte', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link, numeros })
+        body: JSON.stringify({ link, numeros }),
       });
 
       const data = await response.json();
