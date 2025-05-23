@@ -108,122 +108,42 @@ export default async function handler(req, res) {
     });
   }
 
-  // === 2. ACCESO AL LINK GENERADO ===
-  if (req.method === 'GET' && id) {
-    if (!configuracionesPorID[id]) {
-      return res.status(404).json({ error: "ID no encontrado" });
-    }
-
-    const configuracion = configuracionesPorID[id];
-
-    // Manejar la rotación de números
-    if (!indicesRotacion[id]) {
-      indicesRotacion[id] = 0; // Inicializa el índice si no existe
-    }
-
-    const indiceActual = indicesRotacion[id];
-    const numeroActual = configuracion.numeros[indiceActual];
-
-    // Incrementa el índice para la próxima rotación
-    indicesRotacion[id] = (indiceActual + 1) % configuracion.numeros.length;
-
-    // Redirige al número actual de WhatsApp
-    const whatsappLink = `https://wa.me/${numeroActual}?text=${encodeURIComponent(configuracion.mensaje)}`;
-    return res.redirect(302, whatsappLink);
-  }
-
-  // === 3. GENERAR LINK CORTO (POST) ===
   if (req.method === 'POST') {
-  const { email, numeros, mensaje } = req.body;
+    const { email, numeros, mensaje } = req.body;
 
-  if (!email || !numeros || numeros.length === 0) {
-    return res.status(400).json({ error: 'Datos inválidos' });
-  }
-
-  // Verifica si el usuario ya tiene un link generado
-  const configuracionExistente = Object.values(configuracionesPorID).find(
-    (config) => config.email === email
-  );
-
-  if (configuracionExistente) {
-    return res.status(403).json({ error: 'Ya tienes un link generado. Solo puedes actualizarlo.' });
-  }
-
-  // Genera un nuevo ID y link original
-  const id = Math.random().toString(36).substring(2, 8);
-  const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
-
-  try {
-    // Acorta el link usando TinyURL
-    const linkAcortado = await acortarLink(linkOriginal);
-
-    // Guarda la nueva configuración, incluyendo el link corto
-    configuracionesPorID[id] = { email, numeros, mensaje, link: linkAcortado };
-
-    // Devuelve el link acortado y el ID
-    return res.status(200).json({ id, link: linkAcortado });
-  } catch (error) {
-    console.error('Error generando el link:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
-  }
-}
-
-  // === 4. ACTUALIZAR NÚMEROS DEL LINK EXISTENTE (PATCH) ===
-  if (req.method === 'PATCH') {
-  const { email, link, numeros, mensaje } = req.body;
-
-  // Extrae el ID del link
-  const id = link.split('id=')[1]; // Obtiene el ID después de "id="
-
-  if (!id || !configuracionesPorID[id]) {
-    return res.status(404).json({ error: 'Link no encontrado' });
-  }
-
-  // Verifica que el email coincida con el propietario del link
-  if (configuracionesPorID[id].email !== email) {
-    return res.status(403).json({ error: 'No tienes permiso para actualizar este link.' });
-  }
-
-  if (!numeros || numeros.length === 0) {
-    return res.status(400).json({ error: 'Debe proporcionar al menos un número válido.' });
-  }
-
-  // Actualiza los números asociados al link
-  configuracionesPorID[id].numeros = numeros;
-
-  // Actualiza el mensaje si está definido
-  if (mensaje !== undefined) {
-    configuracionesPorID[id].mensaje = mensaje;
-  }
-
-  try {
-    // Devuelve el link corto guardado
-    const linkCorto = configuracionesPorID[id].link;
-    return res.status(200).json({ success: true, link: linkCorto });
-  } catch (error) {
-    console.error('Error actualizando el link:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
-  }
-}
-
-  // === 5. ACORTAR LINK MANUAL (POST) ===
-  if (req.method === 'POST' && req.url === '/soporte/acortar') {
-    const { linkOriginal } = req.body;
-
-    if (!linkOriginal) {
-      return res.status(400).json({ error: 'Debe proporcionar un link válido.' });
+    if (!email || !numeros || numeros.length === 0) {
+      return res.status(400).json({ error: 'Datos inválidos' });
     }
+
+    // Verifica si el usuario ya tiene un link generado
+    const configuracionExistente = Object.values(configuracionesPorID).find(
+      (config) => config.email === email
+    );
+
+    if (configuracionExistente) {
+      return res.status(403).json({ error: 'Ya tienes un link generado. Solo puedes actualizarlo.' });
+    }
+
+    // Genera un nuevo ID y link original
+    const id = Math.random().toString(36).substring(2, 8);
+    const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
     try {
+      // Acorta el link usando TinyURL
       const linkAcortado = await acortarLink(linkOriginal);
-      return res.status(200).json({ link: linkAcortado });
+
+      // Guarda la nueva configuración, incluyendo el link corto
+      configuracionesPorID[id] = { email, numeros, mensaje, link: linkAcortado };
+
+      // Devuelve el link acortado y el ID
+      return res.status(200).json({ id, link: linkAcortado });
     } catch (error) {
-      console.error('Error acortando el link:', error);
+      console.error('Error generando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor' });
     }
   }
 
-  return res.status(400).json({ error: "Solicitud inválida" });
+  return res.status(400).json({ error: 'Solicitud inválida' });
 }
 
 async function acortarLinkManual() {
