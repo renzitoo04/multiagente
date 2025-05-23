@@ -432,18 +432,20 @@
 
           // Mostrar el apartado "Editar Link"
           document.getElementById('editar-link-container').style.display = 'block';
-
-          // Mostrar los números en el apartado "Editar Link"
           mostrarEditarLink(numeros);
 
           // Guardar los datos en localStorage
-          localStorage.setItem('linkGenerado', link);
-          localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
-          localStorage.setItem('mensajeGenerado', mensaje);
+          localStorage.setItem(`linkGenerado_${email}`, link);
+          localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+          localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
         } else {
-          // Si no hay configuración, inicializa el apartado "Editar Link" vacío
+          // Si no hay configuración, inicializa las secciones vacías
+          document.getElementById('detalles-link').style.display = 'block';
+          document.getElementById('numeros-generados').textContent = 'Sin números';
+          document.getElementById('mensaje-generado').textContent = 'Sin mensaje';
+
           document.getElementById('editar-link-container').style.display = 'block';
-          mostrarEditarLink([]);
+          mostrarEditarLink([]); // Muestra las celdas vacías
         }
       } else {
         document.getElementById('login-error').textContent = data.error;
@@ -722,9 +724,13 @@
     document.getElementById('editar-link-container').style.display = 'block';
     mostrarEditarLink(numerosGuardados);
   } else {
-    // Ocultar el apartado "Detalles del Link" si no hay datos
-    document.getElementById('detalles-link').style.display = 'none';
-    document.getElementById('editar-link-container').style.display = 'none';
+    // Mostrar las secciones vacías si no hay datos
+    document.getElementById('detalles-link').style.display = 'block';
+    document.getElementById('numeros-generados').textContent = 'Sin números';
+    document.getElementById('mensaje-generado').textContent = 'Sin mensaje';
+
+    document.getElementById('editar-link-container').style.display = 'block';
+    mostrarEditarLink([]); // Muestra las celdas vacías
   }
 });
 </script>
