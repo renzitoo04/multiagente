@@ -603,9 +603,10 @@
   }
 
   async function actualizarLink() {
+    // Captura los números desde las celdas del apartado "Editar Link"
     const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
       .map(input => input.value.trim())
-      .filter(num => num !== ''); // Asegúrate de que no haya números vacíos
+      .filter(num => num !== ''); // Filtra los campos vacíos
 
     const link = localStorage.getItem('linkGenerado'); // Recupera el link guardado
 
@@ -620,6 +621,7 @@
     }
 
     try {
+      // Envía los números actualizados al backend
       const response = await fetch('/soporte', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -631,7 +633,7 @@
       if (response.ok) {
         alert('Link actualizado correctamente.');
 
-        // Actualiza los detalles del link
+        // Actualiza los detalles del link en el DOM
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
 
         // Muestra el link actualizado en el DOM
