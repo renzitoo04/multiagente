@@ -120,6 +120,15 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Datos inválidos' });
     }
 
+    // Verifica si el usuario ya tiene un link generado
+    const configuracionExistente = Object.values(configuracionesPorID).find(
+      (config) => config.email === email
+    );
+
+    if (configuracionExistente) {
+      return res.status(403).json({ error: 'Ya tienes un link generado. Solo puedes actualizarlo.' });
+    }
+
     // Genera un nuevo ID y link original
     const id = Math.random().toString(36).substring(2, 8);
     const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
