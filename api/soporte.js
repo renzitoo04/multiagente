@@ -1,31 +1,19 @@
-const usuarios = [
-  {
-    email: "renzobianco@gmail.com",
-    password: "renzoxdlol",
-    limiteNumeros: 2
-  },
-  {
-    email: "nuevo_usuario@gmail.com",
-    password: "contraseña123",
-    limiteNumeros: 10
-  },
-  {
-    email: "donarumamatias@gmail.com",
-    password: "contraseña12",
-    limiteNumeros: 3
-  },
-  {
-  email: "prueba@multi.link",
-  password: "test",
-  limiteNumeros: 1
-  },
-  {
-  email: "tomas@gmail.com",
-  password: "tomas123",
-  limiteNumeros: 3
-  }
+const fs = require('fs');
+const path = require('path');
 
-];
+// Ruta al archivo usuarios.json
+const usuariosPath = path.join(__dirname, 'usuarios.json');
+
+// Función para cargar usuarios dinámicamente
+function cargarUsuarios() {
+  try {
+    const data = fs.readFileSync(usuariosPath, 'utf8');
+    return JSON.parse(data); // Devuelve la lista de usuarios como un array
+  } catch (error) {
+    console.error('Error al cargar la lista de usuarios:', error);
+    return []; // Devuelve un array vacío si ocurre un error
+  }
+}
 
 // Objeto para almacenar configuraciones por ID
 const configuracionesPorID = {}; // { id: { email, numeros, mensaje } }
@@ -68,15 +56,19 @@ export default async function handler(req, res) {
 
   // === 1. INICIO DE SESIÓN ===
   if (req.method === 'GET' && email && password) {
+    // Cargar la lista de usuarios desde usuarios.json
+    const usuarios = cargarUsuarios();
+
+    // Buscar el usuario en la lista
     const usuario = usuarios.find(
       (u) => u.email === email && u.password === password
     );
 
     if (!usuario) {
-      return res.status(401).json({ error: "Credenciales incorrectas" });
+      return res.status(401).json({ error: 'Credenciales incorrectas' });
     }
 
-    // Recupera la configuración asociada al email
+    // Recuperar la configuración asociada al email
     const configuracion = Object.values(configuracionesPorID).find(
       (config) => config.email === email
     );
