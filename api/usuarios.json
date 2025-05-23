@@ -24,6 +24,16 @@
     "email": "julian@gmail.com",
     "password": "julian123",
     "limiteNumeros": 2
+  },
+  {
+    "email": "juan@gmail.com",
+    "password": "juan123",
+    "limiteNumeros": 2
+  },
+  {
+    "email": "gustavo@gmail.com",
+    "password": "gustavo123",
+    "limiteNumeros": 2
   }
 
 ]
