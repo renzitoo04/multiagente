@@ -33,6 +33,9 @@ const configuracionesPorID = {}; // { id: { email, numeros, mensaje } }
 // Objeto para manejar índices de rotación por ID
 const indicesRotacion = {}; // { id: índice_actual }
 
+// Objeto para almacenar configuraciones por email
+const configuracionesPorEmail = {}; // { email: { id, numeros, mensaje, link } }
+
 async function acortarLink(linkOriginal) {
   const tinyUrlToken = 'apvW0ktGoIEIlrA5PBzjTFb2v4IS4e3gYkptQei0qYYzSXNukYvK2GwLXKVP'; // Token de TinyURL
   try {
@@ -130,6 +133,7 @@ export default async function handler(req, res) {
 
       // Guarda la nueva configuración, incluyendo el link corto
       configuracionesPorID[id] = { email, numeros, mensaje, link: linkAcortado };
+      configuracionesPorEmail[email] = { id, numeros, mensaje, link: linkAcortado };
 
       // Devuelve el link acortado y el ID
       return res.status(200).json({ id, link: linkAcortado });
@@ -154,12 +158,17 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Debe proporcionar al menos un número válido.' });
     }
 
+    // Verifica permisos
+    if (!configuracionesPorEmail[email] || configuracionesPorEmail[email].id !== id) {
+      return res.status(403).json({ error: 'No tienes permiso para modificar este link.' });
+    }
+
     // Actualiza los números asociados al link
-    configuracionesPorID[id].numeros = numeros;
+    configuracionesPorEmail[email].numeros = numeros;
 
     // Actualiza el mensaje si está definido
     if (mensaje !== undefined) {
-      configuracionesPorID[id].mensaje = mensaje;
+      configuracionesPorEmail[email].mensaje = mensaje;
     }
 
     try {
