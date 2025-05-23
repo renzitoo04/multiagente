@@ -27,11 +27,11 @@
   {
     "email": "julian@gmail.com",
     "password": "julian123",
-    "limiteNumeros": 1
+    "limiteNumeros": 2
   },
   {
     "email": "mica@gmail.com",
     "password": "mica123",
-    "limiteNumeros": 1
+    "limiteNumeros": 2
   }
 ]

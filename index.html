@@ -410,8 +410,46 @@
       const data = await response.json();
 
       if (response.ok) {
-        // Manejar inicio de sesión exitoso
-        console.log('Inicio de sesión exitoso:', data);
+        // Oculta el contenedor de inicio de sesión
+        document.getElementById('login-container').style.display = 'none';
+
+        // Muestra el generador principal
+        document.getElementById('generador-container').style.display = 'block';
+
+        // Configura el límite de números
+        limiteNumeros = data.limiteNumeros;
+
+        // Guarda el correo del usuario en localStorage
+        localStorage.setItem('usuarioEmail', email);
+
+        // Recupera los datos del usuario actual desde localStorage
+        const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
+        const numerosGuardados = JSON.parse(localStorage.getItem(`numerosGenerados_${email}`)) || [];
+        const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`) || '';
+
+        if (linkGuardado) {
+          // Mostrar los detalles del link
+          document.getElementById('detalles-link').style.display = 'block';
+          document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
+          document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
+
+          // Mostrar el link guardado
+          document.getElementById('output').innerHTML = `
+            <p>Tu link generado:</p>
+            <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
+          `;
+
+          // Mostrar los números en el apartado "Editar Link"
+          document.getElementById('editar-link-container').style.display = 'block';
+          mostrarEditarLink(numerosGuardados);
+
+          // Deshabilitar el botón de "Generar Link"
+          document.querySelector('button[onclick="generarLink()"]').disabled = true;
+        } else {
+          // Ocultar las secciones si no hay datos
+          document.getElementById('detalles-link').style.display = 'none';
+          document.getElementById('editar-link-container').style.display = 'none';
+        }
       } else {
         document.getElementById('login-error').textContent = data.error;
       }
@@ -427,7 +465,7 @@
       .filter(num => num !== '');
 
     const mensaje = document.getElementById('mensaje').value.trim();
-    const email = localStorage.getItem('usuarioEmail');
+    const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
 
     if (!email) {
       alert('Por favor, inicia sesión antes de generar un link.');
@@ -440,6 +478,9 @@
     }
 
     try {
+      // Muestra un mensaje de carga mientras se genera el link
+      document.getElementById('output').innerHTML = `<p>Generando link...</p>`;
+
       const response = await fetch('/soporte', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -449,12 +490,39 @@
       const data = await response.json();
 
       if (response.ok) {
-        console.log('Link generado:', data.link);
+        const link = data.link; // Obtén el link del backend
+        const id = data.id; // Obtén el ID del backend
+
+        // Guardar datos en localStorage con el email como prefijo
+        localStorage.setItem(`linkGenerado_${email}`, link);
+        localStorage.setItem(`linkID_${email}`, id);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
+
+        // Muestra el link generado en el DOM
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${link}" target="_blank">${link}</a>
+        `;
+
+        // Muestra los detalles del link
+        document.getElementById('detalles-link').style.display = 'block';
+        document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+
+        // Muestra el apartado "Editar Link"
+        document.getElementById('editar-link-container').style.display = 'block';
+        mostrarEditarLink(numeros);
+
+        // Deshabilitar el botón de "Generar Link"
+        document.querySelector('button[onclick="generarLink()"]').disabled = true;
       } else {
         alert('Error: ' + data.error);
+        document.getElementById('output').innerHTML = ''; // Limpia el mensaje de carga si hay un error
       }
     } catch (error) {
       console.error('Error generando link:', error);
+      document.getElementById('output').innerHTML = `<p>Error al generar el link. Inténtalo de nuevo.</p>`;
     }
   }
 
@@ -685,8 +753,46 @@ async function login() {
     const data = await response.json();
 
     if (response.ok) {
-      // Manejar inicio de sesión exitoso
-      console.log('Inicio de sesión exitoso:', data);
+      // Oculta el contenedor de inicio de sesión
+      document.getElementById('login-container').style.display = 'none';
+
+      // Muestra el generador principal
+      document.getElementById('generador-container').style.display = 'block';
+
+      // Configura el límite de números
+      limiteNumeros = data.limiteNumeros;
+
+      // Guarda el correo del usuario en localStorage
+      localStorage.setItem('usuarioEmail', email);
+
+      // Recupera los datos del usuario actual desde localStorage
+      const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
+      const numerosGuardados = JSON.parse(localStorage.getItem(`numerosGenerados_${email}`)) || [];
+      const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`) || '';
+
+      if (linkGuardado) {
+        // Mostrar los detalles del link
+        document.getElementById('detalles-link').style.display = 'block';
+        document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
+
+        // Mostrar el link guardado
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
+        `;
+
+        // Mostrar los números en el apartado "Editar Link"
+        document.getElementById('editar-link-container').style.display = 'block';
+        mostrarEditarLink(numerosGuardados);
+
+        // Deshabilitar el botón de "Generar Link"
+        document.querySelector('button[onclick="generarLink()"]').disabled = true;
+      } else {
+        // Ocultar las secciones si no hay datos
+        document.getElementById('detalles-link').style.display = 'none';
+        document.getElementById('editar-link-container').style.display = 'none';
+      }
     } else {
       document.getElementById('login-error').textContent = data.error;
     }
