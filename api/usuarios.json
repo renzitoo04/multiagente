@@ -33,5 +33,10 @@
     "email": "mica@gmail.com",
     "password": "mica123",
     "limiteNumeros": 2
+  },
+  {
+    "email": "camila@gmail.com",
+    "password": "camila123",
+    "limiteNumeros": 2
   }
 ]
