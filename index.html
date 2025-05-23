@@ -457,10 +457,15 @@
   async function generarLink() {
     const numeros = Array.from(document.querySelectorAll('.numero'))
       .map(input => input.value.trim())
-      .filter(num => num !== '' && num !== '+549'); // Filtra el valor por defecto
+      .filter(num => num !== '');
 
-    const mensaje = document.getElementById('mensaje').value.trim(); // Permitir mensaje vacío
-    const email = document.getElementById('email').value;
+    const mensaje = document.getElementById('mensaje').value.trim();
+    const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
+
+    if (!email) {
+      alert('Por favor, inicia sesión antes de generar un link.');
+      return;
+    }
 
     if (numeros.length === 0) {
       alert('Por favor, ingresa al menos un número válido.');
@@ -468,38 +473,42 @@
     }
 
     try {
+      // Muestra un mensaje de carga mientras se genera el link
+      document.getElementById('output').innerHTML = `<p>Generando link...</p>`;
+
       const response = await fetch('/soporte', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, numeros, mensaje })
+        body: JSON.stringify({ email, numeros, mensaje }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        const link = data.link;
+        const link = data.link; // Obtén el link del backend
+        const id = data.id; // Obtén el ID del backend
 
-        // Mostrar los detalles del link
+        // Guardar datos en localStorage
+        localStorage.setItem('linkGenerado', link);
+        localStorage.setItem('linkID', id);
+
+        // Muestra el link generado en el DOM
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${link}" target="_blank">${link}</a>
+        `;
+
+        // Muestra los detalles del link
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
-        // Mostrar el apartado "Editar Link"
-        document.getElementById('editar-link-container').style.display = 'block';
-
-        // Mostrar los números en el apartado "Editar Link"
-        mostrarEditarLink(numeros);
-
-        // Guardar los datos en localStorage para mantener la sesión
-        localStorage.setItem('linkGenerado', link);
-        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
-        localStorage.setItem('mensajeGenerado', mensaje);
-        localStorage.setItem('usuarioEmail', email); // Guarda el correo del usuario
       } else {
         alert('Error: ' + data.error);
+        document.getElementById('output').innerHTML = ''; // Limpia el mensaje de carga si hay un error
       }
     } catch (error) {
       console.error('Error generando link:', error);
+      document.getElementById('output').innerHTML = `<p>Error al generar el link. Inténtalo de nuevo.</p>`;
     }
   }
 

@@ -131,7 +131,8 @@ export default async function handler(req, res) {
       // Guarda la nueva configuración
       configuracionesPorID[id] = { email, numeros, mensaje };
 
-      return res.status(200).json({ link: linkAcortado }); // Devuelve el link acortado
+      // Devuelve el link acortado y el ID
+      return res.status(200).json({ id, link: linkAcortado });
     } catch (error) {
       console.error('Error generando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor' });
