@@ -14,6 +14,11 @@
     "email": "pepo@gmail.com",
     "password": "pepo123",
     "limiteNumeros": 2
+  },
+  {
+    "email": "pepo@gmail.com",
+    "password": "pepo123",
+    "limiteNumeros": 2
   }
 
 ]
