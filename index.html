@@ -608,10 +608,10 @@
       .map(input => input.value.trim())
       .filter(num => num !== ''); // Filtra los campos vacíos
 
-    const link = localStorage.getItem('linkGenerado'); // Recupera el link guardado
+    const id = localStorage.getItem('linkID'); // Recupera el ID guardado
 
-    if (!link) {
-      alert('No se encontró un link guardado. Por favor, genera un link primero.');
+    if (!id) {
+      alert('No se encontró un ID guardado. Por favor, genera un link primero.');
       return;
     }
 
@@ -620,12 +620,15 @@
       return;
     }
 
+    // Reconstruye el link original usando el ID
+    const linkOriginal = `${location.origin}/soporte?id=${id}`;
+
     try {
       // Envía los números actualizados al backend
       const response = await fetch('/soporte', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link, numeros }),
+        body: JSON.stringify({ link: linkOriginal, numeros }),
       });
 
       const data = await response.json();
