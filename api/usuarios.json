@@ -18,5 +18,10 @@
     "email": "prueba@multi.link",
     "password": "test",
     "limiteNumeros": 1
+  },
+  {
+    "email": "renzo@gmail.com",
+    "password": "renzo123",
+    "limiteNumeros": 2
   }
 ]
