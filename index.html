@@ -325,6 +325,8 @@
   <div id="editar-link-container" style="display: none;">
     <h3>Editar Link</h3>
     <div id="editar-numeros-container"></div>
+    <label for="editar-mensaje">Mensaje Automático:</label>
+    <input type="text" id="editar-mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
     <button onclick="actualizarLink()">Actualizar Link</button>
   </div>
 
@@ -600,6 +602,10 @@
       `;
       editarNumerosContainer.appendChild(numeroItem);
     }
+
+    // Cargar el mensaje desde localStorage y mostrarlo en el campo #editar-mensaje
+    const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
+    document.getElementById('editar-mensaje').value = mensajeGuardado;
   }
 
   async function actualizarLink() {
@@ -608,6 +614,7 @@
       .map(input => input.value.trim())
       .filter(num => num !== ''); // Filtra los campos vacíos
 
+    const mensaje = document.getElementById('editar-mensaje').value.trim(); // Captura el mensaje actualizado
     const id = localStorage.getItem('linkID'); // Recupera el ID guardado
     const linkGenerado = localStorage.getItem('linkGenerado'); // Recupera el link corto guardado
 
@@ -625,11 +632,11 @@
     const linkOriginal = `${location.origin}/soporte?id=${id}`;
 
     try {
-      // Envía los números actualizados al backend
+      // Envía los números y el mensaje actualizados al backend
       const response = await fetch('/soporte', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: linkOriginal, numeros }),
+        body: JSON.stringify({ link: linkOriginal, numeros, mensaje }),
       });
 
       const data = await response.json();
@@ -639,6 +646,7 @@
 
         // Actualiza los detalles del link en el DOM
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
         // Muestra el link corto guardado en el DOM (sin reemplazarlo)
         document.getElementById('output').innerHTML = `
@@ -646,8 +654,9 @@
           <a href="${linkGenerado}" target="_blank">${linkGenerado}</a>
         `;
 
-        // Guarda los números actualizados en localStorage
+        // Guarda los números y el mensaje actualizados en localStorage
         localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
+        localStorage.setItem('mensajeGenerado', mensaje);
       } else {
         alert('Error: ' + data.error);
       }

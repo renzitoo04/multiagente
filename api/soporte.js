@@ -141,7 +141,7 @@ export default async function handler(req, res) {
 
   // === 4. ACTUALIZAR NÚMEROS DEL LINK EXISTENTE (PATCH) ===
   if (req.method === 'PATCH') {
-    const { link, numeros } = req.body;
+    const { link, numeros, mensaje } = req.body;
 
     // Extrae el ID del link
     const id = link.split('id=')[1]; // Obtiene el ID después de "id="
@@ -156,6 +156,11 @@ export default async function handler(req, res) {
 
     // Actualiza los números asociados al link
     configuracionesPorID[id].numeros = numeros;
+
+    // Actualiza el mensaje si está definido
+    if (mensaje !== undefined) {
+      configuracionesPorID[id].mensaje = mensaje;
+    }
 
     try {
       // Devuelve el link corto guardado en configuracionesPorID
