@@ -304,22 +304,7 @@
     
   </div>
 
-  <!-- Contenedor para prueba de MultiLink -->
-  <div id="probar-multilink-container">
-    <h1>Probar MultiLink</h1>
-    <form id="form-multilink">
-      <div id="numero-prueba-container" class="numero-container">
-        <span class="bandera-container">
-          <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
-        </span>
-        <input type="text" id="numero-prueba" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
-      </div>
-      <label for="mensaje-prueba">Mensaje automático:</label>
-      <input type="text" id="mensaje-prueba" placeholder="Ejemplo: Hola, necesito ayuda">
-      <button type="button" onclick="generarLinkPrueba()">Generar Link</button>
-    </form>
-    <div class="output" id="output-prueba"></div>
-  </div>
+  
 
   <!-- Contenedor para editar link -->
   <div id="editar-link-container" style="display: none;">
@@ -508,51 +493,11 @@
     }
   }
 
-  async function generarLinkPrueba() {
-    const numero = document.getElementById('numero-prueba').value.trim();
-    const mensaje = document.getElementById('mensaje-prueba').value.trim(); // Permitir mensaje vacío
-    const email = "prueba@multi.link";
+  
 
-    if (!numero) {
-      alert('Por favor, ingresa un número.');
-      return;
-    }
+  
 
-    try {
-      const response = await fetch('/soporte', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ numeros: [numero], mensaje, email })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        const shortUrl = `${location.origin}/soporte?id=${data.id}`;
-        document.getElementById('output-prueba').innerHTML = `
-          <p>Tu link de prueba generado:</p>
-          <a href="${shortUrl}" target="_blank">${shortUrl}</a>
-        `;
-      } else {
-        alert('Error: ' + data.error);
-      }
-    } catch (error) {
-      console.error('Error generando link de prueba:', error);
-    }
-  }
-
-  function probarMultiLink() {
-    document.getElementById('login-container').classList.remove('active');
-    document.getElementById('probar-multilink-container').classList.add('active');
-    document.getElementById('numero-prueba').value = '';
-    document.getElementById('mensaje-prueba').value = '';
-  }
-
-  function volverAlLogin() {
-    document.getElementById('probar-multilink-container').classList.remove('active');
-    document.getElementById('login-container').classList.add('active');
-  }
-
+ 
   function reiniciarGenerador() {
     // Reiniciar el contador de números
     contadorNumeros = 1;
