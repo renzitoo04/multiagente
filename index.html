@@ -513,6 +513,9 @@
         // Muestra el apartado "Editar Link"
         document.getElementById('editar-link-container').style.display = 'block';
         mostrarEditarLink(numeros);
+
+        // Deshabilitar el botón de "Generar Link"
+        document.querySelector('button[onclick="generarLink()"]').disabled = true;
       } else {
         alert('Error: ' + data.error);
         document.getElementById('output').innerHTML = ''; // Limpia el mensaje de carga si hay un error
