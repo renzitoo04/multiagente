@@ -614,8 +614,8 @@
     const id = localStorage.getItem(`linkID_${email}`); // Recupera el ID guardado
     const linkGenerado = localStorage.getItem(`linkGenerado_${email}`); // Recupera el link corto guardado
 
-    if (!id) {
-      alert('No se encontró un ID guardado. Por favor, genera un link primero.');
+    if (!email || !id) {
+      alert('No se encontró un usuario o ID guardado. Por favor, inicia sesión y genera un link primero.');
       return;
     }
 
@@ -628,11 +628,11 @@
     const linkOriginal = `${location.origin}/soporte?id=${id}`;
 
     try {
-      // Envía los números y el mensaje actualizados al backend
+      // Envía los números, el mensaje y el email al backend
       const response = await fetch('/soporte', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: linkOriginal, numeros, mensaje }),
+        body: JSON.stringify({ email, link: linkOriginal, numeros, mensaje }),
       });
 
       const data = await response.json();
