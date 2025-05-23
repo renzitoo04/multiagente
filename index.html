@@ -416,41 +416,15 @@
         // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
 
-        // Oculta el apartado "Probar Link"
-        document.getElementById('probar-multilink-container').style.display = 'none';
-
-        // Oculta el apartado informativo "¿Para qué sirve MultiLink?"
-        const infoContainer = document.querySelector('.info-container');
-        if (infoContainer) {
-          infoContainer.style.display = 'none';
-        }
+        // Guarda el email del usuario en localStorage
+        localStorage.setItem('usuarioEmail', email);
 
         // Configura el límite de números
         limiteNumeros = data.limiteNumeros;
 
-        // Si hay una configuración existente, mostrarla
-        if (data.configuracion) {
-          const { link, numeros, mensaje } = data.configuracion;
-
-          document.getElementById('detalles-link').style.display = 'block';
-          document.getElementById('numeros-generados').textContent = numeros.join(', ');
-          document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
-          // Mostrar el apartado "Editar Link"
-          document.getElementById('editar-link-container').style.display = 'block';
-
-          // Mostrar los números en el apartado "Editar Link"
-          mostrarEditarLink(numeros);
-
-          // Guardar los datos en localStorage
-          localStorage.setItem('linkGenerado', link);
-          localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
-          localStorage.setItem('mensajeGenerado', mensaje);
-        } else {
-          // Si no hay configuración, inicializa el apartado "Editar Link" vacío
-          document.getElementById('editar-link-container').style.display = 'block';
-          mostrarEditarLink([]);
-        }
+        // Oculta las secciones "Detalles del Link" y "Editar Link" al iniciar sesión
+        document.getElementById('detalles-link').style.display = 'none';
+        document.getElementById('editar-link-container').style.display = 'none';
       } else {
         document.getElementById('login-error').textContent = data.error;
       }
@@ -494,11 +468,11 @@
         const link = data.link; // Obtén el link del backend
         const id = data.id; // Obtén el ID del backend
 
-        // Guardar datos en localStorage
-        localStorage.setItem('linkGenerado', link);
-        localStorage.setItem('linkID', id);
-        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
-        localStorage.setItem('mensajeGenerado', mensaje);
+        // Guardar datos en localStorage con el email como prefijo
+        localStorage.setItem(`linkGenerado_${email}`, link);
+        localStorage.setItem(`linkID_${email}`, id);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
 
         // Muestra el link generado en el DOM
         document.getElementById('output').innerHTML = `
@@ -506,12 +480,11 @@
           <a href="${link}" target="_blank">${link}</a>
         `;
 
-        // Muestra los detalles del link
+        // Muestra las secciones "Detalles del Link" y "Editar Link"
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
-        // Muestra el apartado "Editar Link"
         document.getElementById('editar-link-container').style.display = 'block';
         mostrarEditarLink(numeros);
       } else {
@@ -610,7 +583,8 @@
     }
 
     // Cargar el mensaje desde localStorage y mostrarlo en el campo #editar-mensaje
-    const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
+    const email = localStorage.getItem('usuarioEmail');
+    const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`) || '';
     document.getElementById('editar-mensaje').value = mensajeGuardado;
   }
 
@@ -702,13 +676,21 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-  const linkGuardado = localStorage.getItem('linkGenerado');
-  const numerosGuardados = JSON.parse(localStorage.getItem('numerosGenerados')) || [];
-  const mensajeGuardado = localStorage.getItem('mensajeGenerado') || '';
-  const usuarioEmailGuardado = localStorage.getItem('usuarioEmail'); // Correo del usuario que generó el link
+  const email = localStorage.getItem('usuarioEmail'); // Correo del usuario logueado
 
-  // Verifica si hay un link guardado y si el usuario actual coincide
-  if (linkGuardado && usuarioEmailGuardado) {
+  if (!email) {
+    // Si no hay un usuario logueado, oculta las secciones
+    document.getElementById('detalles-link').style.display = 'none';
+    document.getElementById('editar-link-container').style.display = 'none';
+    return;
+  }
+
+  // Recupera los datos del usuario actual desde localStorage
+  const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
+  const numerosGuardados = JSON.parse(localStorage.getItem(`numerosGenerados_${email}`)) || [];
+  const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`) || '';
+
+  if (linkGuardado) {
     // Mostrar los detalles del link
     document.getElementById('detalles-link').style.display = 'block';
     document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
@@ -721,9 +703,10 @@
     `;
 
     // Mostrar los números en el apartado "Editar Link"
+    document.getElementById('editar-link-container').style.display = 'block';
     mostrarEditarLink(numerosGuardados);
   } else {
-    // Ocultar el apartado "Detalles del Link" si no hay datos
+    // Oculta las secciones si no hay datos guardados
     document.getElementById('detalles-link').style.display = 'none';
     document.getElementById('editar-link-container').style.display = 'none';
   }
