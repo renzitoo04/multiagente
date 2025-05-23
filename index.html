@@ -416,11 +416,17 @@
         // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
 
+        // Oculta el apartado "Probar Link"
+        document.getElementById('probar-multilink-container').style.display = 'none';
+
+        // Oculta el apartado informativo "¿Para qué sirve MultiLink?"
+        const infoContainer = document.querySelector('.info-container');
+        if (infoContainer) {
+          infoContainer.style.display = 'none';
+        }
+
         // Configura el límite de números
         limiteNumeros = data.limiteNumeros;
-
-        // Guarda el correo del usuario en localStorage
-        localStorage.setItem('usuarioEmail', email);
 
         // Si hay una configuración existente, mostrarla
         if (data.configuracion) {
