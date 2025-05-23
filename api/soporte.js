@@ -8,7 +8,9 @@ const usuariosPath = path.join(__dirname, 'usuarios.json');
 function cargarUsuarios() {
   try {
     const data = fs.readFileSync(usuariosPath, 'utf8');
-    return JSON.parse(data); // Devuelve la lista de usuarios como un array
+    const usuarios = JSON.parse(data);
+    console.log('Usuarios cargados correctamente:', usuarios); // Log para verificar los usuarios cargados
+    return usuarios;
   } catch (error) {
     console.error('Error al cargar la lista de usuarios:', error);
     return []; // Devuelve un array vacío si ocurre un error
@@ -52,12 +54,16 @@ async function acortarLink(linkOriginal) {
 
 // Exporta la función principal del handler
 export default async function handler(req, res) {
-  const { email, password, id } = req.query;
+  if (req.method === 'GET' && req.query.email && req.query.password) {
+    const { email, password } = req.query;
 
-  // === 1. INICIO DE SESIÓN ===
-  if (req.method === 'GET' && email && password) {
     // Cargar la lista de usuarios desde usuarios.json
     const usuarios = cargarUsuarios();
+
+    // Verificar si los usuarios se cargaron correctamente
+    if (!usuarios || usuarios.length === 0) {
+      return res.status(500).json({ error: 'No se pudo cargar la lista de usuarios.' });
+    }
 
     // Buscar el usuario en la lista
     const usuario = usuarios.find(
@@ -71,12 +77,12 @@ export default async function handler(req, res) {
     // Recuperar la configuración asociada al email
     const configuracion = Object.values(configuracionesPorID).find(
       (config) => config.email === email
-    );
+    ) || null;
 
     return res.status(200).json({
       success: true,
       limiteNumeros: usuario.limiteNumeros,
-      configuracion,
+      configuracion
     });
   }
 
