@@ -150,41 +150,41 @@ export default async function handler(req, res) {
 
   // === 4. ACTUALIZAR NÚMEROS DEL LINK EXISTENTE (PATCH) ===
   if (req.method === 'PATCH') {
-    const { email, link, numeros, mensaje } = req.body;
+  const { email, link, numeros, mensaje } = req.body;
 
-    // Extrae el ID del link
-    const id = link.split('id=')[1]; // Obtiene el ID después de "id="
+  // Extrae el ID del link
+  const id = link.split('id=')[1]; // Obtiene el ID después de "id="
 
-    if (!id || !configuracionesPorID[id]) {
-      return res.status(404).json({ error: 'Link no encontrado' });
-    }
-
-    // Verifica que el email coincida con el propietario del link
-    if (configuracionesPorID[id].email !== email) {
-      return res.status(403).json({ error: 'No tienes permiso para actualizar este link.' });
-    }
-
-    if (!numeros || numeros.length === 0) {
-      return res.status(400).json({ error: 'Debe proporcionar al menos un número válido.' });
-    }
-
-    // Actualiza los números asociados al link
-    configuracionesPorID[id].numeros = numeros;
-
-    // Actualiza el mensaje si está definido
-    if (mensaje !== undefined) {
-      configuracionesPorID[id].mensaje = mensaje;
-    }
-
-    try {
-      // Devuelve el link corto guardado
-      const linkCorto = configuracionesPorID[id].link;
-      return res.status(200).json({ success: true, link: linkCorto });
-    } catch (error) {
-      console.error('Error actualizando el link:', error);
-      return res.status(500).json({ error: 'Error interno del servidor' });
-    }
+  if (!id || !configuracionesPorID[id]) {
+    return res.status(404).json({ error: 'Link no encontrado' });
   }
+
+  // Verifica que el email coincida con el propietario del link
+  if (configuracionesPorID[id].email !== email) {
+    return res.status(403).json({ error: 'No tienes permiso para actualizar este link.' });
+  }
+
+  if (!numeros || numeros.length === 0) {
+    return res.status(400).json({ error: 'Debe proporcionar al menos un número válido.' });
+  }
+
+  // Actualiza los números asociados al link
+  configuracionesPorID[id].numeros = numeros;
+
+  // Actualiza el mensaje si está definido
+  if (mensaje !== undefined) {
+    configuracionesPorID[id].mensaje = mensaje;
+  }
+
+  try {
+    // Devuelve el link corto guardado
+    const linkCorto = configuracionesPorID[id].link;
+    return res.status(200).json({ success: true, link: linkCorto });
+  } catch (error) {
+    console.error('Error actualizando el link:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
 
   // === 5. ACORTAR LINK MANUAL (POST) ===
   if (req.method === 'POST' && req.url === '/soporte/acortar') {
