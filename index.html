@@ -699,6 +699,22 @@
     }
   }
 
+  function logout() {
+    // Elimina el email del usuario actual de localStorage
+    localStorage.removeItem('usuarioEmail');
+
+    // Oculta las secciones relacionadas con el link
+    document.getElementById('detalles-link').style.display = 'none';
+    document.getElementById('editar-link-container').style.display = 'none';
+    document.getElementById('output').innerHTML = '';
+
+    // Muestra el contenedor de inicio de sesión
+    document.getElementById('login-container').style.display = 'block';
+
+    // Oculta el generador principal
+    document.getElementById('generador-container').style.display = 'none';
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
   const email = localStorage.getItem('usuarioEmail'); // Correo del usuario logueado
 
