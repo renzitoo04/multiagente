@@ -54,6 +54,7 @@ async function acortarLink(linkOriginal) {
 export default async function handler(req, res) {
   if (req.method === 'GET' && req.query.email && req.query.password) {
     const { email, password } = req.query;
+    console.log('Datos recibidos:', { email, password }); // Agrega este log
 
     // Cargar la lista de usuarios desde usuarios.json
     const usuarios = cargarUsuarios();

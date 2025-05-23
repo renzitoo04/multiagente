@@ -754,6 +754,18 @@
     document.getElementById('editar-link-container').style.display = 'none';
   }
 });
+
+function cargarUsuarios() {
+  try {
+    const data = fs.readFileSync(usuariosPath, 'utf8');
+    const usuarios = JSON.parse(data);
+    console.log('Usuarios cargados:', usuarios); // Agrega este log
+    return usuarios;
+  } catch (error) {
+    console.error('Error al cargar la lista de usuarios:', error);
+    return [];
+  }
+}
 </script>
 </body>
 </html>
