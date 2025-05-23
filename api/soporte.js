@@ -33,6 +33,11 @@ const usuarios = [
   email: "augusto@gmail.com",
   password: "agus123",
   limiteNumeros: 3
+  },
+  {
+  email: "tobi@gmail.com",
+  password: "tobi123",
+  limiteNumeros: 3
   }
 
 ];
