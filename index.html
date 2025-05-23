@@ -609,6 +609,7 @@
       .filter(num => num !== ''); // Filtra los campos vacíos
 
     const id = localStorage.getItem('linkID'); // Recupera el ID guardado
+    const linkGenerado = localStorage.getItem('linkGenerado'); // Recupera el link corto guardado
 
     if (!id) {
       alert('No se encontró un ID guardado. Por favor, genera un link primero.');
@@ -639,10 +640,10 @@
         // Actualiza los detalles del link en el DOM
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
 
-        // Muestra el link actualizado en el DOM
+        // Muestra el link corto guardado en el DOM (sin reemplazarlo)
         document.getElementById('output').innerHTML = `
           <p>Tu link actualizado:</p>
-          <a href="${data.link}" target="_blank">${data.link}</a>
+          <a href="${linkGenerado}" target="_blank">${linkGenerado}</a>
         `;
 
         // Guarda los números actualizados en localStorage

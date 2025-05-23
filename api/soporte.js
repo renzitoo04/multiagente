@@ -128,8 +128,8 @@ export default async function handler(req, res) {
       // Acorta el link usando TinyURL
       const linkAcortado = await acortarLink(linkOriginal);
 
-      // Guarda la nueva configuración
-      configuracionesPorID[id] = { email, numeros, mensaje };
+      // Guarda la nueva configuración, incluyendo el link corto
+      configuracionesPorID[id] = { email, numeros, mensaje, link: linkAcortado };
 
       // Devuelve el link acortado y el ID
       return res.status(200).json({ id, link: linkAcortado });
@@ -158,11 +158,9 @@ export default async function handler(req, res) {
     configuracionesPorID[id].numeros = numeros;
 
     try {
-      // Genera el link original
-      const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
-
-      // Devuelve el mismo link sin regenerarlo
-      return res.status(200).json({ success: true, link: linkOriginal });
+      // Devuelve el link corto guardado en configuracionesPorID
+      const linkCorto = configuracionesPorID[id].link;
+      return res.status(200).json({ success: true, link: linkCorto });
     } catch (error) {
       console.error('Error actualizando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor' });
