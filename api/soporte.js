@@ -99,7 +99,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       limiteNumeros: usuario.limiteNumeros,
-      configuracion,
+      configuracion, // Devuelve la configuración si existe, o null si no hay datos
     });
   }
 

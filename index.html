@@ -422,26 +422,29 @@
         // Guarda el correo del usuario en localStorage
         localStorage.setItem('usuarioEmail', email);
 
-        // Recupera los datos del usuario actual desde localStorage
-        const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
-        const numerosGuardados = JSON.parse(localStorage.getItem(`numerosGenerados_${email}`)) || [];
-        const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`) || '';
+        // Verifica si el usuario tiene una configuración existente
+        if (data.configuracion) {
+          const { link, numeros, mensaje } = data.configuracion;
 
-        if (linkGuardado) {
           // Mostrar los detalles del link
           document.getElementById('detalles-link').style.display = 'block';
-          document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
-          document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
+          document.getElementById('numeros-generados').textContent = numeros.join(', ');
+          document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
           // Mostrar el link guardado
           document.getElementById('output').innerHTML = `
             <p>Tu link generado:</p>
-            <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
+            <a href="${link}" target="_blank">${link}</a>
           `;
 
           // Mostrar los números en el apartado "Editar Link"
           document.getElementById('editar-link-container').style.display = 'block';
-          mostrarEditarLink(numerosGuardados);
+          mostrarEditarLink(numeros);
+
+          // Guardar los datos en localStorage
+          localStorage.setItem(`linkGenerado_${email}`, link);
+          localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+          localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
 
           // Deshabilitar el botón de "Generar Link"
           document.querySelector('button[onclick="generarLink()"]').disabled = true;
