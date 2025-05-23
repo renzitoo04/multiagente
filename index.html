@@ -632,7 +632,7 @@
       const response = await fetch('/soporte', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, link: linkOriginal, numeros, mensaje }),
+        body: JSON.stringify({ link: linkOriginal, numeros, mensaje }),
       });
 
       const data = await response.json();

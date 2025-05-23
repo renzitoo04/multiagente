@@ -33,9 +33,6 @@ const configuracionesPorID = {}; // { id: { email, numeros, mensaje } }
 // Objeto para manejar índices de rotación por ID
 const indicesRotacion = {}; // { id: índice_actual }
 
-// Objeto para almacenar configuraciones por email
-const configuracionesPorEmail = {}; // { email: { id, numeros, mensaje, link } }
-
 async function acortarLink(linkOriginal) {
   const tinyUrlToken = 'apvW0ktGoIEIlrA5PBzjTFb2v4IS4e3gYkptQei0qYYzSXNukYvK2GwLXKVP'; // Token de TinyURL
   try {
@@ -133,7 +130,6 @@ export default async function handler(req, res) {
 
       // Guarda la nueva configuración, incluyendo el link corto
       configuracionesPorID[id] = { email, numeros, mensaje, link: linkAcortado };
-      configuracionesPorEmail[email] = { id, numeros, mensaje, link: linkAcortado };
 
       // Devuelve el link acortado y el ID
       return res.status(200).json({ id, link: linkAcortado });
@@ -145,7 +141,7 @@ export default async function handler(req, res) {
 
   // === 4. ACTUALIZAR NÚMEROS DEL LINK EXISTENTE (PATCH) ===
   if (req.method === 'PATCH') {
-    const { email, link, numeros, mensaje } = req.body;
+    const { link, numeros, mensaje } = req.body;
 
     // Extrae el ID del link
     const id = link.split('id=')[1]; // Obtiene el ID después de "id="
@@ -158,22 +154,17 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Debe proporcionar al menos un número válido.' });
     }
 
-    // Verifica permisos: el email debe coincidir con el email asociado al ID
-    if (!configuracionesPorEmail[email] || configuracionesPorEmail[email].id !== id) {
-      return res.status(403).json({ error: 'No tienes permiso para modificar este link.' });
-    }
-
     // Actualiza los números asociados al link
-    configuracionesPorEmail[email].numeros = numeros;
+    configuracionesPorID[id].numeros = numeros;
 
     // Actualiza el mensaje si está definido
     if (mensaje !== undefined) {
-      configuracionesPorEmail[email].mensaje = mensaje;
+      configuracionesPorID[id].mensaje = mensaje;
     }
 
     try {
       // Devuelve el link corto guardado
-      const linkCorto = configuracionesPorEmail[email].link;
+      const linkCorto = configuracionesPorID[id].link;
       return res.status(200).json({ success: true, link: linkCorto });
     } catch (error) {
       console.error('Error actualizando el link:', error);
