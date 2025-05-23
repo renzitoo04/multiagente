@@ -615,17 +615,17 @@
   }
 
   async function actualizarLink() {
-    // Captura los números desde las celdas del apartado "Editar Link"
     const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
       .map(input => input.value.trim())
       .filter(num => num !== ''); // Filtra los campos vacíos
 
     const mensaje = document.getElementById('editar-mensaje').value.trim(); // Captura el mensaje actualizado
     const id = localStorage.getItem('linkID'); // Recupera el ID guardado
+    const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario
     const linkGenerado = localStorage.getItem('linkGenerado'); // Recupera el link corto guardado
 
-    if (!id) {
-      alert('No se encontró un ID guardado. Por favor, genera un link primero.');
+    if (!email || !id) {
+      alert('No se encontró un usuario o ID guardado. Por favor, inicia sesión y genera un link primero.');
       return;
     }
 
@@ -642,7 +642,7 @@
       const response = await fetch('/soporte', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: linkOriginal, numeros, mensaje }),
+        body: JSON.stringify({ email, link: linkOriginal, numeros, mensaje }),
       });
 
       const data = await response.json();
