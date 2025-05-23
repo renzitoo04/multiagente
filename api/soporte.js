@@ -161,10 +161,8 @@ export default async function handler(req, res) {
       // Genera el link original
       const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
-      // Acorta el link usando TinyURL
-      const linkAcortado = await acortarLink(linkOriginal);
-
-      return res.status(200).json({ success: true, link: linkAcortado }); // Devuelve el link acortado
+      // Devuelve el mismo link sin regenerarlo
+      return res.status(200).json({ success: true, link: linkOriginal });
     } catch (error) {
       console.error('Error actualizando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor' });
