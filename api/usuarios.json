@@ -13,6 +13,16 @@
     "email": "lola@gmail.com",
     "password": "lola123",
     "limiteNumeros": 2
+  },
+  {
+    "email": "valen@gmail.com",
+    "password": "valen123",
+    "limiteNumeros": 2
+  },
+  {
+    "email": "sofi@gmail.com",
+    "password": "sofi123",
+    "limiteNumeros": 2
   }
   
   
