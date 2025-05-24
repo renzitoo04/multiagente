@@ -8,6 +8,11 @@
     "email": "lucas@gmail.com",
     "password": "lucas123",
     "limiteNumeros": 2
+  },
+  {
+    "email": "lola@gmail.com",
+    "password": "lola123",
+    "limiteNumeros": 2
   }
   
   
