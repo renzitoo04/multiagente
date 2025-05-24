@@ -564,11 +564,13 @@
       return;
     }
 
+    // Capturar los números actualizados desde el apartado "Editar Link"
     const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
       .map(input => input.value.trim())
       .filter(num => num !== ''); // Filtra los campos vacíos
 
-    const mensaje = document.getElementById('editar-mensaje').value.trim(); // Captura el mensaje actualizado
+    // Capturar el mensaje actualizado desde el apartado "Editar Link"
+    const mensaje = document.getElementById('editar-mensaje').value.trim();
 
     if (numeros.length === 0) {
       alert('Por favor, ingresa al menos un número válido.');
@@ -576,6 +578,7 @@
     }
 
     try {
+      // Enviar los datos actualizados al backend
       const response = await fetch('/soporte', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -587,13 +590,13 @@
       if (response.ok) {
         alert('Link actualizado correctamente.');
 
-        // Actualiza los detalles del link en el DOM
-        document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
-        // Guarda los números y el mensaje actualizados en localStorage
+        // Actualizar los datos en `localStorage`
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
+
+        // Actualizar los detalles del link en el DOM
+        document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
       } else {
         alert('Error: ' + data.error);
       }
