@@ -4,51 +4,12 @@
     "password": "renzoxdlol",
     "limiteNumeros": 2
   },
-  
   {
-    "email": "camila@gmail.com",
-    "password": "camila123",
-    "limiteNumeros": 2
-  },
-  {
-    "email": "pepo@gmail.com",
-    "password": "pepo123",
-    "limiteNumeros": 2
-  },
-  {
-    "email": "pepo@gmail.com",
-    "password": "pepo123",
-    "limiteNumeros": 2
-  },
-  {
-    "email": "julian@gmail.com",
-    "password": "julian123",
-    "limiteNumeros": 2
-  },
-  {
-    "email": "juan@gmail.com",
-    "password": "juan123",
-    "limiteNumeros": 2
-  },
-  {
-    "email": "gustavo@gmail.com",
-    "password": "gustavo123",
-    "limiteNumeros": 2
-  },
-  {
-    "email": "agustin@gmail.com",
-    "password": "agustin123",
-    "limiteNumeros": 2
-  },
-  {
-    "email": "agustina@gmail.com",
-    "password": "agustina123",
-    "limiteNumeros": 2
-  },
-  {
-    "email": "ema@gmail.com",
-    "password": "ema123",
+    "email": "lucas@gmail.com",
+    "password": "lucas123",
     "limiteNumeros": 2
   }
+  
+  
 
 ]
