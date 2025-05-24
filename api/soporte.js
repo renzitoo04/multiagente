@@ -63,6 +63,18 @@ async function acortarLink(linkOriginal) {
   }
 }
 
+// Función para cargar la lista de usuarios desde usuarios.json
+function cargarUsuarios() {
+  const usuariosPath = path.join(__dirname, 'usuarios.json');
+  try {
+    const data = fs.readFileSync(usuariosPath, 'utf8');
+    return JSON.parse(data); // Devuelve la lista de usuarios como un array
+  } catch (error) {
+    console.error('Error al cargar la lista de usuarios:', error);
+    return []; // Devuelve un array vacío si ocurre un error
+  }
+}
+
 // Exporta la función principal del handler
 export default async function handler(req, res) {
   // === 1. INICIO DE SESIÓN ===
