@@ -141,31 +141,34 @@ export default async function handler(req, res) {
     }
   }
 
-  // === 4. Autenticación de usuario (GET con email y password) ===
-  if (req.method === 'GET' && req.query.email && req.query.password) {
-    const { email, password } = req.query;
+  // === 4. Autenticación de usuario (POST con email y password) ===
+  if (req.method === 'POST' && req.url === '/login') {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Faltan datos de inicio de sesión' });
+    }
 
     try {
-      // Leer el archivo usuarios.json
-      const usuariosPath = path.join(__dirname, 'usuarios.json');
-      const usuarios = JSON.parse(fs.readFileSync(usuariosPath, 'utf8'));
+      // Consultar Supabase para validar las credenciales
+      const { data: usuario, error } = await supabase
+        .from('usuarios')
+        .select('*')
+        .eq('email', email)
+        .eq('password', password)
+        .single();
 
-      // Buscar el usuario en la lista
-      const usuario = usuarios.find(
-        (u) => u.email === email && u.password === password
-      );
-
-      if (!usuario) {
+      if (error || !usuario) {
         return res.status(401).json({ error: 'Credenciales incorrectas' });
       }
 
       // Devolver los datos del usuario
       return res.status(200).json({
-        success: true,
+        email: usuario.email,
         limiteNumeros: usuario.limiteNumeros
       });
     } catch (error) {
-      console.error('Error al cargar usuarios:', error);
+      console.error('Error al validar el login en Supabase:', error);
       return res.status(500).json({ error: 'Error interno del servidor' });
     }
   }
