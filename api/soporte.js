@@ -1,10 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import fs from 'fs';
-import path from 'path';
 dotenv.config();
 
-// Conectar a Supabase
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 // === Funciones para manejar configuraciones en Supabase ===
@@ -16,7 +13,6 @@ async function obtenerConfiguraciones() {
     console.error('Error al obtener configuraciones:', error);
     return {};
   }
-  // Convertir los datos en un objeto con IDs como claves
   return data.reduce((acc, config) => {
     acc[config.id] = config;
     return acc;
@@ -27,7 +23,7 @@ async function obtenerConfiguraciones() {
 async function guardarConfiguracion(id, configuracion) {
   const { error } = await supabase
     .from('configuraciones')
-    .upsert({ id, ...configuracion }); // Inserta o actualiza la configuración
+    .upsert({ id, ...configuracion });
   if (error) {
     console.error('Error al guardar configuración:', error);
   }
@@ -35,7 +31,6 @@ async function guardarConfiguracion(id, configuracion) {
 
 // === Handler principal ===
 export default async function handler(req, res) {
-  // Cargar configuraciones desde Supabase
   const configuracionesPorID = await obtenerConfiguraciones();
 
   // === 1. Generar un nuevo link (POST) ===
@@ -46,21 +41,18 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Datos inválidos' });
     }
 
-    // Generar un nuevo ID y link original
     const id = Math.random().toString(36).substring(2, 8);
     const linkOriginal = `${req.headers.origin}/soporte?id=${id}`;
 
     try {
-      // Acortar el link original
       const linkAcortado = await acortarLink(linkOriginal);
 
-      // Guardar la nueva configuración en Supabase
       const { error } = await supabase.from('links').insert({
         id,
         email,
         numeros,
         mensaje,
-        link: linkAcortado
+        link: linkAcortado,
       });
 
       if (error) {
@@ -68,7 +60,6 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: 'Error al guardar en base de datos' });
       }
 
-      // Devolver el link generado
       return res.status(200).json({ id, link: linkAcortado });
     } catch (error) {
       console.error('Error generando el link:', error);
@@ -81,24 +72,18 @@ export default async function handler(req, res) {
     const { id } = req.query;
 
     try {
-      // Obtener los datos del link desde Supabase
       const { data, error } = await supabase.from('links').select('*').eq('id', id).single();
 
       if (error || !data) {
         return res.status(404).json({ error: 'ID no encontrado' });
       }
 
-      // Extraer los datos necesarios
       const { numeros, mensaje } = data;
-
-      // Manejar la rotación de números
       const indice = indicesRotacion[id] ?? 0;
       const numeroActual = numeros[indice];
 
-      // Actualizar el índice para la próxima rotación
       indicesRotacion[id] = (indice + 1) % numeros.length;
 
-      // Redirigir al número actual de WhatsApp
       const whatsappLink = `https://wa.me/${numeroActual}?text=${encodeURIComponent(mensaje)}`;
       return res.redirect(302, whatsappLink);
     } catch (error) {
@@ -110,22 +95,18 @@ export default async function handler(req, res) {
   // === 3. Actualizar un link existente (PATCH) ===
   if (req.method === 'PATCH') {
     const { link, numeros, mensaje } = req.body;
-
-    // Extraer el ID del link
     const id = link.split('id=')[1];
 
     try {
-      // Verificar si el link existe en Supabase
       const { data, error } = await supabase.from('links').select('*').eq('id', id).single();
 
       if (error || !data) {
         return res.status(404).json({ error: 'Link no encontrado' });
       }
 
-      // Actualizar los datos en Supabase
       const { error: updateError } = await supabase.from('links').update({
         numeros,
-        ...(mensaje !== undefined && { mensaje }) // Solo actualizar el mensaje si está definido
+        ...(mensaje !== undefined && { mensaje }),
       }).eq('id', id);
 
       if (updateError) {
@@ -133,42 +114,9 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: 'Error al actualizar' });
       }
 
-      // Devolver el link actualizado
       return res.status(200).json({ success: true, link: data.link });
     } catch (error) {
       console.error('Error al actualizar el link:', error);
-      return res.status(500).json({ error: 'Error interno del servidor' });
-    }
-  }
-
-  // === 4. Autenticación de usuario (POST con email y password) ===
-  if (req.method === 'POST' && req.url === '/login') {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Faltan datos de inicio de sesión' });
-    }
-
-    try {
-      // Consultar Supabase para validar las credenciales
-      const { data: usuario, error } = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('email', email)
-        .eq('password', password)
-        .single();
-
-      if (error || !usuario) {
-        return res.status(401).json({ error: 'Credenciales incorrectas' });
-      }
-
-      // Devolver los datos del usuario
-      return res.status(200).json({
-        email: usuario.email,
-        limiteNumeros: usuario.limiteNumeros
-      });
-    } catch (error) {
-      console.error('Error al validar el login en Supabase:', error);
       return res.status(500).json({ error: 'Error interno del servidor' });
     }
   }

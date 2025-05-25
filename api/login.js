@@ -19,21 +19,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    // ATENCIÓN: usar los nombres EXACTOS de las columnas con comillas
-    const { data, error } = await supabase
+    // Consultar Supabase para validar las credenciales
+    const { data: usuario, error } = await supabase
       .from('usuarios')
-      .select('*')
-      .eq('correo electrónico', email)
-      .eq('contraseña', password)
+      .select('email, limiteNumeros')
+      .eq('email', email)
+      .eq('password', password) // Asegúrate de que las contraseñas estén almacenadas de forma segura
       .single();
 
-    if (error || !data) {
+    if (error || !usuario) {
       return res.status(401).json({ error: 'Credenciales incorrectas' });
     }
 
+    // Responder con los datos del usuario
     return res.status(200).json({
-      email: data['correo electrónico'],
-      limiteNumeros: data['número_límite']
+      email: usuario.email,
+      limiteNumeros: usuario.limiteNumeros,
     });
   } catch (err) {
     console.error('Error al iniciar sesión:', err);

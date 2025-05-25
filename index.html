@@ -394,22 +394,15 @@
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Oculta el contenedor de inicio de sesión
         document.getElementById('login-container').style.display = 'none';
-
-        // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
-
-        // Configura el límite de números
         limiteNumeros = data.limiteNumeros;
-
-        // Guarda el correo del usuario en localStorage
         localStorage.setItem('usuarioEmail', email);
       } else {
         document.getElementById('login-error').textContent = data.error;
@@ -665,21 +658,15 @@
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
+
       const data = await response.json();
 
       if (response.ok) {
-        // Oculta el contenedor de inicio de sesión
         document.getElementById('login-container').style.display = 'none';
-
-        // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
-
-        // Configura el límite de números
         limiteNumeros = data.limiteNumeros;
-
-        // Guarda el correo del usuario en localStorage
         localStorage.setItem('usuarioEmail', email);
 
         // Recupera los datos del usuario actual desde localStorage
