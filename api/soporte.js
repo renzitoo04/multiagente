@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 dotenv.config();
 
 // Conectar a Supabase
@@ -135,6 +137,35 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, link: data.link });
     } catch (error) {
       console.error('Error al actualizar el link:', error);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  }
+
+  // === 4. Autenticación de usuario (GET con email y password) ===
+  if (req.method === 'GET' && req.query.email && req.query.password) {
+    const { email, password } = req.query;
+
+    try {
+      // Leer el archivo usuarios.json
+      const usuariosPath = path.join(__dirname, 'usuarios.json');
+      const usuarios = JSON.parse(fs.readFileSync(usuariosPath, 'utf8'));
+
+      // Buscar el usuario en la lista
+      const usuario = usuarios.find(
+        (u) => u.email === email && u.password === password
+      );
+
+      if (!usuario) {
+        return res.status(401).json({ error: 'Credenciales incorrectas' });
+      }
+
+      // Devolver los datos del usuario
+      return res.status(200).json({
+        success: true,
+        limiteNumeros: usuario.limiteNumeros
+      });
+    } catch (error) {
+      console.error('Error al cargar usuarios:', error);
       return res.status(500).json({ error: 'Error interno del servidor' });
     }
   }

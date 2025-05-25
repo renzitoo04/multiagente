@@ -406,32 +406,6 @@
 
         // Guarda el correo del usuario en localStorage
         localStorage.setItem('usuarioEmail', email);
-
-        // Recupera los datos del usuario actual desde localStorage
-        const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
-        const numerosGuardados = JSON.parse(localStorage.getItem(`numerosGenerados_${email}`)) || [];
-        const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`) || '';
-
-        if (linkGuardado) {
-          // Mostrar los detalles del link
-          document.getElementById('detalles-link').style.display = 'block';
-          document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
-          document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
-
-          // Mostrar el link guardado
-          document.getElementById('output').innerHTML = `
-            <p>Tu link generado:</p>
-            <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
-          `;
-
-          // Mostrar el apartado "Editar Link"
-          document.getElementById('editar-link-container').style.display = 'block';
-          mostrarEditarLink(numerosGuardados);
-        } else {
-          // Ocultar las secciones si no hay datos
-          document.getElementById('detalles-link').style.display = 'none';
-          document.getElementById('editar-link-container').style.display = 'none';
-        }
       } else {
         document.getElementById('login-error').textContent = data.error;
       }
