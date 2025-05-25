@@ -33,5 +33,10 @@
     "email": "oscar@gmail.com",
     "password": "oscar123",
     "limiteNumeros": 2
+  },
+  {
+    "email": "tobi@gmail.com",
+    "password": "tobi123",
+    "limiteNumeros": 2
   }
 ]
