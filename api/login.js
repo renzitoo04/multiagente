@@ -10,7 +10,6 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { email, password } = req.body;
 
-    // Validar que ambos campos estén presentes
     if (!email || !password) {
       return res.status(400).json({ error: 'Faltan datos de inicio de sesión' });
     }
@@ -24,7 +23,6 @@ export default async function handler(req, res) {
         .eq('password', password)
         .single();
 
-      // Manejar errores o credenciales incorrectas
       if (error || !usuario) {
         return res.status(401).json({ error: 'Credenciales incorrectas' });
       }
@@ -40,6 +38,5 @@ export default async function handler(req, res) {
     }
   }
 
-  // Manejar métodos no permitidos
   return res.status(405).json({ error: 'Método no permitido' });
 }
