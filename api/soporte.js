@@ -93,5 +93,33 @@ export default async function handler(req, res) {
     }
   }
 
+  // === 4. ACTUALIZAR LINK ===
+  if (req.method === 'PATCH' && req.url === '/soporte') {
+    const { email, link, numeros, mensaje } = req.body;
+
+    if (!email || !link || !numeros || numeros.length === 0) {
+      return res.status(400).json({ error: 'Datos inválidos para actualizar el link' });
+    }
+
+    try {
+      // Actualizar el link en la base de datos
+      const { error } = await supabase
+        .from('link')
+        .update({ numeros, mensaje })
+        .eq('link', link)
+        .eq('email', email);
+
+      if (error) {
+        console.error('Error actualizando el link en Supabase:', error);
+        return res.status(500).json({ error: 'Error al actualizar el link', detalle: error.message });
+      }
+
+      return res.status(200).json({ message: 'Link actualizado correctamente' });
+    } catch (err) {
+      console.error('Error al actualizar el link:', err);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  }
+
   return res.status(400).json({ error: 'Solicitud inválida' });
 }
