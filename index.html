@@ -341,6 +341,14 @@
     <div id="acortar-link-output" class="output"></div>
   </div>
 
+  <div id="probar-multilink">
+    <!-- Contenido del apartado "Probar Multilink" -->
+  </div>
+
+  <div id="para-que-sirve">
+    <!-- Contenido del apartado "Para qué sirve" -->
+  </div>
+
   <div class="info-container">
     <h2 class="info-title">¿Para qué sirve MultiLink?</h2>
     <p>MultiLink es una herramienta diseñada especialmente para creadores de contenido, emprendedores y vendedores que utilizan WhatsApp como canal principal de ventas o atención.</p>
@@ -406,8 +414,6 @@
     }
 
     try {
-      console.log('Enviando credenciales:', { email }); // No loguear passwords
-
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -415,19 +421,24 @@
       });
 
       const data = await response.json();
-      console.log('Respuesta del servidor:', data);
 
       if (response.ok) {
+        // Ocultar los apartados "Probar Multilink" y "Para qué sirve"
+        document.getElementById('probar-multilink').style.display = 'none';
+        document.getElementById('para-que-sirve').style.display = 'none';
+
+        // Mostrar el generador de links
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
-        limiteNumeros = data.limiteNumeros;
+
+        // Guardar el email del usuario en localStorage
         localStorage.setItem('usuarioEmail', email);
       } else {
-        document.getElementById('login-error').textContent = `Error: ${data.error}`;
+        document.getElementById('login-error').textContent = data.error;
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      document.getElementById('login-error').textContent = 'Error de conexión al servidor.';
+      document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
     }
   }
 
@@ -632,116 +643,7 @@
     } catch (error) {
       console.error('Error actualizando el link:', error);
     }
-  }
-
-  async function acortarLinkManual() {
-    const linkOriginal = document.getElementById('link-original').value.trim();
-
-    if (!linkOriginal) {
-      alert('Por favor, ingresa un link para acortar.');
-      return;
-    }
-
-    try {
-      const response = await fetch('/acortar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: linkOriginal })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        document.getElementById('acortar-link-output').innerHTML = `
-          <p>Link acortado con éxito:</p>
-          <a href="${data.link}" target="_blank">${data.link}</a>
-        `;
-      } else {
-        alert('Error: ' + data.error);
-      }
-    } catch (error) {
-      console.error('Error al acortar el link:', error);
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-  const email = localStorage.getItem('usuarioEmail'); // Correo del usuario logueado
-
-  if (!email) {
-    // Si no hay un usuario logueado, oculta las secciones
-    document.getElementById('detalles-link').style.display = 'none';
-    document.getElementById('editar-link-container').style.display = 'none';
-    return;
-  }
-
-  // Recupera los datos del usuario actual desde localStorage
-  const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
-  const numerosGuardados = JSON.parse(localStorage.getItem(`numerosGenerados_${email}`)) || [];
-  const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`) || '';
-
-  if (linkGuardado) {
-    // Mostrar los detalles del link
-    document.getElementById('detalles-link').style.display = 'block';
-    document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
-    document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
-
-    // Mostrar el link guardado
-    document.getElementById('output').innerHTML = `
-      <p>Tu link generado:</p>
-      <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
-    `;
-
-    // Mostrar los números en el apartado "Editar Link"
-    document.getElementById('editar-link-container').style.display = 'block';
-    mostrarEditarLink(numerosGuardados);
-
-    // Deshabilitar el botón de "Generar Link"
-    document.querySelector('button[onclick="generarLink()"]').disabled = true;
-  } else {
-    // Mostrar las secciones vacías si no hay datos
-    document.getElementById('detalles-link').style.display = 'block';
-    document.getElementById('numeros-generados').textContent = 'Sin números';
-    document.getElementById('mensaje-generado').textContent = 'Sin mensaje';
-
-    document.getElementById('editar-link-container').style.display = 'block';
-    mostrarEditarLink([]); // Muestra las celdas vacías
-  }
-});
-
-async function login() {
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-
-  if (!email || !password) {
-    document.getElementById('login-error').textContent = 'Por favor, ingresa tu correo y contraseña.';
-    return;
-  }
-
-  try {
-    console.log('Enviando credenciales:', { email }); // No loguear passwords
-
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-    console.log('Respuesta del servidor:', data);
-
-    if (response.ok) {
-      document.getElementById('login-container').style.display = 'none';
-      document.getElementById('generador-container').style.display = 'block';
-      limiteNumeros = data.limiteNumeros;
-      localStorage.setItem('usuarioEmail', email);
-    } else {
-      document.getElementById('login-error').textContent = `Error: ${data.error}`;
-    }
-  } catch (error) {
-    console.error('Error al iniciar sesión:', error);
-    document.getElementById('login-error').textContent = 'Error de conexión al servidor.';
-  }
-}
-</script>
+  } // Aquí cerramos correctamente la función
+  </script>
 </body>
 </html>
