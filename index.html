@@ -406,8 +406,6 @@
     }
 
     try {
-      console.log('Enviando credenciales:', { email }); // No loguear passwords
-
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -415,13 +413,41 @@
       });
 
       const data = await response.json();
-      console.log('Respuesta del servidor:', data);
 
       if (response.ok) {
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
         limiteNumeros = data.limiteNumeros;
         localStorage.setItem('usuarioEmail', email);
+
+        // Recuperar el link asociado al perfil
+        const linkResponse = await fetch(`/api/obtener-link?email=${email}`);
+        const linkData = await linkResponse.json();
+
+        if (linkResponse.ok && linkData.link) {
+          // Mostrar el link en el DOM
+          document.getElementById('output').innerHTML = `
+            <p>Tu link generado:</p>
+            <a href="${linkData.link}" target="_blank">${linkData.link}</a>
+          `;
+
+          // Guardar el link en localStorage
+          localStorage.setItem(`linkGenerado_${email}`, linkData.link);
+          localStorage.setItem(`linkID_${email}`, linkData.id);
+          localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
+          localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
+
+          // Mostrar detalles del link
+          document.getElementById('detalles-link').style.display = 'block';
+          document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
+          document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
+
+          // Mostrar el apartado "Editar Link"
+          document.getElementById('editar-link-container').style.display = 'block';
+          mostrarEditarLink(linkData.numeros);
+        } else {
+          document.getElementById('output').innerHTML = '<p>No tienes un link generado. Por favor, genera uno nuevo.</p>';
+        }
       } else {
         document.getElementById('login-error').textContent = `Error: ${data.error}`;
       }
