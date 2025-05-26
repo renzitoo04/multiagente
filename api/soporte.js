@@ -49,7 +49,25 @@ export default async function handler(req, res) {
     const linkOriginal = `${req.headers.origin}/soporte?id=${id}`;
 
     try {
-      // Guardar la configuración en Supabase
+      // Verificar si ya existe un link para este email
+      const { data: existingLink, error: fetchError } = await supabase
+        .from('link')
+        .select('*')
+        .eq('email', email)
+        .single();
+
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        // Error inesperado al buscar el link
+        console.error('Error buscando link existente:', fetchError);
+        return res.status(500).json({ error: 'Error al verificar link existente' });
+      }
+
+      if (existingLink) {
+        // Si ya existe un link, no permitir generar otro
+        return res.status(400).json({ error: 'Ya existe un link generado para este perfil' });
+      }
+
+      // Guardar el nuevo link en la base de datos
       const { error } = await supabase.from('link').insert({
         id,
         email,
@@ -58,10 +76,9 @@ export default async function handler(req, res) {
         link: linkOriginal,
       });
 
-      // Agrega este log aquí:
       if (error) {
-        console.error('Error guardando en Supabase:', error);
-        return res.status(500).json({ error: 'Error al guardar en base de datos', detalle: error.message });
+        console.error('Error guardando link en Supabase:', error);
+        return res.status(500).json({ error: 'Error al guardar el link' });
       }
 
       return res.status(200).json({ id, link: linkOriginal });
@@ -123,7 +140,7 @@ export default async function handler(req, res) {
 
   // === 5. OBTENER LINK POR EMAIL ===
   if (req.method === 'GET' && req.url.startsWith('/api/obtener-link')) {
-    const { email } = req.query;
+    const email = req.query.email;
 
     if (!email) {
       return res.status(400).json({ error: 'Email no proporcionado' });
@@ -137,7 +154,7 @@ export default async function handler(req, res) {
         .single();
 
       if (error || !data) {
-        return res.status(404).json({ error: 'No se encontró un link para este email' });
+        return res.status(404).json({ error: 'No se encontró un link para este perfil' });
       }
 
       return res.status(200).json(data);
