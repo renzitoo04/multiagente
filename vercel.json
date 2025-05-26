@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/soporte", "destination": "/api/soporte.js" },
-    { "source": "/api/login", "destination": "/api/login.js" }
+    { "source": "/api/login", "destination": "/api/login.js" },
+    { "source": "/api/generar-link", "destination": "/api/soporte.js" }
   ]
 }
