@@ -8,6 +8,12 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
+  // Agregar logs para depuración
+  console.log('Solicitud recibida:', {
+    method: req.method,
+    body: req.body
+  });
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
@@ -19,25 +25,27 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Consultar Supabase para validar las credenciales
+    console.log('Consultando Supabase con:', { email, password });
+
     const { data: usuario, error } = await supabase
       .from('usuarios')
-      .select('email, limiteNumeros')
-      .eq('email', email)
-      .eq('password', password) // Asegúrate de que las contraseñas estén almacenadas de forma segura
+      .select('*')  // Seleccionar todos los campos para depuración
+      .eq('email', email.toLowerCase())  // Convertir a minúsculas
+      .eq('password', password)
       .single();
+
+    console.log('Respuesta de Supabase:', { usuario, error });
 
     if (error || !usuario) {
       return res.status(401).json({ error: 'Credenciales incorrectas' });
     }
 
-    // Responder con los datos del usuario
     return res.status(200).json({
       email: usuario.email,
-      limiteNumeros: usuario.limiteNumeros,
+      limiteNumeros: usuario.limiteNumeros
     });
   } catch (err) {
-    console.error('Error al iniciar sesión:', err);
+    console.error('Error en login:', err);
     return res.status(500).json({ error: 'Error interno del servidor' });
   }
 }
