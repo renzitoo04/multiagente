@@ -18,25 +18,27 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Faltan datos de inicio de sesión' });
   }
 
-  // LOG para depuración: muestra los valores recibidos
-  console.log('Email recibido:', email, 'Password recibido:', password);
+  console.log('Email recibido:', email, 'len:', email.length);
+  console.log('Password recibido:', password, 'len:', password.length);
 
   try {
-    // Busca el usuario en la tabla
     const { data: usuario, error } = await supabase
       .from('usuarios')
       .select('email, limiteNumeros, password')
-      .eq('email', email)
+      .eq('email', email.trim())
       .single();
 
     console.log('Resultado búsqueda solo por email:', usuario);
 
-    if (error) {
+    if (error || !usuario) {
       console.log('Error de Supabase:', error);
       return res.status(401).json({ error: 'Usuario no encontrado' });
     }
 
-    if (usuario.password !== password) {
+    console.log('Email en base:', usuario.email, 'len:', usuario.email.length);
+    console.log('Password en base:', usuario.password, 'len:', usuario.password.length);
+
+    if (usuario.password.trim() !== password.trim()) {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
 
