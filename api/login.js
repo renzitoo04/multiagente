@@ -31,7 +31,8 @@ export default async function handler(req, res) {
 
     console.log('Resultado búsqueda solo por email:', usuario);
 
-    if (!usuario) {
+    if (error) {
+      console.log('Error de Supabase:', error);
       return res.status(401).json({ error: 'Usuario no encontrado' });
     }
 
