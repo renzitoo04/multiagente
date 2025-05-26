@@ -298,6 +298,7 @@
     <div class="output" id="output"></div>
     <div class="detalles-link" id="detalles-link" style="display: none;">
       <h3>Detalles del Link Generado:</h3>
+      <p><strong>Link:</strong> <a id="link-generado" href="#" target="_blank"></a></p>
       <p><strong>Números:</strong> <span id="numeros-generados"></span></p>
       <p><strong>Mensaje Automático:</strong> <span id="mensaje-generado"></span></p>
     </div>
@@ -431,16 +432,18 @@
             <a href="${linkData.link}" target="_blank">${linkData.link}</a>
           `;
 
+          // Actualizar el apartado "Detalles del Link"
+          document.getElementById('link-generado').textContent = linkData.link;
+          document.getElementById('link-generado').href = linkData.link;
+          document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
+          document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
+          document.getElementById('detalles-link').style.display = 'block';
+
           // Guardar los datos en localStorage
           localStorage.setItem(`linkGenerado_${email}`, linkData.link);
           localStorage.setItem(`linkID_${email}`, linkData.id);
           localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
           localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
-
-          // Mostrar detalles del link
-          document.getElementById('detalles-link').style.display = 'block';
-          document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
-          document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
 
           // Mostrar el apartado "Editar Link"
           document.getElementById('editar-link-container').style.display = 'block';
@@ -491,16 +494,18 @@
           <a href="${data.link}" target="_blank">${data.link}</a>
         `;
 
+        // Actualizar el apartado "Detalles del Link"
+        document.getElementById('link-generado').textContent = data.link;
+        document.getElementById('link-generado').href = data.link;
+        document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+        document.getElementById('detalles-link').style.display = 'block';
+
         // Guardar los datos en localStorage
         localStorage.setItem(`linkGenerado_${email}`, data.link);
         localStorage.setItem(`linkID_${email}`, data.id);
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-
-        // Mostrar detalles del link
-        document.getElementById('detalles-link').style.display = 'block';
-        document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
         // Mostrar el apartado "Editar Link"
         document.getElementById('editar-link-container').style.display = 'block';
@@ -692,16 +697,18 @@
           <a href="${linkData.link}" target="_blank">${linkData.link}</a>
         `;
 
+        // Actualizar el apartado "Detalles del Link"
+        document.getElementById('link-generado').textContent = linkData.link;
+        document.getElementById('link-generado').href = linkData.link;
+        document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
+        document.getElementById('detalles-link').style.display = 'block';
+
         // Guardar los datos en localStorage
         localStorage.setItem(`linkGenerado_${email}`, linkData.link);
         localStorage.setItem(`linkID_${email}`, linkData.id);
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
-
-        // Mostrar detalles del link
-        document.getElementById('detalles-link').style.display = 'block';
-        document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
 
         // Mostrar el apartado "Editar Link"
         document.getElementById('editar-link-container').style.display = 'block';
