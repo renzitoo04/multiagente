@@ -2,21 +2,12 @@ import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
-console.log('SUPABASE_KEY:', process.env.SUPABASE_KEY);
-
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
 );
 
 export default async function handler(req, res) {
-  // Agregar logs para depuración
-  console.log('Solicitud recibida:', {
-    method: req.method,
-    body: req.body
-  });
-
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
@@ -28,16 +19,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log('Consultando Supabase con:', { email, password });
-
+    // Busca el usuario en la tabla
     const { data: usuario, error } = await supabase
       .from('usuarios')
-      .select('email, limiteNumeros') // Seleccionar solo los campos necesarios
-      .eq('email', email.toLowerCase())  // Convertir a minúsculas
+      .select('email, limiteNumeros')
+      .eq('email', email)
       .eq('password', password)
       .single();
-
-    console.log('Respuesta de Supabase:', { usuario, error });
 
     if (error || !usuario) {
       return res.status(401).json({ error: 'Credenciales incorrectas' });
