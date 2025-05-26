@@ -58,9 +58,10 @@ export default async function handler(req, res) {
         link: linkOriginal,
       });
 
+      // Agrega este log aquí:
       if (error) {
         console.error('Error guardando en Supabase:', error);
-        return res.status(500).json({ error: 'Error al guardar en base de datos' });
+        return res.status(500).json({ error: 'Error al guardar en base de datos', detalle: error.message });
       }
 
       return res.status(200).json({ id, link: linkOriginal });
