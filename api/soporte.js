@@ -50,7 +50,7 @@ export default async function handler(req, res) {
 
     try {
       // Guardar la configuración en Supabase
-      const { error } = await supabase.from('links').insert({
+      const { error } = await supabase.from('link').insert({
         id,
         email,
         numeros,
@@ -75,7 +75,7 @@ export default async function handler(req, res) {
     const { id } = req.query;
 
     try {
-      const { data, error } = await supabase.from('links').select('*').eq('id', id).single();
+      const { data, error } = await supabase.from('link').select('*').eq('id', id).single();
 
       if (error || !data) {
         return res.status(404).json({ error: 'ID no encontrado' });
