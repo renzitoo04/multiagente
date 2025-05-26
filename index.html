@@ -431,7 +431,7 @@
             <a href="${linkData.link}" target="_blank">${linkData.link}</a>
           `;
 
-          // Guardar el link en localStorage
+          // Guardar los datos en localStorage
           localStorage.setItem(`linkGenerado_${email}`, linkData.link);
           localStorage.setItem(`linkID_${email}`, linkData.id);
           localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
@@ -491,28 +491,25 @@
           <a href="${data.link}" target="_blank">${data.link}</a>
         `;
 
-        // GUARDAR detalles en localStorage
+        // Guardar los datos en localStorage
         localStorage.setItem(`linkGenerado_${email}`, data.link);
         localStorage.setItem(`linkID_${email}`, data.id);
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
 
-        // MOSTRAR detalles en el DOM
+        // Mostrar detalles del link
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
-        // Mostrar el contenedor para editar link
+        // Mostrar el apartado "Editar Link"
         document.getElementById('editar-link-container').style.display = 'block';
         mostrarEditarLink(numeros);
-
-        // Deshabilitar el botón de "Generar Link"
-        document.querySelector('button[onclick="generarLink()"]').disabled = true;
       } else {
         alert('Error: ' + data.error);
       }
     } catch (error) {
-      console.error('Error generando link:', error);
+      console.error('Error generando el link:', error);
       document.getElementById('output').innerHTML = '<p>Error al generar el link.</p>';
     }
   }
@@ -606,15 +603,14 @@
   async function actualizarLink() {
     const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
       .map(input => input.value.trim())
-      .filter(num => num !== ''); // Filtra los campos vacíos
+      .filter(num => num !== '');
 
-    const mensaje = document.getElementById('editar-mensaje').value.trim(); // Captura el mensaje actualizado
-    const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
-    const id = localStorage.getItem(`linkID_${email}`); // Recupera el ID guardado
-    const linkGenerado = localStorage.getItem(`linkGenerado_${email}`); // Recupera el link corto guardado
+    const mensaje = document.getElementById('editar-mensaje').value.trim();
+    const email = localStorage.getItem('usuarioEmail');
+    const link = localStorage.getItem(`linkGenerado_${email}`);
 
-    if (!email || !id) {
-      alert('No se encontró un usuario o ID guardado. Por favor, inicia sesión y genera un link primero.');
+    if (!email || !link) {
+      alert('No se encontró un usuario o link guardado. Por favor, inicia sesión y genera un link primero.');
       return;
     }
 
@@ -623,15 +619,11 @@
       return;
     }
 
-    // Reconstruye el link original usando el ID
-    const linkOriginal = `${location.origin}/soporte?id=${id}`;
-
     try {
-      // Envía los números, el mensaje y el email al backend
       const response = await fetch('/soporte', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, link: linkOriginal, numeros, mensaje }),
+        body: JSON.stringify({ email, link, numeros, mensaje }),
       });
 
       const data = await response.json();
@@ -639,17 +631,11 @@
       if (response.ok) {
         alert('Link actualizado correctamente.');
 
-        // Actualiza los detalles del link en el DOM
+        // Actualizar los detalles en el DOM
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
-        // Muestra el link corto guardado en el DOM (sin reemplazarlo)
-        document.getElementById('output').innerHTML = `
-          <p>Tu link actualizado:</p>
-          <a href="${linkGenerado}" target="_blank">${linkGenerado}</a>
-        `;
-
-        // Guarda los números y el mensaje actualizados en localStorage
+        // Guardar los datos actualizados en localStorage
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
       } else {
@@ -705,6 +691,12 @@
           <p>Tu link generado:</p>
           <a href="${linkData.link}" target="_blank">${linkData.link}</a>
         `;
+
+        // Guardar los datos en localStorage
+        localStorage.setItem(`linkGenerado_${email}`, linkData.link);
+        localStorage.setItem(`linkID_${email}`, linkData.id);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
 
         // Mostrar detalles del link
         document.getElementById('detalles-link').style.display = 'block';
