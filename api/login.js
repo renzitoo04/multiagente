@@ -27,6 +27,9 @@ export default async function handler(req, res) {
       .eq('password', password)
       .single();
 
+    // Después de la consulta a supabase
+    console.log('Usuario encontrado:', usuario, 'Error:', error);
+
     if (error || !usuario) {
       return res.status(401).json({ error: 'Credenciales incorrectas' });
     }
