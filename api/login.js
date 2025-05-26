@@ -2,6 +2,9 @@ import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 dotenv.config();
 
+console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
+console.log('SUPABASE_KEY:', process.env.SUPABASE_KEY);
+
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
@@ -29,7 +32,7 @@ export default async function handler(req, res) {
 
     const { data: usuario, error } = await supabase
       .from('usuarios')
-      .select('*')  // Seleccionar todos los campos para depuración
+      .select('email, limiteNumeros') // Seleccionar solo los campos necesarios
       .eq('email', email.toLowerCase())  // Convertir a minúsculas
       .eq('password', password)
       .single();
