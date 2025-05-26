@@ -149,7 +149,7 @@ export default async function handler(req, res) {
     try {
       const { data, error } = await supabase
         .from('link')
-        .select('*')
+        .select('id, link, numeros, mensaje')
         .eq('email', email)
         .single();
 
