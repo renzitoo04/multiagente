@@ -690,28 +690,36 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-  const email = localStorage.getItem('usuarioEmail'); // Correo del usuario logueado
+  document.addEventListener('DOMContentLoaded', async () => {
+  const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
 
-  // Recupera los datos del usuario actual desde localStorage
-  const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
-  const numerosGuardados = JSON.parse(localStorage.getItem(`numerosGenerados_${email}`)) || [];
-  const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`) || '';
+  if (email) {
+    try {
+      // Recuperar el link asociado al perfil
+      const linkResponse = await fetch(`/api/obtener-link?email=${email}`);
+      const linkData = await linkResponse.json();
 
-  // Mostrar el apartado "Editar Link" siempre
-  document.getElementById('editar-link-container').style.display = 'block';
+      if (linkResponse.ok && linkData.link) {
+        // Mostrar el link en el DOM
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${linkData.link}" target="_blank">${linkData.link}</a>
+        `;
 
-  if (linkGuardado) {
-    // Mostrar los detalles del link
-    document.getElementById('detalles-link').style.display = 'block';
-    document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
-    document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
+        // Mostrar detalles del link
+        document.getElementById('detalles-link').style.display = 'block';
+        document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
 
-    // Mostrar los números en el apartado "Editar Link"
-    mostrarEditarLink(numerosGuardados);
-  } else {
-    // Mostrar las celdas vacías si no hay datos
-    mostrarEditarLink([]);
+        // Mostrar el apartado "Editar Link"
+        document.getElementById('editar-link-container').style.display = 'block';
+        mostrarEditarLink(linkData.numeros);
+      } else {
+        document.getElementById('output').innerHTML = '<p>No tienes un link generado. Por favor, genera uno nuevo.</p>';
+      }
+    } catch (error) {
+      console.error('Error al recuperar el link:', error);
+    }
   }
 });
 </script>
