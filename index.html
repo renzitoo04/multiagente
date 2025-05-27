@@ -305,7 +305,7 @@
   </div>
 
   <!-- Contenedor para prueba de MultiLink -->
-  <div id="probar-multilink-container">
+  <div id="probar-multilink-container" style="display: none;">
     <h1>Probar MultiLink</h1>
     <form id="form-multilink">
       <div id="numero-prueba-container" class="numero-container">
@@ -342,7 +342,7 @@
   </div>
 
   <!-- Apartado "¿Para qué sirve?" -->
-  <div id="info-container" class="info-container">
+  <div id="info-container" class="info-container" style="display: none;">
     <h2 class="info-title">¿Para qué sirve MultiLink?</h2>
     <p>MultiLink es una herramienta diseñada especialmente para creadores de contenido, emprendedores y vendedores que utilizan WhatsApp como canal principal de ventas o atención.</p>
     <ul>
@@ -675,23 +675,33 @@
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
-  const email = localStorage.getItem('usuarioEmail');
+    const email = localStorage.getItem('usuarioEmail');
 
-  if (email) {
-    // Ocultar login
-    document.getElementById('login-container').style.display = 'none';
+    if (email) {
+      // Ocultar el contenedor de login
+      document.getElementById('login-container').style.display = 'none';
 
-    // Ocultar los apartados de "Probar MultiLink" y "¿Para qué sirve?"
-    document.getElementById('probar-multilink-container').style.display = 'none';
-    document.getElementById('info-container').style.display = 'none';
+      // Ocultar los apartados de "Probar MultiLink" y "¿Para qué sirve?"
+      document.getElementById('probar-multilink-container').style.display = 'none';
+      document.getElementById('info-container').style.display = 'none';
 
-    // Mostrar el generador
-    document.getElementById('generador-container').style.display = 'block';
+      // Mostrar el generador
+      document.getElementById('generador-container').style.display = 'block';
 
-    // Cargar el link del usuario
-    await cargarLinkDelUsuario();
-  }
-});
+      // Cargar el link del usuario
+      await cargarLinkDelUsuario();
+    } else {
+      // Si no hay usuario logueado, mostrar el login
+      document.getElementById('login-container').style.display = 'block';
+
+      // Ocultar los apartados de "Probar MultiLink" y "¿Para qué sirve?"
+      document.getElementById('probar-multilink-container').style.display = 'none';
+      document.getElementById('info-container').style.display = 'none';
+
+      // Ocultar el generador
+      document.getElementById('generador-container').style.display = 'none';
+    }
+  });
 </script>
 </body>
 </html>
