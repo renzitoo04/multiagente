@@ -275,33 +275,12 @@
 
   <!-- Contenedor principal del generador -->
   <div id="generador-container" style="display: none;">
-    <h1>Generador de Links Multiagente</h1>
-    <form id="form">
-      <div id="numeros-container">
-        <div class="numero-container" id="numero-container-1">
-          <span class="bandera-container">
-            <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
-          </span>
-          <input type="text" id="numero-1" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
-        </div>
-      </div>
-      <button type="button" onclick="agregarNumero()">Agregar otro número</button>
-      <button type="button" onclick="quitarUltimoNumero()">Quitar último número</button>
-
-      <!-- Campo de mensaje automático en el generador principal -->
-      <label for="mensaje">Mensaje automático:</label>
-      <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
-
-      <button type="button" onclick="generarLink()">Generar Link</button>
-    </form>
-
     <div class="output" id="output"></div>
     <div class="detalles-link" id="detalles-link" style="display: none;">
       <h3>Detalles del Link Generado:</h3>
       <p><strong>Números:</strong> <span id="numeros-generados"></span></p>
       <p><strong>Mensaje Automático:</strong> <span id="mensaje-generado"></span></p>
     </div>
-    
   </div>
 
   <!-- Contenedor para prueba de MultiLink -->
@@ -415,15 +394,27 @@
       const data = await response.json();
 
       if (response.ok) {
+        // Guardar el email en localStorage
         localStorage.setItem('usuarioEmail', email);
+
+        // Ocultar el contenedor de login y mostrar el generador
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
 
-        if (data.configuracion) {
-          const { link, numeros, mensaje } = data.configuracion;
+        // Si el usuario ya tiene un link, mostrar los detalles
+        if (data.link) {
+          const { link, numeros, mensaje } = data.link;
           document.getElementById('detalles-link').style.display = 'block';
           document.getElementById('numeros-generados').textContent = numeros.join(', ');
           document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+          document.getElementById('output').innerHTML = `
+            <p>Tu link generado:</p>
+            <a href="${link}" target="_blank">${link}</a>
+          `;
+        } else {
+          // Si no tiene un link, ocultar los detalles
+          document.getElementById('detalles-link').style.display = 'none';
+          document.getElementById('output').innerHTML = '<p>Aún no tienes un link generado.</p>';
         }
       } else {
         document.getElementById('login-error').textContent = data.error;
@@ -440,7 +431,7 @@
       .filter(num => num !== '');
 
     const mensaje = document.getElementById('mensaje').value.trim();
-    const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
+    const email = localStorage.getItem('usuarioEmail');
 
     if (!email) {
       alert('Por favor, inicia sesión antes de generar un link.');
@@ -453,10 +444,7 @@
     }
 
     try {
-      // Muestra un mensaje de carga mientras se genera el link
-      document.getElementById('output').innerHTML = `<p>Generando link...</p>`;
-
-      const response = await fetch('/soporte', {
+      const response = await fetch('/api/generar-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, numeros, mensaje }),
@@ -465,39 +453,22 @@
       const data = await response.json();
 
       if (response.ok) {
-        const link = data.link; // Obtén el link del backend
-        const id = data.id; // Obtén el ID del backend
-
-        // Guardar datos en localStorage con el email como prefijo
-        localStorage.setItem(`linkGenerado_${email}`, link);
-        localStorage.setItem(`linkID_${email}`, id);
-        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
-        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-
-        // Muestra el link generado en el DOM
+        // Mostrar el link generado
         document.getElementById('output').innerHTML = `
           <p>Tu link generado:</p>
-          <a href="${link}" target="_blank">${link}</a>
+          <a href="${data.link}" target="_blank">${data.link}</a>
         `;
 
-        // Muestra los detalles del link
+        // Mostrar los detalles del link en el DOM
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
-        // Muestra el apartado "Editar Link"
-        document.getElementById('editar-link-container').style.display = 'block';
-        mostrarEditarLink(numeros);
-
-        // Deshabilitar el botón de "Generar Link"
-        document.querySelector('button[onclick="generarLink()"]').disabled = true;
       } else {
         alert('Error: ' + data.error);
-        document.getElementById('output').innerHTML = ''; // Limpia el mensaje de carga si hay un error
       }
     } catch (error) {
-      console.error('Error generando link:', error);
-      document.getElementById('output').innerHTML = `<p>Error al generar el link. Inténtalo de nuevo.</p>`;
+      console.error('Error generando el link:', error);
+      document.getElementById('output').innerHTML = '<p>Error al generar el link.</p>';
     }
   }
 
@@ -737,15 +708,27 @@ async function login() {
     const data = await response.json();
 
     if (response.ok) {
+      // Guardar el email en localStorage
       localStorage.setItem('usuarioEmail', email);
+
+      // Ocultar el contenedor de login y mostrar el generador
       document.getElementById('login-container').style.display = 'none';
       document.getElementById('generador-container').style.display = 'block';
 
-      if (data.configuracion) {
-        const { link, numeros, mensaje } = data.configuracion;
+      // Si el usuario ya tiene un link, mostrar los detalles
+      if (data.link) {
+        const { link, numeros, mensaje } = data.link;
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${link}" target="_blank">${link}</a>
+        `;
+      } else {
+        // Si no tiene un link, ocultar los detalles
+        document.getElementById('detalles-link').style.display = 'none';
+        document.getElementById('output').innerHTML = '<p>Aún no tienes un link generado.</p>';
       }
     } else {
       document.getElementById('login-error').textContent = data.error;

@@ -24,29 +24,38 @@ export default async function handler(req, res) {
   console.log('Password recibido:', password, 'len:', password.length);
 
   try {
+    // Verificar usuario en la tabla "usuarios"
     const { data: usuario, error } = await supabase
       .from('usuarios')
       .select('email, limiteNumeros, password')
       .eq('email', email.trim())
       .single();
 
-    console.log('Resultado búsqueda solo por email:', usuario);
-
     if (error || !usuario) {
       console.log('Error de Supabase:', error);
       return res.status(401).json({ error: 'Usuario no encontrado' });
     }
 
-    console.log('Email en base:', usuario.email, 'len:', usuario.email.length);
-    console.log('Password en base:', usuario.password, 'len:', usuario.password.length);
-
     if (usuario.password.trim() !== password.trim()) {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
 
+    // Verificar si el usuario tiene un link en la tabla "link"
+    const { data: link, error: linkError } = await supabase
+      .from('link')
+      .select('id, link, numeros, mensaje')
+      .eq('email', email.trim())
+      .single();
+
+    if (linkError && linkError.code !== 'PGRST116') {
+      console.error('Error al verificar el link:', linkError);
+      return res.status(500).json({ error: 'Error al verificar el link' });
+    }
+
     return res.status(200).json({
       email: usuario.email,
-      limiteNumeros: usuario.limiteNumeros
+      limiteNumeros: usuario.limiteNumeros,
+      link: link || null, // Si no hay link, devuelve null
     });
   } catch (err) {
     console.error('Error en login:', err);
