@@ -121,5 +121,31 @@ export default async function handler(req, res) {
     }
   }
 
+  // === 5. OBTENER LINK ===
+  if (req.method === 'GET' && req.url.startsWith('/api/obtener-link')) {
+    const email = req.query.email;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email no proporcionado' });
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('link')
+        .select('id, link, numeros, mensaje')
+        .eq('email', email)
+        .single();
+
+      if (error || !data) {
+        return res.status(404).json({ error: 'No se encontró un link para este perfil' });
+      }
+
+      return res.status(200).json(data);
+    } catch (err) {
+      console.error('Error al obtener el link:', err);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  }
+
   return res.status(400).json({ error: 'Solicitud inválida' });
 }
