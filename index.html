@@ -313,22 +313,7 @@
     
   </div>
 
-  <!-- Contenedor para prueba de MultiLink -->
-  <div id="probar-multilink-container">
-    <h1>Probar MultiLink</h1>
-    <form id="form-multilink">
-      <div id="numero-prueba-container" class="numero-container">
-        <span class="bandera-container">
-          <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
-        </span>
-        <input type="text" id="numero-prueba" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
-      </div>
-      <label for="mensaje-prueba">Mensaje automático:</label>
-      <input type="text" id="mensaje-prueba" placeholder="Ejemplo: Hola, necesito ayuda">
-      <button type="button" onclick="generarLinkPrueba()">Generar Link</button>
-    </form>
-    <div class="output" id="output-prueba"></div>
-  </div>
+  
 
   <!-- Contenedor para editar link -->
   <div id="editar-link-container" style="display: none;">
@@ -350,17 +335,7 @@
     <div id="acortar-link-output" class="output"></div>
   </div>
 
-  <div class="info-container">
-    <h2 class="info-title">¿Para qué sirve MultiLink?</h2>
-    <p>MultiLink es una herramienta diseñada especialmente para creadores de contenido, emprendedores y vendedores que utilizan WhatsApp como canal principal de ventas o atención.</p>
-    <ul>
-      <li>Evitar bloqueos por exceso de mensajes en una sola línea</li>
-      <li>Distribuir el flujo de clientes entre diferentes operadores</li>
-      <li>Atender más rápido y de forma organizada</li>
-      <li>Adaptarse al crecimiento de tu negocio sin complicaciones</li>
-    </ul>
-    <p>Ya sea que vendas por WhatsApp, Telegram, redes sociales o tiendas online, MultiLink te ayuda a optimizar tu atención al cliente y aumentar tus conversiones.</p>
-  </div>
+  
 
   <!-- Detalles del Link Generado (nuevo contenedor) -->
   <div id="detalles-link-container" style="display: none; margin-top: 20px;">
@@ -447,6 +422,9 @@
 
           document.getElementById('detalles-link-container').style.display = 'block';
         }
+
+        limiteNumeros = data.limiteNumeros; // Asigna el valor de limiteNumeros devuelto por el backend
+        console.log('Limite de números:', limiteNumeros); // Verifica que el valor sea correcto
       } else {
         document.getElementById('login-error').textContent = data.error;
       }
@@ -752,6 +730,9 @@ async function login() {
 
         document.getElementById('detalles-link-container').style.display = 'block';
       }
+
+      limiteNumeros = data.limiteNumeros; // Asigna el valor de limiteNumeros devuelto por el backend
+      console.log('Limite de números:', limiteNumeros); // Verifica que el valor sea correcto
     } else {
       document.getElementById('login-error').textContent = data.error;
     }
