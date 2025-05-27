@@ -462,7 +462,18 @@
       const data = await response.json();
 
       if (response.ok) {
-        // Actualizar el contenido del contenedor con los detalles del link
+        // Guardar el link generado y los datos en localStorage
+        localStorage.setItem(`linkGenerado_${email}`, data.link);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
+
+        // Mostrar el link generado en el contenedor #output
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${data.link}" target="_blank">${data.link}</a>
+        `;
+
+        // Actualizar los detalles del link en el contenedor #detalles-link-container
         document.getElementById('link-generado').href = data.link;
         document.getElementById('link-generado').textContent = data.link;
         document.getElementById('numeros-rotativos').textContent = numeros.join(', ');
@@ -685,14 +696,6 @@
 
     // Deshabilitar el botón de "Generar Link"
     document.querySelector('button[onclick="generarLink()"]').disabled = true;
-  } else {
-    // Mostrar las secciones vacías si no hay datos
-    document.getElementById('detalles-link').style.display = 'block';
-    document.getElementById('numeros-generados').textContent = 'Sin números';
-    document.getElementById('mensaje-generado').textContent = 'Sin mensaje';
-
-    document.getElementById('editar-link-container').style.display = 'block';
-    mostrarEditarLink([]); // Muestra las celdas vacías
   }
 });
 
