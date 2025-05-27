@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import bcrypt from 'bcrypt'; // Importa bcrypt para comparar contraseñas
 dotenv.config();
 
 console.log('Conectando a:', process.env.SUPABASE_URL);
@@ -21,28 +20,36 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Faltan datos de inicio de sesión' });
   }
 
+  console.log('Email recibido:', email, 'len:', email.length);
+  console.log('Password recibido:', password, 'len:', password.length);
+
   try {
-    // Recupera el usuario desde la tabla "users"
-    const { data: user, error } = await supabase
-      .from('users')
-      .select('email, password, limiteNumeros') // Asegúrate de incluir la columna "password"
-      .eq('email', email)
+    const { data: usuario, error } = await supabase
+      .from('usuarios')
+      .select('email, limiteNumeros, password')
+      .eq('email', email.trim())
       .single();
 
-    if (error || !user) {
-      return res.status(401).json({ error: 'Credenciales inválidas' });
+    console.log('Resultado búsqueda solo por email:', usuario);
+
+    if (error || !usuario) {
+      console.log('Error de Supabase:', error);
+      return res.status(401).json({ error: 'Usuario no encontrado' });
     }
 
-    // Compara la contraseña ingresada con la almacenada
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      return res.status(401).json({ error: 'Credenciales inválidas' });
+    console.log('Email en base:', usuario.email, 'len:', usuario.email.length);
+    console.log('Password en base:', usuario.password, 'len:', usuario.password.length);
+
+    if (usuario.password.trim() !== password.trim()) {
+      return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
 
-    // Devuelve el límite de números junto con otros datos del usuario
-    return res.status(200).json({ email: user.email, limiteNumeros: user.limiteNumeros || 2 });
+    return res.status(200).json({
+      email: usuario.email,
+      limiteNumeros: usuario.limiteNumeros
+    });
   } catch (err) {
-    console.error('Error al iniciar sesión:', err);
+    console.error('Error en login:', err);
     return res.status(500).json({ error: 'Error interno del servidor' });
   }
 }

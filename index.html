@@ -255,22 +255,6 @@
   #acortar-link-container h3 {
     color: #25d366; /* Verde de WhatsApp */
   }
-
-  /* Nuevo estilo para el apartado de detalles del usuario */
-  #detalles-usuario {
-    display: none;
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #1c2541; /* Azul más claro */
-    border: 1px solid #3a506b;
-    border-radius: 4px;
-    color: #ffffff;
-  }
-
-  #detalles-usuario h3 {
-    margin-top: 0;
-    color: #25d366; /* Verde de WhatsApp */
-  }
   </style>
 </head>
 <body>
@@ -314,20 +298,10 @@
     <div class="output" id="output"></div>
     <div class="detalles-link" id="detalles-link" style="display: none;">
       <h3>Detalles del Link Generado:</h3>
-      <p><strong>Link:</strong> <a id="link-generado" href="#" target="_blank"></a></p>
       <p><strong>Números:</strong> <span id="numeros-generados"></span></p>
       <p><strong>Mensaje Automático:</strong> <span id="mensaje-generado"></span></p>
     </div>
     
-  </div>
-
-  <!-- Contenedor para editar link -->
-  <div id="editar-link-container" style="display: none;">
-    <h3>Editar Link</h3>
-    <div id="editar-numeros-container"></div>
-    <label for="editar-mensaje">Mensaje Automático:</label>
-    <input type="text" id="editar-mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
-    <button onclick="actualizarLink()">Actualizar Link</button>
   </div>
 
   <!-- Contenedor para prueba de MultiLink -->
@@ -347,6 +321,15 @@
     <div class="output" id="output-prueba"></div>
   </div>
 
+  <!-- Contenedor para editar link -->
+  <div id="editar-link-container" style="display: none;">
+    <h3>Editar Link</h3>
+    <div id="editar-numeros-container"></div>
+    <label for="editar-mensaje">Mensaje Automático:</label>
+    <input type="text" id="editar-mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
+    <button onclick="actualizarLink()">Actualizar Link</button>
+  </div>
+
   <!-- Contenedor para acortar link manualmente -->
   <div id="acortar-link-container" style="display: none; margin-top: 20px;">
     <h3>Acortar Link</h3>
@@ -356,15 +339,6 @@
       <button type="button" onclick="acortarLinkManual()">Acortar Link</button>
     </form>
     <div id="acortar-link-output" class="output"></div>
-  </div>
-
-  <!-- Nuevo apartado para mostrar los detalles del usuario -->
-  <div id="detalles-usuario" style="display: none; margin-top: 20px;">
-    <h3>Detalles del Usuario</h3>
-    <p><strong>Email:</strong> <span id="usuario-email"></span></p>
-    <p><strong>Link Generado:</strong> <a id="usuario-link" href="#" target="_blank"></a></p>
-    <p><strong>Números:</strong> <span id="usuario-numeros"></span></p>
-    <p><strong>Mensaje Automático:</strong> <span id="usuario-mensaje"></span></p>
   </div>
 
   <div class="info-container">
@@ -432,6 +406,8 @@
     }
 
     try {
+      console.log('Enviando credenciales:', { email }); // No loguear passwords
+
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -439,37 +415,13 @@
       });
 
       const data = await response.json();
+      console.log('Respuesta del servidor:', data);
 
       if (response.ok) {
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
+        limiteNumeros = data.limiteNumeros;
         localStorage.setItem('usuarioEmail', email);
-
-        // Establecer el límite de números desde el backend o un valor predeterminado
-        limiteNumeros = data.limiteNumeros || 2; // Si no se devuelve un límite, usa 2 como predeterminado
-
-        // Recuperar el link asociado al perfil
-        const linkResponse = await fetch(`/api/obtener-link?email=${email}`);
-        const linkData = await linkResponse.json();
-
-        if (linkResponse.ok && linkData.link) {
-          // Mostrar los detalles del usuario en el DOM
-          document.getElementById('usuario-email').textContent = email;
-          document.getElementById('usuario-link').textContent = linkData.link;
-          document.getElementById('usuario-link').href = linkData.link;
-          document.getElementById('usuario-numeros').textContent = linkData.numeros.join(', ');
-          document.getElementById('usuario-mensaje').textContent = linkData.mensaje || 'Sin mensaje';
-          document.getElementById('detalles-usuario').style.display = 'block';
-
-          // Guardar los datos en localStorage
-          localStorage.setItem(`linkGenerado_${email}`, linkData.link);
-          localStorage.setItem(`linkID_${email}`, linkData.id);
-          localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
-          localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
-        } else {
-          document.getElementById('detalles-usuario').style.display = 'none';
-          console.log('No se encontró un link para este usuario.');
-        }
       } else {
         document.getElementById('login-error').textContent = `Error: ${data.error}`;
       }
@@ -513,30 +465,28 @@
           <a href="${data.link}" target="_blank">${data.link}</a>
         `;
 
-        // Actualizar el apartado "Detalles del Link"
-        document.getElementById('link-generado').textContent = data.link;
-        document.getElementById('link-generado').href = data.link;
-        document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-        document.getElementById('detalles-link').style.display = 'block';
-
-        // Mostrar los detalles del usuario
-        mostrarDetallesUsuario(email, { link: data.link, numeros, mensaje });
-
-        // Guardar los datos en localStorage
+        // GUARDAR detalles en localStorage
         localStorage.setItem(`linkGenerado_${email}`, data.link);
         localStorage.setItem(`linkID_${email}`, data.id);
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
 
-        // Mostrar el apartado "Editar Link"
+        // MOSTRAR detalles en el DOM
+        document.getElementById('detalles-link').style.display = 'block';
+        document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+
+        // Mostrar el contenedor para editar link
         document.getElementById('editar-link-container').style.display = 'block';
         mostrarEditarLink(numeros);
+
+        // Deshabilitar el botón de "Generar Link"
+        document.querySelector('button[onclick="generarLink()"]').disabled = true;
       } else {
         alert('Error: ' + data.error);
       }
     } catch (error) {
-      console.error('Error generando el link:', error);
+      console.error('Error generando link:', error);
       document.getElementById('output').innerHTML = '<p>Error al generar el link.</p>';
     }
   }
@@ -630,14 +580,15 @@
   async function actualizarLink() {
     const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
       .map(input => input.value.trim())
-      .filter(num => num !== '');
+      .filter(num => num !== ''); // Filtra los campos vacíos
 
-    const mensaje = document.getElementById('editar-mensaje').value.trim();
-    const email = localStorage.getItem('usuarioEmail');
-    const link = localStorage.getItem(`linkGenerado_${email}`);
+    const mensaje = document.getElementById('editar-mensaje').value.trim(); // Captura el mensaje actualizado
+    const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
+    const id = localStorage.getItem(`linkID_${email}`); // Recupera el ID guardado
+    const linkGenerado = localStorage.getItem(`linkGenerado_${email}`); // Recupera el link corto guardado
 
-    if (!email || !link) {
-      alert('No se encontró un usuario o link guardado. Por favor, inicia sesión y genera un link primero.');
+    if (!email || !id) {
+      alert('No se encontró un usuario o ID guardado. Por favor, inicia sesión y genera un link primero.');
       return;
     }
 
@@ -646,11 +597,15 @@
       return;
     }
 
+    // Reconstruye el link original usando el ID
+    const linkOriginal = `${location.origin}/soporte?id=${id}`;
+
     try {
+      // Envía los números, el mensaje y el email al backend
       const response = await fetch('/soporte', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, link, numeros, mensaje }),
+        body: JSON.stringify({ email, link: linkOriginal, numeros, mensaje }),
       });
 
       const data = await response.json();
@@ -658,11 +613,17 @@
       if (response.ok) {
         alert('Link actualizado correctamente.');
 
-        // Actualizar los detalles en el DOM
+        // Actualiza los detalles del link en el DOM
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
-        // Guardar los datos actualizados en localStorage
+        // Muestra el link corto guardado en el DOM (sin reemplazarlo)
+        document.getElementById('output').innerHTML = `
+          <p>Tu link actualizado:</p>
+          <a href="${linkGenerado}" target="_blank">${linkGenerado}</a>
+        `;
+
+        // Guarda los números y el mensaje actualizados en localStorage
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
       } else {
@@ -703,60 +664,84 @@
     }
   }
 
-  function mostrarDetallesUsuario(email, linkData) {
-    document.getElementById('usuario-email').textContent = email;
-    document.getElementById('usuario-link').textContent = linkData.link;
-    document.getElementById('usuario-link').href = linkData.link;
-    document.getElementById('usuario-numeros').textContent = linkData.numeros.join(', ');
-    document.getElementById('usuario-mensaje').textContent = linkData.mensaje || 'Sin mensaje';
-    document.getElementById('detalles-usuario').style.display = 'block';
+  document.addEventListener('DOMContentLoaded', () => {
+  const email = localStorage.getItem('usuarioEmail'); // Correo del usuario logueado
+
+  if (!email) {
+    // Si no hay un usuario logueado, oculta las secciones
+    document.getElementById('detalles-link').style.display = 'none';
+    document.getElementById('editar-link-container').style.display = 'none';
+    return;
   }
 
-  document.addEventListener('DOMContentLoaded', async () => {
-  const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
+  // Recupera los datos del usuario actual desde localStorage
+  const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
+  const numerosGuardados = JSON.parse(localStorage.getItem(`numerosGenerados_${email}`)) || [];
+  const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`) || '';
 
-  if (email) {
-    try {
-      // Recuperar el link asociado al perfil
-      const linkResponse = await fetch(`/api/obtener-link?email=${email}`);
-      const linkData = await linkResponse.json();
+  if (linkGuardado) {
+    // Mostrar los detalles del link
+    document.getElementById('detalles-link').style.display = 'block';
+    document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
+    document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
 
-      if (linkResponse.ok && linkData.link) {
-        // Mostrar el link en el DOM
-        document.getElementById('output').innerHTML = `
-          <p>Tu link generado:</p>
-          <a href="${linkData.link}" target="_blank">${linkData.link}</a>
-        `;
+    // Mostrar el link guardado
+    document.getElementById('output').innerHTML = `
+      <p>Tu link generado:</p>
+      <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
+    `;
 
-        // Actualizar el apartado "Detalles del Link"
-        document.getElementById('link-generado').textContent = linkData.link;
-        document.getElementById('link-generado').href = linkData.link;
-        document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
-        document.getElementById('detalles-link').style.display = 'block';
+    // Mostrar los números en el apartado "Editar Link"
+    document.getElementById('editar-link-container').style.display = 'block';
+    mostrarEditarLink(numerosGuardados);
 
-        // Mostrar los detalles del usuario
-        mostrarDetallesUsuario(email, linkData);
+    // Deshabilitar el botón de "Generar Link"
+    document.querySelector('button[onclick="generarLink()"]').disabled = true;
+  } else {
+    // Mostrar las secciones vacías si no hay datos
+    document.getElementById('detalles-link').style.display = 'block';
+    document.getElementById('numeros-generados').textContent = 'Sin números';
+    document.getElementById('mensaje-generado').textContent = 'Sin mensaje';
 
-        // Guardar los datos en localStorage
-        localStorage.setItem(`linkGenerado_${email}`, linkData.link);
-        localStorage.setItem(`linkID_${email}`, linkData.id);
-        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
-        localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
-
-        // Mostrar el apartado "Editar Link"
-        document.getElementById('editar-link-container').style.display = 'block';
-        mostrarEditarLink(linkData.numeros);
-      } else {
-        document.getElementById('output').innerHTML = '<p>No tenés ningún link generado aún.</p>';
-        document.getElementById('detalles-link').style.display = 'none';
-        document.getElementById('editar-link-container').style.display = 'none';
-      }
-    } catch (error) {
-      console.error('Error al recuperar el link:', error);
-    }
+    document.getElementById('editar-link-container').style.display = 'block';
+    mostrarEditarLink([]); // Muestra las celdas vacías
   }
 });
+
+async function login() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  if (!email || !password) {
+    document.getElementById('login-error').textContent = 'Por favor, ingresa tu correo y contraseña.';
+    return;
+  }
+
+  try {
+    console.log('Enviando credenciales:', { email }); // No loguear passwords
+
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+    console.log('Respuesta del servidor:', data);
+
+    if (response.ok) {
+      document.getElementById('login-container').style.display = 'none';
+      document.getElementById('generador-container').style.display = 'block';
+      limiteNumeros = data.limiteNumeros;
+      localStorage.setItem('usuarioEmail', email);
+    } else {
+      document.getElementById('login-error').textContent = `Error: ${data.error}`;
+    }
+  } catch (error) {
+    console.error('Error al iniciar sesión:', error);
+    document.getElementById('login-error').textContent = 'Error de conexión al servidor.';
+  }
+}
 </script>
 </body>
 </html>
