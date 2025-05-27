@@ -397,46 +397,58 @@
   }
 
   async function login() {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
+  localStorage.clear(); // 🔥 Limpia antes de guardar los datos nuevos
 
-    if (!email || !password) {
-      document.getElementById('login-error').textContent = 'Por favor, ingresa tu correo y contraseña.';
-      return;
-    }
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
 
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('usuarioEmail', email);
-        document.getElementById('login-container').style.display = 'none';
-        document.getElementById('generador-container').style.display = 'block';
-
-        if (data.link) {
-          const { link, numeros, mensaje } = data.link;
-          document.getElementById('detalles-link').style.display = 'block';
-          document.getElementById('numeros-generados').textContent = numeros.join(', ');
-          document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-          document.getElementById('output').innerHTML = `
-            <p>Tu link generado:</p>
-            <a href="${link}" target="_blank">${link}</a>
-          `;
-        }
-      } else {
-        document.getElementById('login-error').textContent = data.error;
-      }
-    } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
-    }
+  if (!email || !password) {
+    document.getElementById('login-error').textContent = 'Por favor, ingresa tu correo y contraseña.';
+    return;
   }
+
+  try {
+    const response = await fetch(`/soporte?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+    const data = await response.json();
+
+    if (response.ok) {
+      // Guardar el email en localStorage
+      localStorage.setItem('usuarioEmail', email);
+
+      // Ocultar el contenedor de inicio de sesión y mostrar el generador
+      document.getElementById('login-container').style.display = 'none';
+      document.getElementById('generador-container').style.display = 'block';
+
+      // Si Supabase tiene un link, mostrar los detalles
+      if (data.link) {
+        const { link, numeros, mensaje } = data.link;
+
+        // Guardar los datos en localStorage
+        localStorage.setItem(`linkGenerado_${email}`, link);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
+
+        // Mostrar los detalles del link en el DOM
+        document.getElementById('detalles-link').style.display = 'block';
+        document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${link}" target="_blank">${link}</a>
+        `;
+      } else {
+        // Si no hay link, ocultar los detalles
+        document.getElementById('detalles-link').style.display = 'none';
+        document.getElementById('output').innerHTML = '<p>Aún no tienes un link generado.</p>';
+      }
+    } else {
+      document.getElementById('login-error').textContent = data.error;
+    }
+  } catch (error) {
+    console.error('Error al iniciar sesión:', error);
+    document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
+  }
+}
 
   async function generarLink() {
     const numeros = Array.from(document.querySelectorAll('.numero'))
@@ -723,6 +735,8 @@
 });
 
 async function login() {
+  localStorage.clear(); // 🔥 Limpia antes de guardar los datos nuevos
+
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
 
@@ -732,21 +746,27 @@ async function login() {
   }
 
   try {
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
+    const response = await fetch(`/soporte?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
     const data = await response.json();
 
     if (response.ok) {
+      // Guardar el email en localStorage
       localStorage.setItem('usuarioEmail', email);
+
+      // Ocultar el contenedor de inicio de sesión y mostrar el generador
       document.getElementById('login-container').style.display = 'none';
       document.getElementById('generador-container').style.display = 'block';
 
+      // Si Supabase tiene un link, mostrar los detalles
       if (data.link) {
         const { link, numeros, mensaje } = data.link;
+
+        // Guardar los datos en localStorage
+        localStorage.setItem(`linkGenerado_${email}`, link);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
+
+        // Mostrar los detalles del link en el DOM
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
@@ -754,6 +774,10 @@ async function login() {
           <p>Tu link generado:</p>
           <a href="${link}" target="_blank">${link}</a>
         `;
+      } else {
+        // Si no hay link, ocultar los detalles
+        document.getElementById('detalles-link').style.display = 'none';
+        document.getElementById('output').innerHTML = '<p>Aún no tienes un link generado.</p>';
       }
     } else {
       document.getElementById('login-error').textContent = data.error;
