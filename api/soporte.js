@@ -59,9 +59,7 @@ export default async function handler(req, res) {
       console.error('Error generando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
-  }
-
-  if (req.method === 'PATCH') {
+  } else if (req.method === 'PATCH') {
     const { email, numeros, mensaje, link } = req.body;
 
     if (!email || !numeros || numeros.length === 0 || !link) {
@@ -86,9 +84,32 @@ export default async function handler(req, res) {
       console.error('Error interno al actualizar el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
-  }
+  } else if (req.method === 'GET') {
+    const { email } = req.query;
 
-  return res.status(405).json({ error: 'Método no permitido.' });
+    if (!email) {
+      return res.status(400).json({ error: 'Falta el email en la consulta.' });
+    }
+
+    try {
+      const { data: link, error } = await supabase
+        .from('link')
+        .select('link, numeros, mensaje')
+        .eq('email', email)
+        .single();
+
+      if (error || !link) {
+        return res.status(404).json({ error: 'No se encontró un link para este usuario.' });
+      }
+
+      return res.status(200).json(link);
+    } catch (err) {
+      console.error('Error al consultar el link:', err);
+      return res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+  } else {
+    return res.status(405).json({ error: 'Método no permitido.' });
+  }
 }
 
 
