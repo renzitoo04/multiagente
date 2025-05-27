@@ -19,7 +19,7 @@ export default async function handler(req, res) {
     // Verificar usuario en Supabase
     const { data: usuario, error } = await supabase
       .from('usuarios')
-      .select('email, password, limiteNumeros')
+      .select('email, password')
       .eq('email', email.trim())
       .single();
 
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     }
 
     if (usuario.password.trim() !== password.trim()) {
-      return res.status(401).json({ error: 'Contraseña incorrecta' });
+      return res.status(401).json({ error: 'Credenciales incorrectas' });
     }
 
     // Verificar si el usuario tiene un link en la tabla "link"
