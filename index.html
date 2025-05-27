@@ -478,20 +478,12 @@
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
 
-        // Mostrar el link generado en el contenedor #output
-        document.getElementById('output').innerHTML = `
-          <p>Tu link generado:</p>
-          <a href="${data.link}" target="_blank">${data.link}</a>
-        `;
-
-        // Actualizar los detalles del link en el contenedor #detalles-link-container
+        // Actualiza solo el contenedor #detalles-link
+        document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('link-generado').href = data.link;
         document.getElementById('link-generado').textContent = data.link;
-        document.getElementById('numeros-rotativos').textContent = numeros.join(', ');
-        document.getElementById('mensaje-automatico').textContent = mensaje || 'Sin mensaje';
-
-        // Mostrar el contenedor de detalles del link
-        document.getElementById('detalles-link-container').style.display = 'block';
+        document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
       } else {
         alert('Error: ' + data.error);
       }
@@ -730,6 +722,22 @@
     document.getElementById('detalles-link').style.display = 'none';
   }
 });
+
+async function mostrarDetallesLink() {
+  const linkData = await obtenerLinkUsuario(); // Consulta el link del usuario
+
+  if (linkData) {
+    // Mostrar los detalles del link en el contenedor #detalles-link
+    document.getElementById('detalles-link').style.display = 'block';
+    document.getElementById('link-generado').href = linkData.link;
+    document.getElementById('link-generado').textContent = linkData.link;
+    document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
+    document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
+  } else {
+    // Ocultar el contenedor si no hay datos
+    document.getElementById('detalles-link').style.display = 'none';
+  }
+}
 </script>
 </body>
 </html>
