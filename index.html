@@ -406,8 +406,6 @@
     }
 
     try {
-      console.log('Enviando credenciales:', { email }); // No loguear passwords
-
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -415,13 +413,37 @@
       });
 
       const data = await response.json();
-      console.log('Respuesta del servidor:', data);
 
       if (response.ok) {
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
         limiteNumeros = data.limiteNumeros;
         localStorage.setItem('usuarioEmail', email);
+
+        // Recuperar el link asociado al perfil
+        const linkResponse = await fetch(`/api/obtener-link?email=${email}`);
+        const linkData = await linkResponse.json();
+
+        if (linkResponse.ok && linkData.link) {
+          // Mostrar los detalles del link en el DOM
+          document.getElementById('detalles-link').style.display = 'block';
+          document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
+          document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
+          document.getElementById('output').innerHTML = `
+            <p>Tu link generado:</p>
+            <a href="${linkData.link}" target="_blank">${linkData.link}</a>
+          `;
+
+          // Guardar los datos en localStorage
+          localStorage.setItem(`linkGenerado_${email}`, linkData.link);
+          localStorage.setItem(`linkID_${email}`, linkData.id);
+          localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
+          localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
+        } else {
+          // Si no hay link, oculta los detalles
+          document.getElementById('detalles-link').style.display = 'none';
+          document.getElementById('output').innerHTML = '<p>No tienes un link generado aún.</p>';
+        }
       } else {
         document.getElementById('login-error').textContent = `Error: ${data.error}`;
       }
@@ -465,28 +487,21 @@
           <a href="${data.link}" target="_blank">${data.link}</a>
         `;
 
-        // GUARDAR detalles en localStorage
-        localStorage.setItem(`linkGenerado_${email}`, data.link);
-        localStorage.setItem(`linkID_${email}`, data.id);
-        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
-        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-
-        // MOSTRAR detalles en el DOM
+        // Mostrar los detalles del link en el DOM
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
-        // Mostrar el contenedor para editar link
-        document.getElementById('editar-link-container').style.display = 'block';
-        mostrarEditarLink(numeros);
-
-        // Deshabilitar el botón de "Generar Link"
-        document.querySelector('button[onclick="generarLink()"]').disabled = true;
+        // Guardar los datos en localStorage
+        localStorage.setItem(`linkGenerado_${email}`, data.link);
+        localStorage.setItem(`linkID_${email}`, data.id);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
       } else {
         alert('Error: ' + data.error);
       }
     } catch (error) {
-      console.error('Error generando link:', error);
+      console.error('Error generando el link:', error);
       document.getElementById('output').innerHTML = '<p>Error al generar el link.</p>';
     }
   }
@@ -664,84 +679,34 @@
     }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-  const email = localStorage.getItem('usuarioEmail'); // Correo del usuario logueado
+  document.addEventListener('DOMContentLoaded', async () => {
+  const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
 
-  if (!email) {
-    // Si no hay un usuario logueado, oculta las secciones
-    document.getElementById('detalles-link').style.display = 'none';
-    document.getElementById('editar-link-container').style.display = 'none';
-    return;
-  }
+  if (email) {
+    try {
+      // Recuperar el link asociado al perfil
+      const linkResponse = await fetch(`/api/obtener-link?email=${email}`);
+      const linkData = await linkResponse.json();
 
-  // Recupera los datos del usuario actual desde localStorage
-  const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
-  const numerosGuardados = JSON.parse(localStorage.getItem(`numerosGenerados_${email}`)) || [];
-  const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`) || '';
-
-  if (linkGuardado) {
-    // Mostrar los detalles del link
-    document.getElementById('detalles-link').style.display = 'block';
-    document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
-    document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
-
-    // Mostrar el link guardado
-    document.getElementById('output').innerHTML = `
-      <p>Tu link generado:</p>
-      <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
-    `;
-
-    // Mostrar los números en el apartado "Editar Link"
-    document.getElementById('editar-link-container').style.display = 'block';
-    mostrarEditarLink(numerosGuardados);
-
-    // Deshabilitar el botón de "Generar Link"
-    document.querySelector('button[onclick="generarLink()"]').disabled = true;
-  } else {
-    // Mostrar las secciones vacías si no hay datos
-    document.getElementById('detalles-link').style.display = 'block';
-    document.getElementById('numeros-generados').textContent = 'Sin números';
-    document.getElementById('mensaje-generado').textContent = 'Sin mensaje';
-
-    document.getElementById('editar-link-container').style.display = 'block';
-    mostrarEditarLink([]); // Muestra las celdas vacías
+      if (linkResponse.ok && linkData.link) {
+        // Mostrar los detalles del link en el DOM
+        document.getElementById('detalles-link').style.display = 'block';
+        document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${linkData.link}" target="_blank">${linkData.link}</a>
+        `;
+      } else {
+        // Si no hay link, oculta los detalles
+        document.getElementById('detalles-link').style.display = 'none';
+        document.getElementById('output').innerHTML = '<p>No tienes un link generado aún.</p>';
+      }
+    } catch (error) {
+      console.error('Error al recuperar los datos del link:', error);
+    }
   }
 });
-
-async function login() {
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-
-  if (!email || !password) {
-    document.getElementById('login-error').textContent = 'Por favor, ingresa tu correo y contraseña.';
-    return;
-  }
-
-  try {
-    console.log('Enviando credenciales:', { email }); // No loguear passwords
-
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-    console.log('Respuesta del servidor:', data);
-
-    if (response.ok) {
-      document.getElementById('login-container').style.display = 'none';
-      document.getElementById('generador-container').style.display = 'block';
-      limiteNumeros = data.limiteNumeros;
-      localStorage.setItem('usuarioEmail', email);
-    } else {
-      document.getElementById('login-error').textContent = `Error: ${data.error}`;
-    }
-  } catch (error) {
-    console.error('Error al iniciar sesión:', error);
-    document.getElementById('login-error').textContent = 'Error de conexión al servidor.';
-  }
-}
 </script>
 </body>
 </html>
