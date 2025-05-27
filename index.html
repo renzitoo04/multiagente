@@ -564,14 +564,14 @@
   async function actualizarLink() {
     const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
       .map(input => input.value.trim())
-      .filter(num => num !== ''); // Filtra los campos vacíos
+      .filter(num => num !== '');
 
-    const mensaje = document.getElementById('editar-mensaje').value.trim(); // Captura el mensaje actualizado
-    const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
-    const linkGenerado = localStorage.getItem(`linkGenerado_${email}`); // Recupera el link corto guardado
+    const mensaje = document.getElementById('editar-mensaje').value.trim();
+    const email = localStorage.getItem('usuarioEmail');
+    const id = localStorage.getItem(`linkID_${email}`);
 
-    if (!email || !linkGenerado) {
-      alert('No se encontró un usuario o link guardado. Por favor, inicia sesión y genera un link primero.');
+    if (!email || !id) {
+      alert('No se encontró un usuario o ID guardado. Por favor, inicia sesión y genera un link primero.');
       return;
     }
 
@@ -581,11 +581,10 @@
     }
 
     try {
-      // Envía los números, el mensaje y el email al backend
       const response = await fetch('/api/soporte', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, link: linkGenerado, numeros, mensaje }),
+        body: JSON.stringify({ email, numeros, mensaje, id }),
       });
 
       const data = await response.json();
@@ -593,7 +592,6 @@
       if (response.ok) {
         alert('Link actualizado correctamente.');
 
-        // Actualiza los detalles del link en el DOM
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
       } else {

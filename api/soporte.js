@@ -15,14 +15,10 @@ export default async function handler(req, res) {
     }
 
     try {
-      // Generar un nuevo ID y link original
       const id = Math.random().toString(36).substring(2, 8);
       const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
-
-      // Acortar el link usando TinyURL
       const linkAcortado = await acortarLink(linkOriginal);
 
-      // Guardar la información en Supabase
       const { error } = await supabase
         .from('link')
         .insert([{ id, email, numeros, mensaje, link: linkAcortado }]);
@@ -39,6 +35,32 @@ export default async function handler(req, res) {
     }
   }
 
+  if (req.method === 'PATCH') {
+    const { email, numeros, mensaje, id } = req.body;
+
+    if (!email || !numeros || numeros.length === 0 || !id) {
+      return res.status(400).json({ error: 'Datos inválidos para actualizar el link.' });
+    }
+
+    try {
+      const { error } = await supabase
+        .from('link')
+        .update({ numeros, mensaje })
+        .eq('id', id)
+        .eq('email', email);
+
+      if (error) {
+        console.error('Error al actualizar el link en Supabase:', error);
+        return res.status(500).json({ error: 'Error al actualizar el link.' });
+      }
+
+      return res.status(200).json({ message: 'Link actualizado correctamente.' });
+    } catch (error) {
+      console.error('Error interno al actualizar el link:', error);
+      return res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+  }
+
   if (req.method === 'GET') {
     const { id } = req.query;
 
@@ -47,7 +69,6 @@ export default async function handler(req, res) {
     }
 
     try {
-      // Recuperar la configuración desde Supabase
       const { data: configuracion, error } = await supabase
         .from('link')
         .select('numeros, mensaje')
@@ -58,18 +79,14 @@ export default async function handler(req, res) {
         return res.status(404).json({ error: 'No se encontró la configuración para este ID.' });
       }
 
-      // Rotar el número
       if (!indicesRotacion[id]) {
-        indicesRotacion[id] = 0; // Inicializa el índice si no existe
+        indicesRotacion[id] = 0;
       }
 
       const indiceActual = indicesRotacion[id];
       const numeroActual = configuracion.numeros[indiceActual];
-
-      // Incrementa el índice para la próxima rotación
       indicesRotacion[id] = (indiceActual + 1) % configuracion.numeros.length;
 
-      // Redirige al número actual de WhatsApp
       const whatsappLink = `https://wa.me/${numeroActual}?text=${encodeURIComponent(configuracion.mensaje)}`;
       return res.redirect(302, whatsappLink);
     } catch (error) {
