@@ -51,7 +51,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      limiteNumeros: usuario.limiteNumeros,
+      limiteNumeros: usuario.limiteNumeros, // Asegúrate de que este valor se devuelva
       configuracion,
     });
   }
@@ -231,6 +231,9 @@ async function login() {
     const data = await response.json();
 
     if (response.ok) {
+      // Configura el límite de números
+      limiteNumeros = data.limiteNumeros; // Asigna el valor de limiteNumeros devuelto por el backend
+
       // Oculta el contenedor de inicio de sesión
       document.getElementById('login-container').style.display = 'none';
 
@@ -239,9 +242,6 @@ async function login() {
 
       // Muestra el apartado "Acortar Link"
       mostrarAcortarLink();
-
-      // Configura el límite de números
-      limiteNumeros = data.limiteNumeros;
 
       // Si hay una configuración existente, mostrarla
       if (data.configuracion) {
