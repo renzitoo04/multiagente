@@ -273,6 +273,48 @@ export default async function handler(req, res) {
     }
   }
 
+  // === NUEVO: GUARDAR LINK Y GENERAR ACORTADO (POST) ===
+  if (req.method === 'POST' && req.url === '/soporte') {
+    const { email, numeros, mensaje } = req.body;
+
+    if (!email || !numeros || numeros.length === 0) {
+      return res.status(400).json({ error: 'Datos inválidos' });
+    }
+
+    try {
+      // Verifica si el usuario ya tiene un link generado
+      const { data: existingLink } = await supabase
+        .from('link')
+        .select('id')
+        .eq('email', email)
+        .single();
+
+      if (existingLink) {
+        return res.status(403).json({ error: 'Ya tienes un link generado. Solo puedes actualizarlo.' });
+      }
+
+      // Genera un nuevo ID y link original
+      const id = Math.random().toString(36).substring(2, 8);
+      const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
+      const linkAcortado = await acortarLink(linkOriginal);
+
+      // Guarda en la base de datos Supabase
+      const { error } = await supabase
+        .from('link')
+        .insert([{ id, email, numeros, mensaje, link: linkAcortado }]);
+
+      if (error) {
+        console.error('Error al guardar en Supabase:', error);
+        return res.status(500).json({ error: 'Error al guardar en Supabase' });
+      }
+
+      return res.status(200).json({ id, link: linkAcortado });
+    } catch (err) {
+      console.error('Error generando el link:', err);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  }
+
   return res.status(400).json({ error: "Solicitud inválida" });
 }
 
