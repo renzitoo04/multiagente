@@ -478,12 +478,12 @@
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
 
-        // Actualiza solo el contenedor #detalles-link
+        // Mostrar el link generado en el contenedor #detalles-link
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('link-generado').href = data.link;
         document.getElementById('link-generado').textContent = data.link;
-        document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+        document.getElementById('numeros-rotativos').textContent = numeros.join(', ');
+        document.getElementById('mensaje-automatico').textContent = mensaje || 'Sin mensaje';
       } else {
         alert('Error: ' + data.error);
       }
