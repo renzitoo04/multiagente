@@ -412,6 +412,9 @@
 
         // Guarda el correo del usuario en localStorage
         localStorage.setItem('usuarioEmail', email);
+
+        // Mostrar los detalles del link y el apartado "Editar Link"
+        mostrarDetallesLink();
       } else {
         document.getElementById('login-error').textContent = data.error;
       }
@@ -547,16 +550,15 @@
     const editarNumerosContainer = document.getElementById('editar-numeros-container');
     editarNumerosContainer.innerHTML = '';
 
-    for (let i = 0; i < limiteNumeros; i++) {
-      const numero = numeros[i] || ''; // Si no hay un número en esa posición, deja el campo vacío
+    numeros.forEach((numero, index) => {
       const numeroItem = document.createElement('div');
       numeroItem.classList.add('numero-item');
       numeroItem.innerHTML = `
-        <label for="editar-numero-${i}">Número ${i + 1}:</label>
-        <input type="text" id="editar-numero-${i}" value="${numero}" placeholder="Ejemplo: +5492944585356" />
+        <label for="editar-numero-${index}">Número ${index + 1}:</label>
+        <input type="text" id="editar-numero-${index}" value="${numero}" placeholder="Ejemplo: +5492944585356" />
       `;
       editarNumerosContainer.appendChild(numeroItem);
-    }
+    });
   }
 
   async function actualizarLink() {
@@ -685,9 +687,15 @@
       `;
       document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
       document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
+
+      // Mostrar el apartado "Editar Link"
+      document.getElementById('editar-link-container').style.display = 'block';
+      mostrarEditarLink(linkData.numeros); // Inicializa los campos de edición con los números actuales
+      document.getElementById('editar-mensaje').value = linkData.mensaje || ''; // Inicializa el mensaje en el campo de edición
     } else {
       // Ocultar el contenedor si no hay datos
       document.getElementById('detalles-link').style.display = 'none';
+      document.getElementById('editar-link-container').style.display = 'none';
     }
   }
 
