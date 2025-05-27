@@ -4,6 +4,83 @@ dotenv.config();
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
+const indicesRotacion = {}; // Objeto para llevar el control de los índices de rotación por ID
+
+export default async function handler(req, res) {
+  if (req.method === 'POST') {
+    const { email, numeros, mensaje } = req.body;
+
+    if (!email || !numeros || numeros.length === 0) {
+      return res.status(400).json({ error: 'Datos inválidos' });
+    }
+
+    try {
+      // Generar un nuevo ID y link original
+      const id = Math.random().toString(36).substring(2, 8);
+      const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
+
+      // Acortar el link usando TinyURL
+      const linkAcortado = await acortarLink(linkOriginal);
+
+      // Guardar la información en Supabase
+      const { error } = await supabase
+        .from('link')
+        .insert([{ id, email, numeros, mensaje, link: linkAcortado }]);
+
+      if (error) {
+        console.error('Error al guardar en Supabase:', error);
+        return res.status(500).json({ error: 'Error al guardar la configuración.' });
+      }
+
+      return res.status(200).json({ id, link: linkAcortado });
+    } catch (error) {
+      console.error('Error generando el link:', error);
+      return res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+  }
+
+  if (req.method === 'GET') {
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(400).json({ error: 'Falta el ID en la consulta.' });
+    }
+
+    try {
+      // Recuperar la configuración desde Supabase
+      const { data: configuracion, error } = await supabase
+        .from('link')
+        .select('numeros, mensaje')
+        .eq('id', id)
+        .single();
+
+      if (error || !configuracion) {
+        return res.status(404).json({ error: 'No se encontró la configuración para este ID.' });
+      }
+
+      // Rotar el número
+      if (!indicesRotacion[id]) {
+        indicesRotacion[id] = 0; // Inicializa el índice si no existe
+      }
+
+      const indiceActual = indicesRotacion[id];
+      const numeroActual = configuracion.numeros[indiceActual];
+
+      // Incrementa el índice para la próxima rotación
+      indicesRotacion[id] = (indiceActual + 1) % configuracion.numeros.length;
+
+      // Redirige al número actual de WhatsApp
+      const whatsappLink = `https://wa.me/${numeroActual}?text=${encodeURIComponent(configuracion.mensaje)}`;
+      return res.redirect(302, whatsappLink);
+    } catch (error) {
+      console.error('Error al redirigir al número de WhatsApp:', error);
+      return res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+  }
+
+  return res.status(405).json({ error: 'Método no permitido.' });
+}
+
 async function acortarLink(linkOriginal) {
   try {
     const response = await fetch('https://api.tinyurl.com/create', {
@@ -25,90 +102,6 @@ async function acortarLink(linkOriginal) {
   } catch (error) {
     console.error('Error en la función acortarLink:', error);
     return linkOriginal; // Devuelve el link original si ocurre un error
-  }
-}
-
-export default async function handler(req, res) {
-  if (req.method === 'POST') {
-    const { email, numeros, mensaje } = req.body;
-
-    if (!email || !numeros || numeros.length === 0) {
-      return res.status(400).json({ error: 'Datos inválidos' });
-    }
-
-    try {
-      // Generar un nuevo ID y link original
-      const id = Math.random().toString(36).substring(2, 8);
-      const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
-
-      // Acortar el link usando TinyURL
-      const linkAcortado = await acortarLink(linkOriginal);
-
-      // Guardar la información en Supabase
-      const { error } = await supabase
-        .from('link')
-        .insert([{ id, email, numeros, mensaje, link: linkAcortado }]);
-
-      if (error) {
-        console.error('Error al guardar en Supabase:', error);
-        return res.status(500).json({ error: 'Error al guardar la configuración.' });
-      }
-
-      return res.status(200).json({ id, link: linkAcortado });
-    } catch (error) {
-      console.error('Error generando el link:', error);
-      return res.status(500).json({ error: 'Error interno del servidor.' });
-    }
-  } else if (req.method === 'PATCH') {
-    const { email, numeros, mensaje, link } = req.body;
-
-    if (!email || !numeros || numeros.length === 0 || !link) {
-      return res.status(400).json({ error: 'Datos inválidos para actualizar el link.' });
-    }
-
-    try {
-      // Actualizar el registro en Supabase
-      const { error } = await supabase
-        .from('link')
-        .update({ numeros, mensaje })
-        .eq('email', email)
-        .eq('link', link);
-
-      if (error) {
-        console.error('Error al actualizar el link en Supabase:', error);
-        return res.status(500).json({ error: 'Error al actualizar el link.' });
-      }
-
-      return res.status(200).json({ message: 'Link actualizado correctamente.' });
-    } catch (error) {
-      console.error('Error interno al actualizar el link:', error);
-      return res.status(500).json({ error: 'Error interno del servidor.' });
-    }
-  } else if (req.method === 'GET') {
-    const { email } = req.query;
-
-    if (!email) {
-      return res.status(400).json({ error: 'Falta el email en la consulta.' });
-    }
-
-    try {
-      const { data: link, error } = await supabase
-        .from('link')
-        .select('link, numeros, mensaje')
-        .eq('email', email)
-        .single();
-
-      if (error || !link) {
-        return res.status(404).json({ error: 'No se encontró un link para este usuario.' });
-      }
-
-      return res.status(200).json(link);
-    } catch (err) {
-      console.error('Error al consultar el link:', err);
-      return res.status(500).json({ error: 'Error interno del servidor.' });
-    }
-  } else {
-    return res.status(405).json({ error: 'Método no permitido.' });
   }
 }
 

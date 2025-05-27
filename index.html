@@ -430,7 +430,7 @@
       .filter(num => num !== '');
 
     const mensaje = document.getElementById('mensaje').value.trim();
-    const email = localStorage.getItem('usuarioEmail');
+    const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
 
     if (!email) {
       alert('Por favor, inicia sesión antes de generar un link.');
