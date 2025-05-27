@@ -674,6 +674,33 @@
     }
   }
 
+  async function obtenerLinkUsuario() {
+  const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
+
+  if (!email) {
+    console.error('No hay un usuario logueado.');
+    return null;
+  }
+
+  try {
+    const response = await fetch(`/api/link?email=${encodeURIComponent(email)}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!response.ok) {
+      console.error('Error al obtener el link del usuario:', await response.text());
+      return null;
+    }
+
+    const data = await response.json();
+    return data; // Devuelve el registro del link del usuario
+  } catch (error) {
+    console.error('Error al consultar el backend:', error);
+    return null;
+  }
+}
+
   document.addEventListener('DOMContentLoaded', () => {
   const email = localStorage.getItem('usuarioEmail'); // Recupera el correo del usuario logueado
 
@@ -766,6 +793,27 @@ async function login() {
     document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
   }
 }
+
+async function mostrarDetallesLink() {
+  const linkData = await obtenerLinkUsuario(); // Consulta el link del usuario
+
+  if (linkData) {
+    // Mostrar los detalles del link en el contenedor #detalles-link
+    document.getElementById('detalles-link').style.display = 'block';
+    document.getElementById('link-generado').href = linkData.link;
+    document.getElementById('link-generado').textContent = linkData.link;
+    document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
+    document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
+  } else {
+    // Ocultar el contenedor si no hay datos
+    document.getElementById('detalles-link').style.display = 'none';
+  }
+}
+
+// Llama a esta función al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+  mostrarDetallesLink();
+});
 </script>
 </body>
 </html>
