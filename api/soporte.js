@@ -5,28 +5,26 @@ dotenv.config();
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 async function acortarLink(linkOriginal) {
-  const tinyUrlToken = process.env.TINYURL_TOKEN; // Asegúrate de agregar este token a tu archivo .env
   try {
     const response = await fetch('https://api.tinyurl.com/create', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${tinyUrlToken}`,
+        Authorization: `Bearer ${process.env.TINYURL_TOKEN}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ url: linkOriginal, domain: 'tiny.one' }),
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error acortando el link con TinyURL:', errorText);
-      return linkOriginal;
+      console.error('Error acortando el link:', await response.text());
+      return linkOriginal; // Devuelve el link original si falla
     }
 
     const data = await response.json();
     return data.data.tiny_url;
   } catch (error) {
-    console.error('Error en la función acortarLink:', error);
-    return linkOriginal;
+    console.error('Error en acortarLink:', error);
+    return linkOriginal; // Devuelve el link original si hay un error
   }
 }
 
@@ -64,7 +62,10 @@ export default async function handler(req, res) {
 
     const configuracion = configuracionesPorID[id];
 
-    // Manejar la rotación de números
+    if (!configuracion || !configuracion.numeros || configuracion.numeros.length === 0) {
+      return res.status(400).json({ error: 'No hay números configurados para este link.' });
+    }
+
     if (!indicesRotacion[id]) {
       indicesRotacion[id] = 0; // Inicializa el índice si no existe
     }
