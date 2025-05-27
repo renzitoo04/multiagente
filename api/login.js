@@ -33,7 +33,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       email: usuario.email,
-      limiteNumeros: usuario.limiteNumeros,
+      limiteNumeros: usuario.limiteNumeros, // Asegúrate de que este valor se devuelva
     });
   } catch (err) {
     console.error('Error en login:', err);

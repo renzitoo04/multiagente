@@ -416,6 +416,7 @@
 
       if (response.ok) {
         localStorage.setItem('usuarioEmail', email);
+        limiteNumeros = data.limiteNumeros; // Asigna el valor de limiteNumeros devuelto por el backend
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
       } else {
@@ -704,6 +705,7 @@ async function login() {
 
     if (response.ok) {
       localStorage.setItem('usuarioEmail', email);
+      limiteNumeros = data.limiteNumeros; // Asigna el valor de limiteNumeros devuelto por el backend
       document.getElementById('login-container').style.display = 'none';
       document.getElementById('generador-container').style.display = 'block';
     } else {
