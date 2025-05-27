@@ -630,7 +630,6 @@
 
   async function cargarLinkDelUsuario(email) {
   try {
-    // Consultar a Supabase por los datos del usuario
     const response = await fetch(`/api/obtener-link?email=${email}`);
     const data = await response.json();
 
@@ -665,12 +664,17 @@
   const email = localStorage.getItem('usuarioEmail');
 
   if (email) {
-    // Mostrar el generador y cargar los datos del usuario
-    document.getElementById('login-container').style.display = 'none';
-    document.getElementById('generador-container').style.display = 'block';
-    await cargarLinkDelUsuario(email);
+    try {
+      // Mostrar el generador y cargar los datos del usuario
+      document.getElementById('login-container').style.display = 'none';
+      document.getElementById('generador-container').style.display = 'block';
+      await cargarLinkDelUsuario(email);
+    } catch (error) {
+      console.error('Error al cargar los datos del usuario:', error);
+      document.getElementById('output').innerHTML = '<p>Error al cargar los datos del usuario.</p>';
+    }
   } else {
-    // Mostrar el contenedor de login si no hay usuario logueado
+    // Redirigir al formulario de inicio de sesión
     document.getElementById('login-container').style.display = 'block';
     document.getElementById('generador-container').style.display = 'none';
   }
