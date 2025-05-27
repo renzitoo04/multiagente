@@ -255,6 +255,15 @@
   #acortar-link-container h3 {
     color: #25d366; /* Verde de WhatsApp */
   }
+
+  #detalles-link-container {
+    display: none;
+    margin-top: 20px;
+  }
+
+  #detalles-link-container h3 {
+    color: #25d366; /* Verde de WhatsApp */
+  }
   </style>
 </head>
 <body>
@@ -353,6 +362,14 @@
     <p>Ya sea que vendas por WhatsApp, Telegram, redes sociales o tiendas online, MultiLink te ayuda a optimizar tu atención al cliente y aumentar tus conversiones.</p>
   </div>
 
+  <!-- Detalles del Link Generado (nuevo contenedor) -->
+  <div id="detalles-link-container" style="display: none; margin-top: 20px;">
+    <h3>Detalles del Link Generado</h3>
+    <p><strong>Link:</strong> <a id="link-generado" href="#" target="_blank"></a></p>
+    <p><strong>Números:</strong> <span id="numeros-rotativos"></span></p>
+    <p><strong>Mensaje Automático:</strong> <span id="mensaje-automatico"></span></p>
+  </div>
+
 <script>
   let contadorNumeros = 1;
   let limiteNumeros = 0;
@@ -416,9 +433,20 @@
 
       if (response.ok) {
         localStorage.setItem('usuarioEmail', email);
-        limiteNumeros = data.limiteNumeros; // Asigna el valor de limiteNumeros devuelto por el backend
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
+
+        // Si ya existe un link, mostrar los detalles
+        if (data.link) {
+          const { link, numeros, mensaje } = data.link;
+
+          document.getElementById('link-generado').href = link;
+          document.getElementById('link-generado').textContent = link;
+          document.getElementById('numeros-rotativos').textContent = numeros.join(', ');
+          document.getElementById('mensaje-automatico').textContent = mensaje || 'Sin mensaje';
+
+          document.getElementById('detalles-link-container').style.display = 'block';
+        }
       } else {
         document.getElementById('login-error').textContent = data.error;
       }
@@ -456,15 +484,20 @@
       const data = await response.json();
 
       if (response.ok) {
-        document.getElementById('output').innerHTML = `
-          <p>Tu link generado:</p>
-          <a href="${data.link}" target="_blank">${data.link}</a>
-        `;
+        // Actualizar el contenido del contenedor con los detalles del link
+        document.getElementById('link-generado').href = data.link;
+        document.getElementById('link-generado').textContent = data.link;
+        document.getElementById('numeros-rotativos').textContent = numeros.join(', ');
+        document.getElementById('mensaje-automatico').textContent = mensaje || 'Sin mensaje';
+
+        // Mostrar el contenedor de detalles del link
+        document.getElementById('detalles-link-container').style.display = 'block';
       } else {
         alert('Error: ' + data.error);
       }
     } catch (error) {
       console.error('Error generando el link:', error);
+      alert('Error al generar el link. Inténtalo de nuevo.');
     }
   }
 
@@ -705,9 +738,20 @@ async function login() {
 
     if (response.ok) {
       localStorage.setItem('usuarioEmail', email);
-      limiteNumeros = data.limiteNumeros; // Asigna el valor de limiteNumeros devuelto por el backend
       document.getElementById('login-container').style.display = 'none';
       document.getElementById('generador-container').style.display = 'block';
+
+      // Si ya existe un link, mostrar los detalles
+      if (data.link) {
+        const { link, numeros, mensaje } = data.link;
+
+        document.getElementById('link-generado').href = link;
+        document.getElementById('link-generado').textContent = link;
+        document.getElementById('numeros-rotativos').textContent = numeros.join(', ');
+        document.getElementById('mensaje-automatico').textContent = mensaje || 'Sin mensaje';
+
+        document.getElementById('detalles-link-container').style.display = 'block';
+      }
     } else {
       document.getElementById('login-error').textContent = data.error;
     }
