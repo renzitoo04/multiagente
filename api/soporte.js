@@ -227,40 +227,29 @@ async function login() {
   }
 
   try {
-    const response = await fetch(`/soporte?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
     const data = await response.json();
 
     if (response.ok) {
-      // Oculta el contenedor de inicio de sesión
+      localStorage.setItem('usuarioEmail', email);
       document.getElementById('login-container').style.display = 'none';
-
-      // Muestra el generador principal
       document.getElementById('generador-container').style.display = 'block';
 
-      // Muestra el apartado "Acortar Link"
-      mostrarAcortarLink();
+      // Si ya existe un link, mostrar los detalles
+      if (data.link) {
+        const { link, numeros, mensaje } = data.link;
 
-      // Configura el límite de números
-      limiteNumeros = data.limiteNumeros;
+        document.getElementById('link-generado').href = link;
+        document.getElementById('link-generado').textContent = link;
+        document.getElementById('numeros-rotativos').textContent = numeros.join(', ');
+        document.getElementById('mensaje-automatico').textContent = mensaje || 'Sin mensaje';
 
-      // Si hay una configuración existente, mostrarla
-      if (data.configuracion) {
-        const { link, numeros, mensaje } = data.configuracion;
-
-        document.getElementById('detalles-link').style.display = 'block';
-        document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
-        // Mostrar el apartado "Editar Link"
-        document.getElementById('editar-link-container').style.display = 'block';
-
-        // Mostrar los números en el apartado "Editar Link"
-        mostrarEditarLink(numeros);
-
-        // Guardar los datos en localStorage
-        localStorage.setItem('linkGenerado', link);
-        localStorage.setItem('numerosGenerados', JSON.stringify(numeros));
-        localStorage.setItem('mensajeGenerado', mensaje);
+        document.getElementById('detalles-link-container').style.display = 'block';
       }
     } else {
       document.getElementById('login-error').textContent = data.error;
