@@ -2,39 +2,6 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-// Objeto para almacenar configuraciones por ID
-const configuracionesPorID = {}; // { id: { email, numeros, mensaje } }
-
-// Objeto para manejar índices de rotación por ID
-const indicesRotacion = {}; // { id: índice_actual }
-
-async function acortarLink(linkOriginal) {
-  const tinyUrlToken = process.env.TINYURL_TOKEN; // Asegúrate de agregar este token a tu archivo .env
-  try {
-    const response = await fetch('https://api.tinyurl.com/create', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${tinyUrlToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ url: linkOriginal, domain: 'tiny.one' }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error acortando el link con TinyURL:', errorText);
-      return linkOriginal; // Devuelve el link original si falla
-    }
-
-    const data = await response.json();
-    return data.data.tiny_url; // Devuelve el link acortado
-  } catch (error) {
-    console.error('Error en la función acortarLink con TinyURL:', error);
-    return linkOriginal; // Devuelve el link original si ocurre un error
-  }
-}
-
-// Exporta la función principal del handler
 export default async function handler(req, res) {
   // === 1. INICIO DE SESIÓN ===
   if (req.method === 'POST' && req.url === '/api/login') {
@@ -88,7 +55,7 @@ export default async function handler(req, res) {
 
     try {
       // Verificar si ya existe un link para el usuario
-      const { data: existingLink, error: existingError } = await supabase
+      const { data: existingLink } = await supabase
         .from('link')
         .select('id')
         .eq('email', email)
@@ -100,19 +67,18 @@ export default async function handler(req, res) {
 
       // Generar el link
       const id = Math.random().toString(36).substring(2, 8);
-      const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
-      const linkAcortado = await acortarLink(linkOriginal);
+      const link = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
 
       // Guardar el link en Supabase
-      const { error: insertError } = await supabase
+      const { error } = await supabase
         .from('link')
-        .insert([{ email, numeros, mensaje, link: linkAcortado }]);
+        .insert([{ email, numeros, mensaje, link }]);
 
-      if (insertError) {
-        throw insertError;
+      if (error) {
+        throw error;
       }
 
-      return res.status(200).json({ id, link: linkAcortado });
+      return res.status(200).json({ link });
     } catch (err) {
       console.error('Error generando el link:', err);
       return res.status(500).json({ error: 'Error interno del servidor' });
@@ -141,6 +107,31 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, link });
     } catch (err) {
       console.error('Error actualizando el link:', err);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  }
+
+  if (req.method === 'GET' && req.url.startsWith('/api/obtener-link')) {
+    const email = req.query.email;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email no proporcionado' });
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('link')
+        .select('id, link, numeros, mensaje')
+        .eq('email', email)
+        .single();
+
+      if (error || !data) {
+        return res.status(404).json({ error: 'No se encontró un link para este perfil' });
+      }
+
+      return res.status(200).json(data);
+    } catch (err) {
+      console.error('Error al obtener el link:', err);
       return res.status(500).json({ error: 'Error interno del servidor' });
     }
   }

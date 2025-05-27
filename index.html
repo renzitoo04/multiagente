@@ -463,6 +463,11 @@
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+
+        // Guardar los datos en localStorage
+        localStorage.setItem(`linkGenerado_${email}`, data.link);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
       } else {
         alert('Error: ' + data.error);
       }
