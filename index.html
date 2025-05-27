@@ -449,7 +449,9 @@
           document.getElementById('editar-link-container').style.display = 'block';
           mostrarEditarLink(linkData.numeros);
         } else {
-          document.getElementById('output').innerHTML = '<p>No tienes un link generado. Por favor, genera uno nuevo.</p>';
+          document.getElementById('output').innerHTML = '<p>No tenés ningún link generado aún.</p>';
+          document.getElementById('detalles-link').style.display = 'none';
+          document.getElementById('editar-link-container').style.display = 'none';
         }
       } else {
         document.getElementById('login-error').textContent = `Error: ${data.error}`;
@@ -714,7 +716,9 @@
         document.getElementById('editar-link-container').style.display = 'block';
         mostrarEditarLink(linkData.numeros);
       } else {
-        document.getElementById('output').innerHTML = '<p>No tienes un link generado. Por favor, genera uno nuevo.</p>';
+        document.getElementById('output').innerHTML = '<p>No tenés ningún link generado aún.</p>';
+        document.getElementById('detalles-link').style.display = 'none';
+        document.getElementById('editar-link-container').style.display = 'none';
       }
     } catch (error) {
       console.error('Error al recuperar el link:', error);
