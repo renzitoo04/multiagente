@@ -452,7 +452,7 @@
       const data = await response.json();
 
       if (response.ok) {
-        // Muestra el link generado en el DOM
+        // Muestra el link acortado en el DOM
         document.getElementById('output').innerHTML = `
           <p>Tu link generado:</p>
           <a href="${data.link}" target="_blank">${data.link}</a>
