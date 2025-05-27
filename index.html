@@ -644,7 +644,7 @@
     }
 
     try {
-      const response = await fetch(`/api/link?email=${encodeURIComponent(email)}`, {
+      const response = await fetch(`/api/soporte?email=${encodeURIComponent(email)}`, {
         method: 'GET', // Asegúrate de que el método sea GET
         headers: { 'Content-Type': 'application/json' },
       });
