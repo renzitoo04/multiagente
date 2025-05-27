@@ -445,6 +445,9 @@
         document.getElementById('generador-container').style.display = 'block';
         localStorage.setItem('usuarioEmail', email);
 
+        // Establecer el límite de números desde el backend o un valor predeterminado
+        limiteNumeros = data.limiteNumeros || 2; // Si no se devuelve un límite, usa 2 como predeterminado
+
         // Recuperar el link asociado al perfil
         const linkResponse = await fetch(`/api/obtener-link?email=${email}`);
         const linkData = await linkResponse.json();

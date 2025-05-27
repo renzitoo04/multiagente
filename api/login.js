@@ -20,36 +20,21 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Faltan datos de inicio de sesión' });
   }
 
-  console.log('Email recibido:', email, 'len:', email.length);
-  console.log('Password recibido:', password, 'len:', password.length);
-
   try {
-    const { data: usuario, error } = await supabase
-      .from('usuarios')
-      .select('email, limiteNumeros, password')
-      .eq('email', email.trim())
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('email, limiteNumeros')
+      .eq('email', email)
       .single();
 
-    console.log('Resultado búsqueda solo por email:', usuario);
-
-    if (error || !usuario) {
-      console.log('Error de Supabase:', error);
-      return res.status(401).json({ error: 'Usuario no encontrado' });
+    if (error || !user) {
+      return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
-    console.log('Email en base:', usuario.email, 'len:', usuario.email.length);
-    console.log('Password en base:', usuario.password, 'len:', usuario.password.length);
-
-    if (usuario.password.trim() !== password.trim()) {
-      return res.status(401).json({ error: 'Contraseña incorrecta' });
-    }
-
-    return res.status(200).json({
-      email: usuario.email,
-      limiteNumeros: usuario.limiteNumeros
-    });
+    // Devuelve el límite de números junto con otros datos del usuario
+    return res.status(200).json({ email: user.email, limiteNumeros: user.limiteNumeros || 2 });
   } catch (err) {
-    console.error('Error en login:', err);
+    console.error('Error al iniciar sesión:', err);
     return res.status(500).json({ error: 'Error interno del servidor' });
   }
 }
