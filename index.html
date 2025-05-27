@@ -255,6 +255,22 @@
   #acortar-link-container h3 {
     color: #25d366; /* Verde de WhatsApp */
   }
+
+  /* Nuevo estilo para el apartado de detalles del usuario */
+  #detalles-usuario {
+    display: none;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #1c2541; /* Azul más claro */
+    border: 1px solid #3a506b;
+    border-radius: 4px;
+    color: #ffffff;
+  }
+
+  #detalles-usuario h3 {
+    margin-top: 0;
+    color: #25d366; /* Verde de WhatsApp */
+  }
   </style>
 </head>
 <body>
@@ -342,6 +358,15 @@
     <div id="acortar-link-output" class="output"></div>
   </div>
 
+  <!-- Nuevo apartado para mostrar los detalles del usuario -->
+  <div id="detalles-usuario" style="display: none; margin-top: 20px;">
+    <h3>Detalles del Usuario</h3>
+    <p><strong>Email:</strong> <span id="usuario-email"></span></p>
+    <p><strong>Link Generado:</strong> <a id="usuario-link" href="#" target="_blank"></a></p>
+    <p><strong>Números:</strong> <span id="usuario-numeros"></span></p>
+    <p><strong>Mensaje Automático:</strong> <span id="usuario-mensaje"></span></p>
+  </div>
+
   <div class="info-container">
     <h2 class="info-title">¿Para qué sirve MultiLink?</h2>
     <p>MultiLink es una herramienta diseñada especialmente para creadores de contenido, emprendedores y vendedores que utilizan WhatsApp como canal principal de ventas o atención.</p>
@@ -418,7 +443,6 @@
       if (response.ok) {
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
-        limiteNumeros = data.limiteNumeros;
         localStorage.setItem('usuarioEmail', email);
 
         // Recuperar el link asociado al perfil
@@ -426,32 +450,22 @@
         const linkData = await linkResponse.json();
 
         if (linkResponse.ok && linkData.link) {
-          // Mostrar el link en el DOM
-          document.getElementById('output').innerHTML = `
-            <p>Tu link generado:</p>
-            <a href="${linkData.link}" target="_blank">${linkData.link}</a>
-          `;
-
-          // Actualizar el apartado "Detalles del Link"
-          document.getElementById('link-generado').textContent = linkData.link;
-          document.getElementById('link-generado').href = linkData.link;
-          document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
-          document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
-          document.getElementById('detalles-link').style.display = 'block';
+          // Mostrar los detalles del usuario en el DOM
+          document.getElementById('usuario-email').textContent = email;
+          document.getElementById('usuario-link').textContent = linkData.link;
+          document.getElementById('usuario-link').href = linkData.link;
+          document.getElementById('usuario-numeros').textContent = linkData.numeros.join(', ');
+          document.getElementById('usuario-mensaje').textContent = linkData.mensaje || 'Sin mensaje';
+          document.getElementById('detalles-usuario').style.display = 'block';
 
           // Guardar los datos en localStorage
           localStorage.setItem(`linkGenerado_${email}`, linkData.link);
           localStorage.setItem(`linkID_${email}`, linkData.id);
           localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
           localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
-
-          // Mostrar el apartado "Editar Link"
-          document.getElementById('editar-link-container').style.display = 'block';
-          mostrarEditarLink(linkData.numeros);
         } else {
-          document.getElementById('output').innerHTML = '<p>No tenés ningún link generado aún.</p>';
-          document.getElementById('detalles-link').style.display = 'none';
-          document.getElementById('editar-link-container').style.display = 'none';
+          document.getElementById('detalles-usuario').style.display = 'none';
+          console.log('No se encontró un link para este usuario.');
         }
       } else {
         document.getElementById('login-error').textContent = `Error: ${data.error}`;
@@ -502,6 +516,9 @@
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
         document.getElementById('detalles-link').style.display = 'block';
+
+        // Mostrar los detalles del usuario
+        mostrarDetallesUsuario(email, { link: data.link, numeros, mensaje });
 
         // Guardar los datos en localStorage
         localStorage.setItem(`linkGenerado_${email}`, data.link);
@@ -683,6 +700,15 @@
     }
   }
 
+  function mostrarDetallesUsuario(email, linkData) {
+    document.getElementById('usuario-email').textContent = email;
+    document.getElementById('usuario-link').textContent = linkData.link;
+    document.getElementById('usuario-link').href = linkData.link;
+    document.getElementById('usuario-numeros').textContent = linkData.numeros.join(', ');
+    document.getElementById('usuario-mensaje').textContent = linkData.mensaje || 'Sin mensaje';
+    document.getElementById('detalles-usuario').style.display = 'block';
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
   const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
 
@@ -705,6 +731,9 @@
         document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
         document.getElementById('detalles-link').style.display = 'block';
+
+        // Mostrar los detalles del usuario
+        mostrarDetallesUsuario(email, linkData);
 
         // Guardar los datos en localStorage
         localStorage.setItem(`linkGenerado_${email}`, linkData.link);
