@@ -61,6 +61,33 @@ export default async function handler(req, res) {
     }
   }
 
+  if (req.method === 'PATCH') {
+    const { email, numeros, mensaje, link } = req.body;
+
+    if (!email || !numeros || numeros.length === 0 || !link) {
+      return res.status(400).json({ error: 'Datos inválidos para actualizar el link.' });
+    }
+
+    try {
+      // Actualizar el registro en Supabase
+      const { error } = await supabase
+        .from('link')
+        .update({ numeros, mensaje })
+        .eq('email', email)
+        .eq('link', link);
+
+      if (error) {
+        console.error('Error al actualizar el link en Supabase:', error);
+        return res.status(500).json({ error: 'Error al actualizar el link.' });
+      }
+
+      return res.status(200).json({ message: 'Link actualizado correctamente.' });
+    } catch (error) {
+      console.error('Error interno al actualizar el link:', error);
+      return res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+  }
+
   return res.status(405).json({ error: 'Método no permitido.' });
 }
 
