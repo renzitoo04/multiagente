@@ -710,9 +710,13 @@ async function login() {
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
-  const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
+  const email = localStorage.getItem('usuarioEmail');
 
   if (email) {
+    // Mostrar el contenedor principal y ocultar login
+    document.getElementById('login-container').style.display = 'none';
+    document.getElementById('generador-container').style.display = 'block';
+
     try {
       // Recuperar el link asociado al perfil
       const linkResponse = await fetch(`/api/obtener-link?email=${email}`);
@@ -727,14 +731,35 @@ async function login() {
           <p>Tu link generado:</p>
           <a href="${linkData.link}" target="_blank">${linkData.link}</a>
         `;
+
+        // Mostrar y configurar el apartado de edición
+        document.getElementById('editar-link-container').style.display = 'block';
+        document.getElementById('editar-mensaje').value = linkData.mensaje || '';
+
+        // Guardar datos en localStorage
+        localStorage.setItem(`linkGenerado_${email}`, linkData.link);
+        localStorage.setItem(`linkID_${email}`, linkData.id);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
+
+        // Mostrar el editor de números
+        mostrarEditarLink(linkData.numeros);
+
+        // Establecer el límite de números (puedes ajustar este valor según necesites)
+        limiteNumeros = 2; // O el valor que corresponda según tu lógica
       } else {
-        // Si no hay link, oculta los detalles
         document.getElementById('detalles-link').style.display = 'none';
-        document.getElementById('output').innerHTML = '<p>No tienes un link generado aún.</p>';
+        document.getElementById('editar-link-container').style.display = 'none';
+        document.getElementById('output').innerHTML = '<p>Aún no tenés ningún link creado</p>';
       }
     } catch (error) {
-      console.error('Error al recuperar los datos del link:', error);
+      console.error('Error al recuperar el link:', error);
+      document.getElementById('output').innerHTML = '<p>Error al cargar tu link</p>';
     }
+  } else {
+    // Si no hay usuario logueado, mostrar el login
+    document.getElementById('login-container').style.display = 'block';
+    document.getElementById('generador-container').style.display = 'none';
   }
 });
 </script>
