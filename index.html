@@ -275,26 +275,6 @@
 
   <!-- Contenedor principal del generador -->
   <div id="generador-container" style="display: none;">
-    <h1>Generador de Links Multiagente</h1>
-    <form id="form">
-      <div id="numeros-container">
-        <div class="numero-container" id="numero-container-1">
-          <span class="bandera-container">
-            <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
-          </span>
-          <input type="text" id="numero-1" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
-        </div>
-      </div>
-      <button type="button" onclick="agregarNumero()">Agregar otro número</button>
-      <button type="button" onclick="quitarUltimoNumero()">Quitar último número</button>
-
-      <!-- Campo de mensaje automático en el generador principal -->
-      <label for="mensaje">Mensaje automático:</label>
-      <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
-
-      <button type="button" onclick="generarLink()">Generar Link</button>
-    </form>
-
     <div class="output" id="output"></div>
     <div class="detalles-link" id="detalles-link" style="display: none;">
       <h3>Detalles del Link Generado:</h3>
@@ -388,8 +368,6 @@
     }
 
     try {
-      console.log('Enviando credenciales:', { email }); // No loguear passwords
-
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -397,13 +375,17 @@
       });
 
       const data = await response.json();
-      console.log('Respuesta del servidor:', data);
 
       if (response.ok) {
+        // Guardar el email en localStorage
+        localStorage.setItem('usuarioEmail', email);
+
+        // Ocultar el contenedor de login y mostrar el generador
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
-        limiteNumeros = data.limiteNumeros;
-        localStorage.setItem('usuarioEmail', email);
+
+        // Cargar los datos del usuario desde Supabase
+        await cargarLinkDelUsuario(email);
       } else {
         document.getElementById('login-error').textContent = `Error: ${data.error}`;
       }
@@ -646,49 +628,51 @@
     }
   }
 
+  async function cargarLinkDelUsuario(email) {
+  try {
+    // Consultar a Supabase por los datos del usuario
+    const response = await fetch(`/api/obtener-link?email=${email}`);
+    const data = await response.json();
+
+    if (response.ok && data.link) {
+      // Mostrar los datos en el DOM
+      document.getElementById('output').innerHTML = `
+        <p>Tu link generado:</p>
+        <a href="${data.link}" target="_blank">${data.link}</a>
+      `;
+
+      document.getElementById('detalles-link').style.display = 'block';
+      document.getElementById('numeros-generados').textContent = data.numeros.join(', ');
+      document.getElementById('mensaje-generado').textContent = data.mensaje || 'Sin mensaje';
+
+      // Guardar los datos en localStorage
+      localStorage.setItem(`linkGenerado_${email}`, data.link);
+      localStorage.setItem(`linkID_${email}`, data.id);
+      localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(data.numeros));
+      localStorage.setItem(`mensajeGenerado_${email}`, data.mensaje);
+    } else {
+      // Si no hay datos, mostrar un mensaje
+      document.getElementById('output').innerHTML = '<p>Aún no tienes un link generado.</p>';
+      document.getElementById('detalles-link').style.display = 'none';
+    }
+  } catch (error) {
+    console.error('Error al cargar los datos del usuario:', error);
+    document.getElementById('output').innerHTML = '<p>Error al cargar los datos del usuario.</p>';
+  }
+}
+
   document.addEventListener('DOMContentLoaded', async () => {
   const email = localStorage.getItem('usuarioEmail');
 
-  if (!email) {
-    // Si no hay usuario logueado, oculta las secciones
-    document.getElementById('detalles-link').style.display = 'none';
-    document.getElementById('editar-link-container').style.display = 'none';
-    return;
-  }
-
-  try {
-    // Recuperar el link asociado al perfil desde Supabase
-    const linkResponse = await fetch(`/api/obtener-link?email=${email}`);
-    const linkData = await linkResponse.json();
-
-    if (linkResponse.ok && linkData.link) {
-      // Mostrar los detalles del link en el DOM
-      document.getElementById('detalles-link').style.display = 'block';
-      document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
-      document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
-      document.getElementById('output').innerHTML = `
-        <p>Tu link generado:</p>
-        <a href="${linkData.link}" target="_blank">${linkData.link}</a>
-      `;
-
-      // Mostrar el contenedor para editar link
-      document.getElementById('editar-link-container').style.display = 'block';
-      mostrarEditarLink(linkData.numeros);
-
-      // Guardar los datos en localStorage
-      localStorage.setItem(`linkGenerado_${email}`, linkData.link);
-      localStorage.setItem(`linkID_${email}`, linkData.id);
-      localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
-      localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
-    } else {
-      // Si no hay link, oculta los detalles
-      document.getElementById('detalles-link').style.display = 'none';
-      document.getElementById('editar-link-container').style.display = 'none';
-      document.getElementById('output').innerHTML = '<p>Aún no tenés ningún link creado</p>';
-    }
-  } catch (error) {
-    console.error('Error al cargar el link:', error);
-    document.getElementById('output').innerHTML = '<p>Error al cargar tu link</p>';
+  if (email) {
+    // Mostrar el generador y cargar los datos del usuario
+    document.getElementById('login-container').style.display = 'none';
+    document.getElementById('generador-container').style.display = 'block';
+    await cargarLinkDelUsuario(email);
+  } else {
+    // Mostrar el contenedor de login si no hay usuario logueado
+    document.getElementById('login-container').style.display = 'block';
+    document.getElementById('generador-container').style.display = 'none';
   }
 });
 </script>
