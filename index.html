@@ -255,15 +255,6 @@
   #acortar-link-container h3 {
     color: #25d366; /* Verde de WhatsApp */
   }
-
-  #detalles-link-container {
-    display: none;
-    margin-top: 20px;
-  }
-
-  #detalles-link-container h3 {
-    color: #25d366; /* Verde de WhatsApp */
-  }
   </style>
 </head>
 <body>
@@ -313,7 +304,22 @@
     
   </div>
 
-  
+  <!-- Contenedor para prueba de MultiLink -->
+  <div id="probar-multilink-container">
+    <h1>Probar MultiLink</h1>
+    <form id="form-multilink">
+      <div id="numero-prueba-container" class="numero-container">
+        <span class="bandera-container">
+          <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
+        </span>
+        <input type="text" id="numero-prueba" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
+      </div>
+      <label for="mensaje-prueba">Mensaje automático:</label>
+      <input type="text" id="mensaje-prueba" placeholder="Ejemplo: Hola, necesito ayuda">
+      <button type="button" onclick="generarLinkPrueba()">Generar Link</button>
+    </form>
+    <div class="output" id="output-prueba"></div>
+  </div>
 
   <!-- Contenedor para editar link -->
   <div id="editar-link-container" style="display: none;">
@@ -335,14 +341,16 @@
     <div id="acortar-link-output" class="output"></div>
   </div>
 
-  
-
-  <!-- Detalles del Link Generado (nuevo contenedor) -->
-  <div id="detalles-link-container" style="display: none; margin-top: 20px;">
-    <h3>Detalles del Link Generado</h3>
-    <p><strong>Link:</strong> <a id="link-generado" href="#" target="_blank"></a></p>
-    <p><strong>Números:</strong> <span id="numeros-rotativos"></span></p>
-    <p><strong>Mensaje Automático:</strong> <span id="mensaje-automatico"></span></p>
+  <div class="info-container">
+    <h2 class="info-title">¿Para qué sirve MultiLink?</h2>
+    <p>MultiLink es una herramienta diseñada especialmente para creadores de contenido, emprendedores y vendedores que utilizan WhatsApp como canal principal de ventas o atención.</p>
+    <ul>
+      <li>Evitar bloqueos por exceso de mensajes en una sola línea</li>
+      <li>Distribuir el flujo de clientes entre diferentes operadores</li>
+      <li>Atender más rápido y de forma organizada</li>
+      <li>Adaptarse al crecimiento de tu negocio sin complicaciones</li>
+    </ul>
+    <p>Ya sea que vendas por WhatsApp, Telegram, redes sociales o tiendas online, MultiLink te ayuda a optimizar tu atención al cliente y aumentar tus conversiones.</p>
   </div>
 
 <script>
@@ -407,35 +415,17 @@
       const data = await response.json();
 
       if (response.ok) {
-        // Limpiar datos previos de localStorage
-        localStorage.clear();
-
-        // Guardar el email del usuario actual
-        localStorage.setItem('usuarioEmail', email);
-
-        // Configurar el límite de números
-        limiteNumeros = data.limiteNumeros;
-
-        // Ocultar el contenedor de inicio de sesión y mostrar el generador
+        // Oculta el contenedor de inicio de sesión
         document.getElementById('login-container').style.display = 'none';
+
+        // Muestra el generador principal
         document.getElementById('generador-container').style.display = 'block';
 
-        // Si ya existe un link, mostrar los detalles
-        if (data.link) {
-          const { link, numeros, mensaje } = data.link;
+        // Configura el límite de números
+        limiteNumeros = data.limiteNumeros;
 
-          document.getElementById('link-generado').href = link;
-          document.getElementById('link-generado').textContent = link;
-          document.getElementById('numeros-rotativos').textContent = numeros.join(', ');
-          document.getElementById('mensaje-automatico').textContent = mensaje || 'Sin mensaje';
-
-          document.getElementById('detalles-link-container').style.display = 'block';
-
-          // Guardar los datos del link en localStorage
-          localStorage.setItem(`linkGenerado_${email}`, link);
-          localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
-          localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-        }
+        // Guarda el correo del usuario en localStorage
+        localStorage.setItem('usuarioEmail', email);
       } else {
         document.getElementById('login-error').textContent = data.error;
       }
@@ -473,23 +463,22 @@
       const data = await response.json();
 
       if (response.ok) {
-        // Guardar el link generado y los datos en localStorage
+        // Muestra el link generado en el DOM
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${data.link}" target="_blank">${data.link}</a>
+        `;
+
+        // Guarda los datos en localStorage
         localStorage.setItem(`linkGenerado_${email}`, data.link);
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-
-        // Mostrar el link generado en el contenedor #detalles-link
-        document.getElementById('detalles-link').style.display = 'block';
-        document.getElementById('link-generado').href = data.link;
-        document.getElementById('link-generado').textContent = data.link;
-        document.getElementById('numeros-rotativos').textContent = numeros.join(', ');
-        document.getElementById('mensaje-automatico').textContent = mensaje || 'Sin mensaje';
       } else {
         alert('Error: ' + data.error);
       }
     } catch (error) {
-      console.error('Error generando el link:', error);
-      alert('Error al generar el link. Inténtalo de nuevo.');
+      console.error('Error generando link:', error);
+      document.getElementById('output').innerHTML = `<p>Error al generar el link. Inténtalo de nuevo.</p>`;
     }
   }
 
@@ -666,76 +655,86 @@
     }
   }
 
-  async function obtenerLinkUsuario() {
-  const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
+  document.addEventListener('DOMContentLoaded', () => {
+  const email = localStorage.getItem('usuarioEmail'); // Correo del usuario logueado
 
   if (!email) {
-    console.error('No hay un usuario logueado.');
-    return null;
-  }
-
-  try {
-    const response = await fetch(`/api/link?email=${encodeURIComponent(email)}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    if (!response.ok) {
-      console.error('Error al obtener el link del usuario:', await response.text());
-      return null;
-    }
-
-    const data = await response.json();
-    return data; // Devuelve el registro del link del usuario
-  } catch (error) {
-    console.error('Error al consultar el backend:', error);
-    return null;
-  }
-}
-
-  document.addEventListener('DOMContentLoaded', async () => {
-  const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
-
-  if (!email) {
-    console.error('No hay un usuario logueado.');
+    // Si no hay un usuario logueado, oculta las secciones
+    document.getElementById('detalles-link').style.display = 'none';
+    document.getElementById('editar-link-container').style.display = 'none';
     return;
   }
 
-  // Recuperar datos del link desde localStorage
+  // Recupera los datos del usuario actual desde localStorage
   const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
   const numerosGuardados = JSON.parse(localStorage.getItem(`numerosGenerados_${email}`)) || [];
   const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`) || '';
 
   if (linkGuardado) {
-    // Mostrar el link guardado en el contenedor #output
+    // Mostrar los detalles del link
+    document.getElementById('detalles-link').style.display = 'block';
+    document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
+    document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
+
+    // Mostrar el link guardado
     document.getElementById('output').innerHTML = `
       <p>Tu link generado:</p>
       <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
     `;
 
-    // Mostrar los detalles del link
-    document.getElementById('detalles-link').style.display = 'block';
-    document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
-    document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
+    // Mostrar los números en el apartado "Editar Link"
+    document.getElementById('editar-link-container').style.display = 'block';
+    mostrarEditarLink(numerosGuardados);
+
+    // Deshabilitar el botón de "Generar Link"
+    document.querySelector('button[onclick="generarLink()"]').disabled = true;
   } else {
-    console.log('No hay un link guardado para este usuario.');
-    document.getElementById('detalles-link').style.display = 'none';
+    // Mostrar las secciones vacías si no hay datos
+    document.getElementById('detalles-link').style.display = 'block';
+    document.getElementById('numeros-generados').textContent = 'Sin números';
+    document.getElementById('mensaje-generado').textContent = 'Sin mensaje';
+
+    document.getElementById('editar-link-container').style.display = 'block';
+    mostrarEditarLink([]); // Muestra las celdas vacías
   }
 });
 
-async function mostrarDetallesLink() {
-  const linkData = await obtenerLinkUsuario(); // Consulta el link del usuario
+async function login() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
 
-  if (linkData) {
-    // Mostrar los detalles del link en el contenedor #detalles-link
-    document.getElementById('detalles-link').style.display = 'block';
-    document.getElementById('link-generado').href = linkData.link;
-    document.getElementById('link-generado').textContent = linkData.link;
-    document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
-    document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
-  } else {
-    // Ocultar el contenedor si no hay datos
-    document.getElementById('detalles-link').style.display = 'none';
+  if (!email || !password) {
+    document.getElementById('login-error').textContent = 'Por favor, ingresa tu correo y contraseña.';
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Oculta el contenedor de inicio de sesión
+      document.getElementById('login-container').style.display = 'none';
+
+      // Muestra el generador principal
+      document.getElementById('generador-container').style.display = 'block';
+
+      // Configura el límite de números
+      limiteNumeros = data.limiteNumeros;
+
+      // Guarda el correo del usuario en localStorage
+      localStorage.setItem('usuarioEmail', email);
+    } else {
+      document.getElementById('login-error').textContent = data.error;
+    }
+  } catch (error) {
+    console.error('Error al iniciar sesión:', error);
+    document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
   }
 }
 </script>
