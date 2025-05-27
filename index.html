@@ -410,30 +410,38 @@ async function cargarLinkDelUsuario() {
     const linkResponse = await fetch(`/api/obtener-link?email=${email}`);
     const linkData = await linkResponse.json();
 
-    if (linkResponse.ok && linkData.link) {
-      // Mostrar el link y sus detalles
+    if (linkResponse.ok && linkData) {
+      // Mostrar el link generado
       document.getElementById('output').innerHTML = `
         <p>Tu link generado:</p>
         <a href="${linkData.link}" target="_blank">${linkData.link}</a>
       `;
 
       // Mostrar los detalles del link
-      document.getElementById('detalles-link').style.display = 'block';
-      document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
-      document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
+      const detallesContainer = document.getElementById('detalles-link');
+      detallesContainer.style.display = 'block';
+      detallesContainer.innerHTML = `
+        <h3>Detalles del Link:</h3>
+        <p><strong>Link:</strong> <a href="${linkData.link}" target="_blank">${linkData.link}</a></p>
+        <p><strong>Números:</strong> <span id="numeros-generados">${linkData.numeros.join(', ')}</span></p>
+        <p><strong>Mensaje:</strong> <span id="mensaje-generado">${linkData.mensaje || 'Sin mensaje'}</span></p>
+      `;
 
       // Mostrar y configurar el apartado de edición
       document.getElementById('editar-link-container').style.display = 'block';
       document.getElementById('editar-mensaje').value = linkData.mensaje || '';
       mostrarEditarLink(linkData.numeros);
 
-      // Guardar datos en localStorage
+      // Guardar datos en localStorage para persistencia
       localStorage.setItem(`linkGenerado_${email}`, linkData.link);
       localStorage.setItem(`linkID_${email}`, linkData.id);
       localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
       localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
+
+      // Establecer límite de números si existe
+      limiteNumeros = linkData.numeros.length || 2;
     } else {
-      // Si no hay link, mostrar mensaje y ocultar apartados
+      // Si no hay link, mostrar mensaje
       document.getElementById('output').innerHTML = '<p>Aún no tenés ningún link creado</p>';
       document.getElementById('detalles-link').style.display = 'none';
       document.getElementById('editar-link-container').style.display = 'none';
@@ -717,45 +725,8 @@ async function login() {
     document.getElementById('login-container').style.display = 'none';
     document.getElementById('generador-container').style.display = 'block';
 
-    try {
-      // Recuperar el link asociado al perfil
-      const linkResponse = await fetch(`/api/obtener-link?email=${email}`);
-      const linkData = await linkResponse.json();
-
-      if (linkResponse.ok && linkData.link) {
-        // Mostrar los detalles del link en el DOM
-        document.getElementById('detalles-link').style.display = 'block';
-        document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
-        document.getElementById('output').innerHTML = `
-          <p>Tu link generado:</p>
-          <a href="${linkData.link}" target="_blank">${linkData.link}</a>
-        `;
-
-        // Mostrar y configurar el apartado de edición
-        document.getElementById('editar-link-container').style.display = 'block';
-        document.getElementById('editar-mensaje').value = linkData.mensaje || '';
-
-        // Guardar datos en localStorage
-        localStorage.setItem(`linkGenerado_${email}`, linkData.link);
-        localStorage.setItem(`linkID_${email}`, linkData.id);
-        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
-        localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
-
-        // Mostrar el editor de números
-        mostrarEditarLink(linkData.numeros);
-
-        // Establecer el límite de números (puedes ajustar este valor según necesites)
-        limiteNumeros = 2; // O el valor que corresponda según tu lógica
-      } else {
-        document.getElementById('detalles-link').style.display = 'none';
-        document.getElementById('editar-link-container').style.display = 'none';
-        document.getElementById('output').innerHTML = '<p>Aún no tenés ningún link creado</p>';
-      }
-    } catch (error) {
-      console.error('Error al recuperar el link:', error);
-      document.getElementById('output').innerHTML = '<p>Error al cargar tu link</p>';
-    }
+    // Cargar el link y sus detalles
+    await cargarLinkDelUsuario();
   } else {
     // Si no hay usuario logueado, mostrar el login
     document.getElementById('login-container').style.display = 'block';
