@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt'; // Importa bcrypt para comparar contraseñas
 dotenv.config();
 
 console.log('Conectando a:', process.env.SUPABASE_URL);
@@ -21,13 +22,20 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Recupera el usuario desde la tabla "users"
     const { data: user, error } = await supabase
       .from('users')
-      .select('email, limiteNumeros')
+      .select('email, password, limiteNumeros') // Asegúrate de incluir la columna "password"
       .eq('email', email)
       .single();
 
     if (error || !user) {
+      return res.status(401).json({ error: 'Credenciales inválidas' });
+    }
+
+    // Compara la contraseña ingresada con la almacenada
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
