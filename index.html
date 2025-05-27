@@ -653,94 +653,37 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-  const email = localStorage.getItem('usuarioEmail'); // Correo del usuario logueado
+  const email = localStorage.getItem('usuarioEmail'); // Recupera el correo del usuario logueado
 
-  if (!email) {
-    // Si no hay un usuario logueado, oculta las secciones
-    document.getElementById('detalles-link').style.display = 'none';
-    document.getElementById('editar-link-container').style.display = 'none';
-    return;
-  }
+  if (email) {
+    // Mostrar el contenedor principal y ocultar el de inicio de sesión
+    document.getElementById('login-container').style.display = 'none';
+    document.getElementById('generador-container').style.display = 'block';
 
-  // Recupera los datos del usuario actual desde localStorage
-  const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
-  const numerosGuardados = JSON.parse(localStorage.getItem(`numerosGenerados_${email}`)) || [];
-  const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`) || '';
+    // Recuperar datos del link generado desde localStorage
+    const link = localStorage.getItem(`linkGenerado_${email}`);
+    const numeros = JSON.parse(localStorage.getItem(`numerosGenerados_${email}`)) || [];
+    const mensaje = localStorage.getItem(`mensajeGenerado_${email}`) || 'Sin mensaje';
 
-  if (linkGuardado) {
-    // Mostrar los detalles del link
-    document.getElementById('detalles-link').style.display = 'block';
-    document.getElementById('numeros-generados').textContent = numerosGuardados.join(', ');
-    document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
+    if (link) {
+      // Mostrar los detalles del link generado
+      document.getElementById('detalles-link').style.display = 'block';
+      document.getElementById('numeros-generados').textContent = numeros.join(', ');
+      document.getElementById('mensaje-generado').textContent = mensaje;
+      document.getElementById('output').innerHTML = `
+        <p>Tu link generado:</p>
+        <a href="${link}" target="_blank">${link}</a>
+      `;
 
-    // Mostrar el link guardado
-    document.getElementById('output').innerHTML = `
-      <p>Tu link generado:</p>
-      <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
-    `;
+      // Mostrar el contenedor para editar el link
+      document.getElementById('editar-link-container').style.display = 'block';
+      mostrarEditarLink(numeros);
 
-    // Mostrar los números en el apartado "Editar Link"
-    document.getElementById('editar-link-container').style.display = 'block';
-    mostrarEditarLink(numerosGuardados);
-
-    // Deshabilitar el botón de "Generar Link"
-    document.querySelector('button[onclick="generarLink()"]').disabled = true;
-  } else {
-    // Mostrar las secciones vacías si no hay datos
-    document.getElementById('detalles-link').style.display = 'block';
-    document.getElementById('numeros-generados').textContent = 'Sin números';
-    document.getElementById('mensaje-generado').textContent = 'Sin mensaje';
-
-    document.getElementById('editar-link-container').style.display = 'block';
-    mostrarEditarLink([]); // Muestra las celdas vacías
+      // Deshabilitar el botón de "Generar Link" si ya existe un link
+      document.querySelector('button[onclick="generarLink()"]').disabled = true;
+    }
   }
 });
-
-async function login() {
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-
-  if (!email || !password) {
-    document.getElementById('login-error').textContent = 'Por favor, ingresa tu correo y contraseña.';
-    return;
-  }
-
-  try {
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      localStorage.setItem('usuarioEmail', email);
-      document.getElementById('login-container').style.display = 'none';
-      document.getElementById('generador-container').style.display = 'block';
-
-      // Si ya existe un link, mostrar los detalles
-      if (data.link) {
-        const { link, numeros, mensaje } = data.link;
-
-        document.getElementById('link-generado').href = link;
-        document.getElementById('link-generado').textContent = link;
-        document.getElementById('numeros-rotativos').textContent = numeros.join(', ');
-        document.getElementById('mensaje-automatico').textContent = mensaje || 'Sin mensaje';
-
-        document.getElementById('detalles-link-container').style.display = 'block';
-      }
-
-      limiteNumeros = data.limiteNumeros; // Asigna el valor de limiteNumeros devuelto por el backend
-      console.log('Limite de números:', limiteNumeros); // Verifica que el valor sea correcto
-    } else {
-      document.getElementById('login-error').textContent = data.error;
-    }
-  } catch (error) {
-    console.error('Error al iniciar sesión:', error);
-    document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
-  }
-}
 </script>
 </body>
 </html>
