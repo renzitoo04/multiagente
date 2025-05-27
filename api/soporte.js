@@ -1,64 +1,32 @@
-const usuarios = [
-  {
-    email: "renzobianco@gmail.com",
-    password: "renzoxdlol",
-    limiteNumeros: 2
-  },
-  {
-    email: "nuevo_usuario@gmail.com",
-    password: "contraseña123",
-    limiteNumeros: 10
-  },
-  {
-    email: "donarumamatias@gmail.com",
-    password: "contraseña12",
-    limiteNumeros: 3
-  },
-  {
-  email: "prueba@multi.link",
-  password: "test",
-  limiteNumeros: 1
-  },
-  {
-  email: "tomas@gmail.com",
-  password: "tomas123",
-  limiteNumeros: 3
-  }
+import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+dotenv.config();
 
-];
-
-// Objeto para almacenar configuraciones por ID
-const configuracionesPorID = {}; // { id: { email, numeros, mensaje } }
-
-// Objeto para manejar índices de rotación por ID
-const indicesRotacion = {}; // { id: índice_actual }
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 async function acortarLink(linkOriginal) {
-  const tinyUrlToken = 'apvW0ktGoIEIlrA5PBzjTFb2v4IS4e3gYkptQei0qYYzSXNukYvK2GwLXKVP'; // Token de TinyURL
+  const tinyUrlToken = process.env.TINYURL_TOKEN; // Asegúrate de agregar este token a tu archivo .env
   try {
-    const response = await fetch(`https://api.tinyurl.com/create`, {
+    const response = await fetch('https://api.tinyurl.com/create', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${tinyUrlToken}`,
+        Authorization: `Bearer ${tinyUrlToken}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        url: linkOriginal,
-        domain: 'tiny.one', // Puedes usar 'tiny.one' o 'tinyurl.com'
-      }),
+      body: JSON.stringify({ url: linkOriginal, domain: 'tiny.one' }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Error acortando el link con TinyURL:', errorText);
-      return linkOriginal; // Devuelve el link original si falla
+      return linkOriginal;
     }
 
     const data = await response.json();
-    return data.data.tiny_url; // Devuelve el link acortado
+    return data.data.tiny_url;
   } catch (error) {
-    console.error('Error en la función acortarLink con TinyURL:', error);
-    return linkOriginal; // Devuelve el link original si ocurre un error
+    console.error('Error en la función acortarLink:', error);
+    return linkOriginal;
   }
 }
 
@@ -114,77 +82,82 @@ export default async function handler(req, res) {
 
   // === 3. GENERAR LINK CORTO (POST) ===
   if (req.method === 'POST') {
-  const { email, numeros, mensaje } = req.body;
+    const { email, numeros, mensaje } = req.body;
 
-  if (!email || !numeros || numeros.length === 0) {
-    return res.status(400).json({ error: 'Datos inválidos' });
+    if (!email || !numeros || numeros.length === 0) {
+      return res.status(400).json({ error: 'Datos inválidos' });
+    }
+
+    try {
+      // Verificar si ya existe un link para el usuario
+      const { data: existingLink } = await supabase
+        .from('link')
+        .select('id')
+        .eq('email', email)
+        .single();
+
+      if (existingLink) {
+        return res.status(403).json({ error: 'Ya tienes un link generado. Solo puedes actualizarlo.' });
+      }
+
+      // Generar el link
+      const id = Math.random().toString(36).substring(2, 8);
+      const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
+      const linkAcortado = await acortarLink(linkOriginal);
+
+      // Guardar el link en Supabase
+      const { error } = await supabase
+        .from('link')
+        .insert([{ id, email, numeros, mensaje, link: linkAcortado }]);
+
+      if (error) {
+        throw error;
+      }
+
+      return res.status(200).json({ id, link: linkAcortado });
+    } catch (err) {
+      console.error('Error generando el link:', err);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
   }
-
-  // Verifica si el usuario ya tiene un link generado
-  const configuracionExistente = Object.values(configuracionesPorID).find(
-    (config) => config.email === email
-  );
-
-  if (configuracionExistente) {
-    return res.status(403).json({ error: 'Ya tienes un link generado. Solo puedes actualizarlo.' });
-  }
-
-  // Genera un nuevo ID y link original
-  const id = Math.random().toString(36).substring(2, 8);
-  const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/soporte?id=${id}`;
-
-  try {
-    // Acorta el link usando TinyURL
-    const linkAcortado = await acortarLink(linkOriginal);
-
-    // Guarda la nueva configuración, incluyendo el link corto
-    configuracionesPorID[id] = { email, numeros, mensaje, link: linkAcortado };
-
-    // Devuelve el link acortado y el ID
-    return res.status(200).json({ id, link: linkAcortado });
-  } catch (error) {
-    console.error('Error generando el link:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
-  }
-}
 
   // === 4. ACTUALIZAR NÚMEROS DEL LINK EXISTENTE (PATCH) ===
   if (req.method === 'PATCH') {
-  const { email, link, numeros, mensaje } = req.body;
+    const { email, link, numeros, mensaje } = req.body;
 
-  // Extrae el ID del link
-  const id = link.split('id=')[1]; // Obtiene el ID después de "id="
+    // Extrae el ID del link
+    const id = link.split('id=')[1]; // Obtiene el ID después de "id="
 
-  if (!id || !configuracionesPorID[id]) {
-    return res.status(404).json({ error: 'Link no encontrado' });
+    if (!id || !configuracionesPorID[id]) {
+      return res.status(404).json({ error: 'Link no encontrado' });
+    }
+
+    // Verifica que el email coincida con el propietario del link
+    if (configuracionesPorID[id].email !== email) {
+      return res.status(403).json({ error: 'No tienes permiso para actualizar este link.' });
+    }
+
+    if (!numeros || numeros.length === 0) {
+      return res.status(400).json({ error: 'Debe proporcionar al menos un número válido.' });
+    }
+
+    // Actualiza los números asociados al link
+    configuracionesPorID[id].numeros = numeros;
+
+    // Actualiza el mensaje si está definido
+    if (mensaje !== undefined) {
+      configuracionesPorID[id].mensaje = mensaje;
+    }
+
+    try {
+      // Devuelve el link corto guardado
+      const linkCorto = configuracionesPorID[id].link;
+      return res.status(200).json({ success: true, link: linkCorto });
+    } catch (error) {
+      console.error('Error actualizando el link:', error);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
   }
-
-  // Verifica que el email coincida con el propietario del link
-  if (configuracionesPorID[id].email !== email) {
-    return res.status(403).json({ error: 'No tienes permiso para actualizar este link.' });
-  }
-
-  if (!numeros || numeros.length === 0) {
-    return res.status(400).json({ error: 'Debe proporcionar al menos un número válido.' });
-  }
-
-  // Actualiza los números asociados al link
-  configuracionesPorID[id].numeros = numeros;
-
-  // Actualiza el mensaje si está definido
-  if (mensaje !== undefined) {
-    configuracionesPorID[id].mensaje = mensaje;
-  }
-
-  try {
-    // Devuelve el link corto guardado
-    const linkCorto = configuracionesPorID[id].link;
-    return res.status(200).json({ success: true, link: linkCorto });
-  } catch (error) {
-    console.error('Error actualizando el link:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
-  }
-}
 
   // === 5. ACORTAR LINK MANUAL (POST) ===
   if (req.method === 'POST' && req.url === '/soporte/acortar') {

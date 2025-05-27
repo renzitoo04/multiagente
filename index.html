@@ -397,38 +397,35 @@
   }
 
   async function login() {
-  localStorage.clear(); // Limpia antes de guardar los datos nuevos
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
 
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-
-  if (!email || !password) {
-    document.getElementById('login-error').textContent = 'Por favor, ingresa tu correo y contraseña.';
-    return;
-  }
-
-  try {
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      // Inicio de sesión exitoso
-      localStorage.setItem('usuarioEmail', email);
-      document.getElementById('login-container').style.display = 'none';
-      document.getElementById('generador-container').style.display = 'block';
-    } else {
-      document.getElementById('login-error').textContent = data.error;
+    if (!email || !password) {
+      document.getElementById('login-error').textContent = 'Por favor, ingresa tu correo y contraseña.';
+      return;
     }
-  } catch (error) {
-    console.error('Error al iniciar sesión:', error);
-    document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
+
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('usuarioEmail', email);
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('generador-container').style.display = 'block';
+      } else {
+        document.getElementById('login-error').textContent = data.error;
+      }
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
+    }
   }
-}
 
   async function generarLink() {
     const numeros = Array.from(document.querySelectorAll('.numero'))
@@ -436,7 +433,7 @@
       .filter(num => num !== '');
 
     const mensaje = document.getElementById('mensaje').value.trim();
-    const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
+    const email = localStorage.getItem('usuarioEmail');
 
     if (!email) {
       alert('Por favor, inicia sesión antes de generar un link.');
@@ -449,10 +446,7 @@
     }
 
     try {
-      // Muestra un mensaje de carga mientras se genera el link
-      document.getElementById('output').innerHTML = `<p>Generando link...</p>`;
-
-      const response = await fetch('/soporte', {
+      const response = await fetch('/api/soporte', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, numeros, mensaje }),
@@ -461,39 +455,15 @@
       const data = await response.json();
 
       if (response.ok) {
-        const link = data.link; // Obtén el link del backend
-        const id = data.id; // Obtén el ID del backend
-
-        // Guardar datos en localStorage con el email como prefijo
-        localStorage.setItem(`linkGenerado_${email}`, link);
-        localStorage.setItem(`linkID_${email}`, id);
-        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
-        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-
-        // Muestra el link generado en el DOM
         document.getElementById('output').innerHTML = `
           <p>Tu link generado:</p>
-          <a href="${link}" target="_blank">${link}</a>
+          <a href="${data.link}" target="_blank">${data.link}</a>
         `;
-
-        // Muestra los detalles del link
-        document.getElementById('detalles-link').style.display = 'block';
-        document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
-        // Muestra el apartado "Editar Link"
-        document.getElementById('editar-link-container').style.display = 'block';
-        mostrarEditarLink(numeros);
-
-        // Deshabilitar el botón de "Generar Link"
-        document.querySelector('button[onclick="generarLink()"]').disabled = true;
       } else {
         alert('Error: ' + data.error);
-        document.getElementById('output').innerHTML = ''; // Limpia el mensaje de carga si hay un error
       }
     } catch (error) {
-      console.error('Error generando link:', error);
-      document.getElementById('output').innerHTML = `<p>Error al generar el link. Inténtalo de nuevo.</p>`;
+      console.error('Error generando el link:', error);
     }
   }
 
@@ -715,8 +685,6 @@
 });
 
 async function login() {
-  localStorage.clear(); // 🔥 Limpia antes de guardar los datos nuevos
-
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
 
@@ -726,39 +694,18 @@ async function login() {
   }
 
   try {
-    const response = await fetch(`/soporte?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
     const data = await response.json();
 
     if (response.ok) {
-      // Guardar el email en localStorage
       localStorage.setItem('usuarioEmail', email);
-
-      // Ocultar el contenedor de inicio de sesión y mostrar el generador
       document.getElementById('login-container').style.display = 'none';
       document.getElementById('generador-container').style.display = 'block';
-
-      // Si Supabase tiene un link, mostrar los detalles
-      if (data.link) {
-        const { link, numeros, mensaje } = data.link;
-
-        // Guardar los datos en localStorage
-        localStorage.setItem(`linkGenerado_${email}`, link);
-        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
-        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-
-        // Mostrar los detalles del link en el DOM
-        document.getElementById('detalles-link').style.display = 'block';
-        document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-        document.getElementById('output').innerHTML = `
-          <p>Tu link generado:</p>
-          <a href="${link}" target="_blank">${link}</a>
-        `;
-      } else {
-        // Si no hay link, ocultar los detalles
-        document.getElementById('detalles-link').style.display = 'none';
-        document.getElementById('output').innerHTML = '<p>Aún no tienes un link generado.</p>';
-      }
     } else {
       document.getElementById('login-error').textContent = data.error;
     }
