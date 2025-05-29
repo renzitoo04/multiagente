@@ -4,260 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generador de Links Multiagente</title>
-  <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #0a1128; /* Fondo azul oscuro */
-    color: #ffffff; /* Texto blanco */
-  }
-
-  header {
-    background-color: #1c2541; /* Azul más claro */
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-
-  .titulo-principal {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #25d366; /* Verde de WhatsApp */
-    margin: 0;
-  }
-
-  h1, h2 {
-    text-align: center;
-    color: #ffffff;
-  }
-
-  form {
-    max-width: 600px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #1c2541; /* Azul más claro para el fondo del formulario */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    text-align: center; /* Centra los botones dentro del formulario */
-  }
-
-  label {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
-    color: #ffffff;
-  }
-
-  input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #3a506b;
-    border-radius: 4px;
-    font-size: 16px;
-    background-color: #d4f8e8; /* Verde muy clarito */
-    color: #0a1128; /* Azul oscuro para el texto */
-  }
-
-  input::placeholder {
-    color: #6c757d; /* Color gris para el texto del placeholder */
-  }
-
-  input:focus {
-    outline: none;
-    border-color: #25d366; /* Verde de WhatsApp al enfocar */
-    box-shadow: 0 0 5px #25d366;
-  }
-
-  button {
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 10px auto; /* Centra los botones verticalmente */
-    font-size: 16px;
-    font-weight: bold;
-    color: #0a1128; /* Azul oscuro para el texto */
-    background-color: #25d366; /* Verde de WhatsApp */
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    display: block; /* Asegura que los botones ocupen toda la línea */
-    text-align: center; /* Centra el texto dentro del botón */
-  }
-
-  button:hover {
-    background-color: #1da851; /* Verde más oscuro al pasar el mouse */
-    transform: scale(1.05);
-  }
-
-  button:active {
-    transform: scale(0.95);
-  }
-
-  form button {
-    width: 100%; /* Hace que los botones ocupen todo el ancho del formulario */
-    max-width: 300px; /* Limita el ancho máximo de los botones */
-  }
-
-  .output {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #1c2541; /* Azul más claro */
-    border: 1px solid #3a506b;
-    border-radius: 4px;
-    text-align: center;
-    color: #ffffff;
-  }
-
-  .output a {
-    color: #4fc3f7; /* Azul brillante para los links */
-    text-decoration: none;
-    font-weight: bold;
-  }
-
-  .output a:hover {
-    text-decoration: underline;
-  }
-
-  .numero-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-
-  .bandera-container {
-    margin-right: 10px;
-  }
-
-  .bandera {
-    width: 24px;
-    height: 16px;
-  }
-
-  .numero {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #3a506b;
-    border-radius: 4px;
-    font-size: 16px;
-    background-color: #d4f8e8; /* Verde muy clarito */
-    color: #0a1128; /* Azul oscuro para el texto */
-  }
-
-  .numero::placeholder {
-    color: #6c757d; /* Color gris para el texto del placeholder */
-  }
-
-  .numero:focus {
-    outline: none;
-    border-color: #25d366; /* Verde de WhatsApp al enfocar */
-    box-shadow: 0 0 5px #25d366;
-  }
-
-  .info-container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px;
-    background-color: #1c2541; /* Azul más claro */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    color: #ffffff;
-    text-align: left;
-  }
-
-  .info-title {
-    text-align: center;
-    color: #25d366; /* Verde de WhatsApp */
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-  }
-
-  .info-container p {
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 20px;
-  }
-
-  .info-container ul {
-    list-style-type: disc;
-    margin-left: 20px;
-    margin-bottom: 20px;
-  }
-
-  .info-container ul li {
-    margin-bottom: 10px;
-  }
-
-  #probar-multilink-container {
-    margin-top: 50px; /* Aumenta la separación del título respecto al botón de iniciar sesión */
-  }
-
-  #probar-multilink-container h1 {
-    font-size: 1.6rem; /* Tamaño de fuente más pequeño */
-  }
-
-  .detalles-link {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #1c2541; /* Azul más claro */
-    border: 1px solid #3a506b;
-    border-radius: 4px;
-    color: #ffffff;
-  }
-
-  .detalles-link h3 {
-    margin-top: 0;
-    color: #25d366; /* Verde de WhatsApp */
-  }
-
-  #editar-link-container {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #1c2541; /* Azul más claro */
-    border: 1px solid #3a506b;
-    border-radius: 4px;
-    color: #ffffff;
-  }
-
-  #editar-link-container h3 {
-    margin-top: 0;
-    color: #25d366; /* Verde de WhatsApp */
-  }
-
-  .numero-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-
-  .numero-item label {
-    margin-right: 10px;
-    font-weight: bold;
-  }
-
-  .numero-item input {
-    flex: 1;
-    padding: 5px;
-    border: 1px solid #3a506b;
-    border-radius: 4px;
-    font-size: 14px;
-    background-color: #d4f8e8; /* Verde muy clarito */
-    color: #0a1128; /* Azul oscuro */
-  }
-
-  #acortar-link-container {
-    display: none;
-    margin-top: 20px;
-  }
-
-  #acortar-link-container h3 {
-    color: #25d366; /* Verde de WhatsApp */
-  }
-  </style>
+  <link rel="stylesheet" href="styles.css"> <!-- Si el nuevo diseño incluye un archivo CSS -->
 </head>
 <body>
+  <!-- Nuevo diseño del archivo `index(3)` -->
   <header>
     <h1 class="titulo-principal">MultiLink</h1>
   </header>
@@ -301,11 +51,7 @@
       <p><strong>Números:</strong> <span id="numeros-generados"></span></p>
       <p><strong>Mensaje Automático:</strong> <span id="mensaje-generado"></span></p>
     </div>
-    
   </div>
-
-  <!-- Contenedor para prueba de MultiLink -->
-  
 
   <!-- Contenedor para editar link -->
   <div id="editar-link-container" style="display: none;">
@@ -339,355 +85,356 @@
     <p>Ya sea que vendas por WhatsApp, Telegram, redes sociales o tiendas online, MultiLink te ayuda a optimizar tu atención al cliente y aumentar tus conversiones.</p>
   </div>
 
-<script>
-  let contadorNumeros = 1;
-  let limiteNumeros = 0;
+  <!-- Scripts con las funcionalidades existentes -->
+  <script>
+    let contadorNumeros = 1;
+    let limiteNumeros = 0;
 
-  function agregarNumero() {
-    if (contadorNumeros >= limiteNumeros) {
-      alert(`Solo puedes agregar hasta ${limiteNumeros} números.`);
-      document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
-      return;
-    }
+    function agregarNumero() {
+      if (contadorNumeros >= limiteNumeros) {
+        alert(`Solo puedes agregar hasta ${limiteNumeros} números.`);
+        document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
+        return;
+      }
 
-    contadorNumeros++;
-    const container = document.getElementById('numeros-container');
-    const nuevoCampo = document.createElement('div');
-    nuevoCampo.classList.add('numero-container');
-    nuevoCampo.id = `numero-container-${contadorNumeros}`;
-    nuevoCampo.innerHTML = `
-      <span class="bandera-container">
-        <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
-      </span>
-      <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
-    `;
-    container.appendChild(nuevoCampo);
-
-    if (contadorNumeros >= limiteNumeros) {
-      document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
-    }
-  }
-
-  function quitarUltimoNumero() {
-    if (contadorNumeros > 1) {
+      contadorNumeros++;
       const container = document.getElementById('numeros-container');
-      const ultimoCampo = document.getElementById(`numero-container-${contadorNumeros}`);
-      if (ultimoCampo) {
-        container.removeChild(ultimoCampo);
-        contadorNumeros--;
-        document.querySelector('button[onclick="agregarNumero()"]').disabled = false;
-      }
-    } else {
-      alert('Debe haber al menos un número.');
-    }
-  }
-
-  async function login() {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-
-    if (!email || !password) {
-      document.getElementById('login-error').textContent = 'Por favor, ingresa tu correo y contraseña.';
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Oculta el contenedor de inicio de sesión
-        document.getElementById('login-container').style.display = 'none';
-
-        // Muestra el generador principal
-        document.getElementById('generador-container').style.display = 'block';
-
-        // Configura el límite de números
-        limiteNumeros = data.limiteNumeros;
-
-        // Guarda el correo del usuario en localStorage
-        localStorage.setItem('usuarioEmail', email);
-
-        // Mostrar los detalles del link y el apartado "Editar Link"
-        mostrarDetallesLink();
-      } else {
-        document.getElementById('login-error').textContent = data.error;
-      }
-    } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
-    }
-  }
-
-  async function generarLink() {
-    const numeros = Array.from(document.querySelectorAll('.numero'))
-      .map(input => input.value.trim())
-      .filter(num => num !== '');
-
-    const mensaje = document.getElementById('mensaje').value.trim();
-    const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
-
-    if (!email) {
-      alert('Por favor, inicia sesión antes de generar un link.');
-      return;
-    }
-
-    if (numeros.length === 0) {
-      alert('Por favor, ingresa al menos un número válido.');
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/soporte', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, numeros, mensaje }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Muestra el link acortado en el DOM
-        document.getElementById('output').innerHTML = `
-          <p>Tu link generado:</p>
-          <a href="${data.link}" target="_blank">${data.link}</a>
-        `;
-
-        // Guarda los datos en localStorage
-        localStorage.setItem(`linkGenerado_${email}`, data.link);
-        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
-        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-        localStorage.setItem(`linkID_${email}`, data.id); // Guarda el ID del link
-
-        // Mostrar el apartado "Editar Link"
-        document.getElementById('editar-link-container').style.display = 'block';
-        mostrarEditarLink(numeros);
-      } else {
-        alert('Error: ' + data.error);
-      }
-    } catch (error) {
-      console.error('Error generando link:', error);
-      document.getElementById('output').innerHTML = `<p>Error al generar el link. Inténtalo de nuevo.</p>`;
-    }
-  }
-
-  async function generarLinkPrueba() {
-    const numero = document.getElementById('numero-prueba').value.trim();
-    const mensaje = document.getElementById('mensaje-prueba').value.trim(); // Permitir mensaje vacío
-    const email = "prueba@multi.link";
-
-    if (!numero) {
-      alert('Por favor, ingresa un número.');
-      return;
-    }
-
-    try {
-      const response = await fetch('/soporte', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ numeros: [numero], mensaje, email })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        const shortUrl = `${location.origin}/soporte?id=${data.id}`;
-        document.getElementById('output-prueba').innerHTML = `
-          <p>Tu link de prueba generado:</p>
-          <a href="${shortUrl}" target="_blank">${shortUrl}</a>
-        `;
-      } else {
-        alert('Error: ' + data.error);
-      }
-    } catch (error) {
-      console.error('Error generando link de prueba:', error);
-    }
-  }
-
-  function probarMultiLink() {
-    document.getElementById('login-container').classList.remove('active');
-    document.getElementById('probar-multilink-container').classList.add('active');
-    document.getElementById('numero-prueba').value = '';
-    document.getElementById('mensaje-prueba').value = '';
-  }
-
-  function volverAlLogin() {
-    document.getElementById('probar-multilink-container').classList.remove('active');
-    document.getElementById('login-container').classList.add('active');
-  }
-
-  function reiniciarGenerador() {
-    // Reiniciar el contador de números
-    contadorNumeros = 1;
-    document.getElementById('mensaje').value = ''; // Limpiar el campo de mensaje
-
-    // Limpiar los números generados
-    const numerosInputs = document.querySelectorAll('.numero');
-    numerosInputs.forEach((input, index) => {
-      if (index === 0) {
-        input.value = '+549'; // Restablecer el primer número a su valor por defecto
-      } else {
-        input.value = ''; // Limpiar los demás campos de número
-      }
-    });
-
-    // Limpiar el output
-    document.getElementById('output').innerHTML = '';
-
-    // Ocultar detalles del link
-    document.getElementById('detalles-link').style.display = 'none';
-
-    // Habilitar el botón de generación
-    document.querySelector('button[onclick="generarLink()"]').disabled = false;
-  }
-
-  function mostrarEditarLink(numeros) {
-    const editarNumerosContainer = document.getElementById('editar-numeros-container');
-    editarNumerosContainer.innerHTML = '';
-
-    numeros.forEach((numero, index) => {
-      const numeroItem = document.createElement('div');
-      numeroItem.classList.add('numero-item');
-      numeroItem.innerHTML = `
-        <label for="editar-numero-${index}">Número ${index + 1}:</label>
-        <input type="text" id="editar-numero-${index}" value="${numero}" placeholder="Ejemplo: +5492944585356" />
+      const nuevoCampo = document.createElement('div');
+      nuevoCampo.classList.add('numero-container');
+      nuevoCampo.id = `numero-container-${contadorNumeros}`;
+      nuevoCampo.innerHTML = `
+        <span class="bandera-container">
+          <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
+        </span>
+        <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
       `;
-      editarNumerosContainer.appendChild(numeroItem);
-    });
-  }
+      container.appendChild(nuevoCampo);
 
-  async function actualizarLink() {
-    const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
-      .map(input => input.value.trim())
-      .filter(num => num !== '');
-
-    const mensaje = document.getElementById('editar-mensaje').value.trim();
-    const email = localStorage.getItem('usuarioEmail');
-    const id = localStorage.getItem(`linkID_${email}`);
-
-    if (!email || !id) {
-      alert('No se encontró un usuario o ID guardado. Por favor, inicia sesión y genera un link primero.');
-      return;
-    }
-
-    if (numeros.length === 0) {
-      alert('Por favor, ingresa al menos un número válido.');
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/soporte', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, numeros, mensaje, id }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert('Link actualizado correctamente.');
-
-        document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-      } else {
-        alert('Error: ' + data.error);
+      if (contadorNumeros >= limiteNumeros) {
+        document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
       }
-    } catch (error) {
-      console.error('Error actualizando el link:', error);
-      alert('Error al actualizar el link. Inténtalo de nuevo.');
-    }
-  }
-
-  async function acortarLinkManual() {
-    const linkOriginal = document.getElementById('link-original').value.trim();
-
-    if (!linkOriginal) {
-      alert('Por favor, ingresa un link para acortar.');
-      return;
     }
 
-    try {
-      const response = await fetch('/acortar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: linkOriginal })
+    function quitarUltimoNumero() {
+      if (contadorNumeros > 1) {
+        const container = document.getElementById('numeros-container');
+        const ultimoCampo = document.getElementById(`numero-container-${contadorNumeros}`);
+        if (ultimoCampo) {
+          container.removeChild(ultimoCampo);
+          contadorNumeros--;
+          document.querySelector('button[onclick="agregarNumero()"]').disabled = false;
+        }
+      } else {
+        alert('Debe haber al menos un número.');
+      }
+    }
+
+    async function login() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!email || !password) {
+        document.getElementById('login-error').textContent = 'Por favor, ingresa tu correo y contraseña.';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Oculta el contenedor de inicio de sesión
+          document.getElementById('login-container').style.display = 'none';
+
+          // Muestra el generador principal
+          document.getElementById('generador-container').style.display = 'block';
+
+          // Configura el límite de números
+          limiteNumeros = data.limiteNumeros;
+
+          // Guarda el correo del usuario en localStorage
+          localStorage.setItem('usuarioEmail', email);
+
+          // Mostrar los detalles del link y el apartado "Editar Link"
+          mostrarDetallesLink();
+        } else {
+          document.getElementById('login-error').textContent = data.error;
+        }
+      } catch (error) {
+        console.error('Error al iniciar sesión:', error);
+        document.getElementById('login-error').textContent = 'Error al iniciar sesión.';
+      }
+    }
+
+    async function generarLink() {
+      const numeros = Array.from(document.querySelectorAll('.numero'))
+        .map(input => input.value.trim())
+        .filter(num => num !== '');
+
+      const mensaje = document.getElementById('mensaje').value.trim();
+      const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
+
+      if (!email) {
+        alert('Por favor, inicia sesión antes de generar un link.');
+        return;
+      }
+
+      if (numeros.length === 0) {
+        alert('Por favor, ingresa al menos un número válido.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/soporte', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, numeros, mensaje }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Muestra el link acortado en el DOM
+          document.getElementById('output').innerHTML = `
+            <p>Tu link generado:</p>
+            <a href="${data.link}" target="_blank">${data.link}</a>
+          `;
+
+          // Guarda los datos en localStorage
+          localStorage.setItem(`linkGenerado_${email}`, data.link);
+          localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+          localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
+          localStorage.setItem(`linkID_${email}`, data.id); // Guarda el ID del link
+
+          // Mostrar el apartado "Editar Link"
+          document.getElementById('editar-link-container').style.display = 'block';
+          mostrarEditarLink(numeros);
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (error) {
+        console.error('Error generando link:', error);
+        document.getElementById('output').innerHTML = `<p>Error al generar el link. Inténtalo de nuevo.</p>`;
+      }
+    }
+
+    async function generarLinkPrueba() {
+      const numero = document.getElementById('numero-prueba').value.trim();
+      const mensaje = document.getElementById('mensaje-prueba').value.trim(); // Permitir mensaje vacío
+      const email = "prueba@multi.link";
+
+      if (!numero) {
+        alert('Por favor, ingresa un número.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/soporte', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ numeros: [numero], mensaje, email })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          const shortUrl = `${location.origin}/soporte?id=${data.id}`;
+          document.getElementById('output-prueba').innerHTML = `
+            <p>Tu link de prueba generado:</p>
+            <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+          `;
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (error) {
+        console.error('Error generando link de prueba:', error);
+      }
+    }
+
+    function probarMultiLink() {
+      document.getElementById('login-container').classList.remove('active');
+      document.getElementById('probar-multilink-container').classList.add('active');
+      document.getElementById('numero-prueba').value = '';
+      document.getElementById('mensaje-prueba').value = '';
+    }
+
+    function volverAlLogin() {
+      document.getElementById('probar-multilink-container').classList.remove('active');
+      document.getElementById('login-container').classList.add('active');
+    }
+
+    function reiniciarGenerador() {
+      // Reiniciar el contador de números
+      contadorNumeros = 1;
+      document.getElementById('mensaje').value = ''; // Limpiar el campo de mensaje
+
+      // Limpiar los números generados
+      const numerosInputs = document.querySelectorAll('.numero');
+      numerosInputs.forEach((input, index) => {
+        if (index === 0) {
+          input.value = '+549'; // Restablecer el primer número a su valor por defecto
+        } else {
+          input.value = ''; // Limpiar los demás campos de número
+        }
       });
 
-      const data = await response.json();
+      // Limpiar el output
+      document.getElementById('output').innerHTML = '';
 
-      if (response.ok) {
-        document.getElementById('acortar-link-output').innerHTML = `
-          <p>Link acortado con éxito:</p>
-          <a href="${data.link}" target="_blank">${data.link}</a>
+      // Ocultar detalles del link
+      document.getElementById('detalles-link').style.display = 'none';
+
+      // Habilitar el botón de generación
+      document.querySelector('button[onclick="generarLink()"]').disabled = false;
+    }
+
+    function mostrarEditarLink(numeros) {
+      const editarNumerosContainer = document.getElementById('editar-numeros-container');
+      editarNumerosContainer.innerHTML = '';
+
+      numeros.forEach((numero, index) => {
+        const numeroItem = document.createElement('div');
+        numeroItem.classList.add('numero-item');
+        numeroItem.innerHTML = `
+          <label for="editar-numero-${index}">Número ${index + 1}:</label>
+          <input type="text" id="editar-numero-${index}" value="${numero}" placeholder="Ejemplo: +5492944585356" />
         `;
-      } else {
-        alert('Error: ' + data.error);
-      }
-    } catch (error) {
-      console.error('Error al acortar el link:', error);
-    }
-  }
-
-  async function obtenerLinkUsuario() {
-    const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
-
-    if (!email) {
-      console.error('No hay un usuario logueado.');
-      return null;
-    }
-
-    try {
-      const response = await fetch(`/api/soporte?email=${encodeURIComponent(email)}`, {
-        method: 'GET', // Método GET para consultar el backend
-        headers: { 'Content-Type': 'application/json' },
+        editarNumerosContainer.appendChild(numeroItem);
       });
+    }
 
-      if (!response.ok) {
-        console.error('Error al obtener el link del usuario:', await response.text());
+    async function actualizarLink() {
+      const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
+        .map(input => input.value.trim())
+        .filter(num => num !== '');
+
+      const mensaje = document.getElementById('editar-mensaje').value.trim();
+      const email = localStorage.getItem('usuarioEmail');
+      const id = localStorage.getItem(`linkID_${email}`);
+
+      if (!email || !id) {
+        alert('No se encontró un usuario o ID guardado. Por favor, inicia sesión y genera un link primero.');
+        return;
+      }
+
+      if (numeros.length === 0) {
+        alert('Por favor, ingresa al menos un número válido.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/soporte', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, numeros, mensaje, id }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Link actualizado correctamente.');
+
+          document.getElementById('numeros-generados').textContent = numeros.join(', ');
+          document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (error) {
+        console.error('Error actualizando el link:', error);
+        alert('Error al actualizar el link. Inténtalo de nuevo.');
+      }
+    }
+
+    async function acortarLinkManual() {
+      const linkOriginal = document.getElementById('link-original').value.trim();
+
+      if (!linkOriginal) {
+        alert('Por favor, ingresa un link para acortar.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/acortar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ link: linkOriginal })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          document.getElementById('acortar-link-output').innerHTML = `
+            <p>Link acortado con éxito:</p>
+            <a href="${data.link}" target="_blank">${data.link}</a>
+          `;
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (error) {
+        console.error('Error al acortar el link:', error);
+      }
+    }
+
+    async function obtenerLinkUsuario() {
+      const email = localStorage.getItem('usuarioEmail'); // Recupera el email del usuario logueado
+
+      if (!email) {
+        console.error('No hay un usuario logueado.');
         return null;
       }
 
-      const data = await response.json();
-      return data; // Devuelve el registro del link del usuario
-    } catch (error) {
-      console.error('Error al consultar el backend:', error);
-      return null;
+      try {
+        const response = await fetch(`/api/soporte?email=${encodeURIComponent(email)}`, {
+          method: 'GET', // Método GET para consultar el backend
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!response.ok) {
+          console.error('Error al obtener el link del usuario:', await response.text());
+          return null;
+        }
+
+        const data = await response.json();
+        return data; // Devuelve el registro del link del usuario
+      } catch (error) {
+        console.error('Error al consultar el backend:', error);
+        return null;
+      }
     }
-  }
 
-  async function mostrarDetallesLink() {
-    const linkData = await obtenerLinkUsuario(); // Consulta el link del usuario
+    async function mostrarDetallesLink() {
+      const linkData = await obtenerLinkUsuario(); // Consulta el link del usuario
 
-    if (linkData) {
-      // Mostrar los detalles del link en el contenedor #detalles-link
-      document.getElementById('detalles-link').style.display = 'block';
-      document.getElementById('output').innerHTML = `
-        <p>Tu link generado:</p>
-        <a href="${linkData.link}" target="_blank">${linkData.link}</a>
-      `;
-      document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
-      document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
+      if (linkData) {
+        // Mostrar los detalles del link en el contenedor #detalles-link
+        document.getElementById('detalles-link').style.display = 'block';
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${linkData.link}" target="_blank">${linkData.link}</a>
+        `;
+        document.getElementById('numeros-generados').textContent = linkData.numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = linkData.mensaje || 'Sin mensaje';
 
-      // Mostrar el apartado "Editar Link"
-      document.getElementById('editar-link-container').style.display = 'block';
-      mostrarEditarLink(linkData.numeros); // Inicializa los campos de edición con los números actuales
-      document.getElementById('editar-mensaje').value = linkData.mensaje || ''; // Inicializa el mensaje en el campo de edición
-    } else {
-      // Ocultar el contenedor si no hay datos
-      document.getElementById('detalles-link').style.display = 'none';
-      document.getElementById('editar-link-container').style.display = 'none';
+        // Mostrar el apartado "Editar Link"
+        document.getElementById('editar-link-container').style.display = 'block';
+        mostrarEditarLink(linkData.numeros); // Inicializa los campos de edición con los números actuales
+        document.getElementById('editar-mensaje').value = linkData.mensaje || ''; // Inicializa el mensaje en el campo de edición
+      } else {
+        // Ocultar el contenedor si no hay datos
+        document.getElementById('detalles-link').style.display = 'none';
+        document.getElementById('editar-link-container').style.display = 'none';
+      }
     }
-  }
 
-  // Llama a esta función al cargar la página
-  document.addEventListener('DOMContentLoaded', () => {
-    mostrarDetallesLink();
-  });
-</script>
+    // Llama a esta función al cargar la página
+    document.addEventListener('DOMContentLoaded', () => {
+      mostrarDetallesLink();
+    });
+  </script>
 </body>
 </html>
