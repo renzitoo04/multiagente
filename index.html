@@ -286,11 +286,22 @@
   async function login() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
+    const rememberMe = document.getElementById('remember-me').checked;
+    const loginButton = document.querySelector('#login-container button');
+    const loginError = document.getElementById('login-error');
+    
+    loginError.style.display = 'none';
+    loginError.textContent = '';
 
     if (!email || !password) {
-      showNotification('Por favor, ingresa tu correo y contraseña.', 'error');
+      loginError.textContent = 'Por favor, ingresa tu correo y contraseña.';
+      loginError.style.display = 'block';
       return;
     }
+
+    // Mostrar estado de carga
+    loginButton.innerHTML = '<span class="loading"></span> Iniciando sesión...';
+    loginButton.disabled = true;
 
     try {
       const response = await fetch('/api/login', {
@@ -302,62 +313,71 @@
       const data = await response.json();
 
       if (response.ok) {
-        // Guardar datos del usuario
-        localStorage.setItem('usuarioEmail', email);
+        // Guardar el límite de números
         limiteNumeros = data.limiteNumeros;
+        localStorage.setItem('limiteNumeros', limiteNumeros);
 
         // Mostrar el generador y ocultar el login
         document.getElementById('login-container').style.display = 'none';
+        document.getElementById('login-info').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
 
-        showNotification('Inicio de sesión exitoso.');
+        // Configurar información del usuario
+        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+        document.getElementById('user-email-display').textContent = email;
+
+        // Guardar email en localStorage
+        localStorage.setItem('usuarioEmail', email);
+
+        if (rememberMe) {
+          localStorage.setItem('rememberedEmail', email);
+          localStorage.setItem('rememberMe', 'true');
+        } else {
+          localStorage.removeItem('rememberedEmail');
+          localStorage.removeItem('rememberMe');
+        }
+
+        // Mostrar notificación de éxito
+        showNotification('Sesión iniciada correctamente');
       } else {
-        showNotification(data.error, 'error');
+        loginError.textContent = data.error;
+        loginError.style.display = 'block';
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      showNotification('Error al iniciar sesión. Por favor, inténtalo de nuevo.', 'error');
+      loginError.textContent = 'Error al iniciar sesión. Por favor, inténtalo de nuevo.';
+      loginError.style.display = 'block';
+    } finally {
+      loginButton.innerHTML = 'Iniciar sesión';
+      loginButton.disabled = false;
     }
-  }
-
-  function mostrarLinks(links) {
-    const container = document.getElementById('output');
-    container.innerHTML = '';
-
-    links.forEach(link => {
-      const linkElement = document.createElement('div');
-      linkElement.classList.add('link-item');
-      linkElement.innerHTML = `
-        <p><strong>Link:</strong> <a href="${link.link}" target="_blank">${link.link}</a></p>
-        <p><strong>Números:</strong> ${link.numeros.join(', ')}</p>
-        <p><strong>Mensaje:</strong> ${link.mensaje}</p>
-      `;
-      container.appendChild(linkElement);
-    });
   }
 
   // Function to handle logout
   function cerrarSesion() {
     const email = localStorage.getItem('usuarioEmail');
     
-    // Limpiar datos del usuario en localStorage
+    // Clear user data from localStorage
     localStorage.removeItem('usuarioEmail');
     localStorage.removeItem(`linkGenerado_${email}`);
     localStorage.removeItem(`numerosGenerados_${email}`);
     localStorage.removeItem(`mensajeGenerado_${email}`);
     localStorage.removeItem(`linkID_${email}`);
-    localStorage.removeItem('limiteNumeros');
-
-    // Mostrar el contenedor de inicio de sesión
+    
+    // Show login container and info section, hide generator container
     document.getElementById('login-container').style.display = 'block';
+    document.getElementById('login-info').style.display = 'block';
     document.getElementById('generador-container').style.display = 'none';
-
-    // Limpiar el formulario de inicio de sesión
+    
+    // Clear login form
     document.getElementById('email').value = '';
     document.getElementById('password').value = '';
-
-    // Mostrar notificación
-    showNotification('Sesión cerrada correctamente. Por favor, inicia sesión nuevamente.');
+    
+    // Reset the form state
+    resetFormState();
+    
+    // Show notification with improved message
+    showNotification('Sesión cerrada correctamente. ¡Hasta pronto!');
   }
 
   // Function to reset form state
@@ -418,6 +438,7 @@
 
     const mensaje = document.getElementById('mensaje').value.trim();
     const email = localStorage.getItem('usuarioEmail');
+    const generarButton = document.querySelector('button[onclick="generarLink()"]');
 
     if (!email) {
       showNotification('Por favor, inicia sesión antes de generar un link.', 'error');
@@ -429,6 +450,10 @@
       return;
     }
 
+    // Mostrar estado de carga
+    generarButton.innerHTML = '<span class="loading"></span> Generando...';
+    generarButton.disabled = true;
+
     try {
       const response = await fetch('/api/soporte', {
         method: 'POST',
@@ -439,6 +464,21 @@
       const data = await response.json();
 
       if (response.ok) {
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${data.link}" target="_blank">${data.link}</a>
+        `;
+        document.getElementById('output').style.display = 'block';
+
+        localStorage.setItem(`linkGenerado_${email}`, data.link);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
+        localStorage.setItem(`linkID_${email}`, data.id);
+
+        document.getElementById('detalles-link').style.display = 'block';
+        document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+
         showNotification('¡Link generado con éxito!');
       } else {
         showNotification('Error al generar el link: ' + data.error, 'error');
@@ -446,6 +486,9 @@
     } catch (error) {
       console.error('Error generando link:', error);
       showNotification('Error al generar el link. Inténtalo de nuevo.', 'error');
+    } finally {
+      generarButton.innerHTML = 'Generar Link';
+      generarButton.disabled = false;
     }
   }
 
@@ -607,13 +650,39 @@
 
   // Check login status on page load
   document.addEventListener('DOMContentLoaded', () => {
-    // Forzar cierre de sesión al cargar la página
-    cerrarSesion();
-
-    // Mostrar el contenedor de inicio de sesión
-    document.getElementById('login-container').style.display = 'block';
-    document.getElementById('login-info').style.display = 'block';
-    document.getElementById('generador-container').style.display = 'none';
+    const email = localStorage.getItem('usuarioEmail');
+    const rememberedEmail = localStorage.getItem('rememberedEmail');
+    const rememberMe = localStorage.getItem('rememberMe');
+    
+    // Si hay credenciales guardadas, rellenar el campo de email
+    if (rememberedEmail && rememberMe === 'true') {
+      document.getElementById('email').value = rememberedEmail;
+      document.getElementById('remember-me').checked = true;
+    }
+    
+    if (email) {
+      // User is logged in, show generator container and hide info
+      document.getElementById('login-container').style.display = 'none';
+      document.getElementById('login-info').style.display = 'none';
+      document.getElementById('generador-container').style.display = 'block';
+      
+      // Update user info
+      document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+      document.getElementById('user-email-display').textContent = email;
+      
+      // Show link details if available
+      mostrarDetallesLink();
+      
+      // Update stats on load
+      updateStats();
+    } else {
+      // Check if password is saved and autofill the form
+      const savedPassword = localStorage.getItem('usuarioPassword');
+      if (savedPassword) {
+        document.getElementById('password').value = savedPassword;
+        document.getElementById('remember-me').checked = true;
+      }
+    }
   });
 
   // Additional function for copy to clipboard

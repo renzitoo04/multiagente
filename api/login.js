@@ -27,12 +27,10 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Usuario no encontrado' });
     }
 
-    // Comparar contraseñas
     if (usuario.password.trim() !== password.trim()) {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
 
-    // Respuesta exitosa
     return res.status(200).json({
       email: usuario.email,
       limiteNumeros: usuario.limiteNumeros,
