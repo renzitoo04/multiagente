@@ -3,8 +3,31 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const indicesRotacion = {}; // Control de índices de rotación por ID
 
-const indicesRotacion = {}; // Objeto para llevar el control de los índices de rotación por ID
+async function acortarLink(linkOriginal) {
+  try {
+    const response = await fetch('https://api.tinyurl.com/create', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.TINYURL_TOKEN}`, // Token de TinyURL
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url: linkOriginal, domain: 'tiny.one' }),
+    });
+
+    if (!response.ok) {
+      console.error('Error al acortar el link:', await response.text());
+      return linkOriginal; // Devuelve el link original si falla
+    }
+
+    const data = await response.json();
+    return data.data.tiny_url; // Devuelve el link acortado
+  } catch (error) {
+    console.error('Error en la función acortarLink:', error);
+    return linkOriginal; // Devuelve el link original si ocurre un error
+  }
+}
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
@@ -35,108 +58,41 @@ export default async function handler(req, res) {
     }
   }
 
-  if (req.method === 'PATCH') {
-    const { email, numeros, mensaje, id } = req.body;
+  if (req.method === 'GET') {
+    const { id } = req.query;
 
-    if (!email || !numeros || numeros.length === 0 || !id) {
-      return res.status(400).json({ error: 'Datos inválidos para actualizar el link.' });
+    if (!id) {
+      return res.status(400).json({ error: 'Falta el ID en la consulta.' });
     }
 
     try {
-      const { error } = await supabase
+      const { data: configuracion, error } = await supabase
         .from('link')
-        .update({ numeros, mensaje })
+        .select('numeros, mensaje')
         .eq('id', id)
-        .eq('email', email);
+        .single();
 
-      if (error) {
-        console.error('Error al actualizar el link en Supabase:', error);
-        return res.status(500).json({ error: 'Error al actualizar el link.' });
+      if (error || !configuracion) {
+        return res.status(404).json({ error: 'No se encontró la configuración para este ID.' });
       }
 
-      return res.status(200).json({ message: 'Link actualizado correctamente.' });
+      if (!indicesRotacion[id]) {
+        indicesRotacion[id] = 0;
+      }
+
+      const indiceActual = indicesRotacion[id];
+      const numeroActual = configuracion.numeros[indiceActual];
+      indicesRotacion[id] = (indiceActual + 1) % configuracion.numeros.length;
+
+      const whatsappLink = `https://wa.me/${numeroActual}?text=${encodeURIComponent(configuracion.mensaje)}`;
+      return res.redirect(302, whatsappLink);
     } catch (error) {
-      console.error('Error interno al actualizar el link:', error);
+      console.error('Error al redirigir al número de WhatsApp:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
   }
 
-  if (req.method === 'GET') {
-    const { id, email } = req.query;
-
-    if (id) {
-      try {
-        const { data: configuracion, error } = await supabase
-          .from('link')
-          .select('numeros, mensaje')
-          .eq('id', id)
-          .single();
-
-        if (error || !configuracion) {
-          return res.status(404).json({ error: 'No se encontró la configuración para este ID.' });
-        }
-
-        if (!indicesRotacion[id]) {
-          indicesRotacion[id] = 0;
-        }
-
-        const indiceActual = indicesRotacion[id];
-        const numeroActual = configuracion.numeros[indiceActual];
-        indicesRotacion[id] = (indiceActual + 1) % configuracion.numeros.length;
-
-        const whatsappLink = `https://wa.me/${numeroActual}?text=${encodeURIComponent(configuracion.mensaje)}`;
-        return res.redirect(302, whatsappLink);
-      } catch (error) {
-        console.error('Error al redirigir al número de WhatsApp:', error);
-        return res.status(500).json({ error: 'Error interno del servidor.' });
-      }
-    } else if (email) {
-      try {
-        const { data: link, error } = await supabase
-          .from('link')
-          .select('link, numeros, mensaje')
-          .eq('email', email)
-          .single();
-
-        if (error || !link) {
-          return res.status(404).json({ error: 'No se encontró un link para este usuario.' });
-        }
-
-        return res.status(200).json(link);
-      } catch (err) {
-        console.error('Error al consultar el link:', err);
-        return res.status(500).json({ error: 'Error interno del servidor.' });
-      }
-    } else {
-      return res.status(400).json({ error: 'Falta el ID o el email en la consulta.' });
-    }
-  }
-
   return res.status(405).json({ error: 'Método no permitido.' });
-}
-
-async function acortarLink(linkOriginal) {
-  try {
-    const response = await fetch('https://api.tinyurl.com/create', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.TINYURL_TOKEN}`, // Token de TinyURL
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ url: linkOriginal, domain: 'tiny.one' }),
-    });
-
-    if (!response.ok) {
-      console.error('Error al acortar el link:', await response.text());
-      return linkOriginal; // Devuelve el link original si falla
-    }
-
-    const data = await response.json();
-    return data.data.tiny_url; // Devuelve el link acortado
-  } catch (error) {
-    console.error('Error en la función acortarLink:', error);
-    return linkOriginal; // Devuelve el link original si ocurre un error
-  }
 }
 
 
