@@ -4,12 +4,2487 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Linkify - Generador de Links Multiagente</title>
-  <link rel="stylesheet" href="style.css"> <!-- Enlace al archivo CSS -->
+  <style>
+  /* Base styling */
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #0a1128 0%, #1c2541 100%);
+    background-attachment: fixed;
+    color: #ffffff;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Container for better alignment - optimized for desktop */
+  .container {
+    width: 100%;
+    max-width: 1400px; /* Increased from 1200px for better use of widescreen displays */
+    margin: 0 auto;
+    padding: 0 30px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centrar todos los elementos hijos */
+  }
+
+  /* Enhanced header with subtle animation */
+  header {
+    background: linear-gradient(to right, #1c2541, #3a506b);
+    padding: 18px 40px; /* Slightly increased padding */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    position: sticky; /* Make header sticky for better navigation */
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(79, 195, 247, 0.2);
+    transition: padding 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  /* Shrink header slightly on scroll for better UX */
+  header.scrolled {
+    padding: 12px 40px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(to right, #25d366, #4fc3f7);
+  }
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Cambiado a space-between para separar logo y botón */
+    width: 100%; /* Asegurar que ocupe todo el ancho */
+  }
+
+  .logo {
+    height: 70px; /* Increased from 50px to make the logo bigger */
+    width: auto;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  }
+
+  .logo:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3)) brightness(1.05);
+  }
+
+  /* Improved desktop layout with content spacing */
+  .desktop-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin: 40px 0;
+  }
+
+  .main-column {
+    flex: 1;
+    min-width: 600px;
+    max-width: 900px; /* Limitar ancho máximo para alinear con formulario */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centro los elementos hijos */
+  }
+  
+  .side-column {
+    width: 350px;
+    flex-shrink: 0;
+  }
+
+  /* Typography improvements */
+  h1, h2, h3 {
+    margin-top: 30px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 2.4rem; /* Larger for desktop */
+    margin-top: 40px;
+    margin-bottom: 30px;
+    color: #ffffff;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+    color: #ffffff;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;
+  }
+  
+  h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, rgba(37, 211, 102, 0.6), transparent);
+  }
+
+  h3 {
+    font-size: 1.4rem;
+    color: #25d366;
+    margin-top: 10px;
+  }
+
+  /* Form enhancements optimized for desktop */
+  form {
+    max-width: 900px; /* Formulario más ancho */
+    margin: 40px auto; /* Centrado con margen automático */
+    padding: 50px; /* Mayor padding para más espacio interno */
+    background: linear-gradient(145deg, #1c2541, #202f54);
+    border-radius: 20px; /* Bordes más redondeados para consistencia */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4); /* Sombra más pronunciada */
+    text-align: center; /* Centrado del contenido */
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box; /* Incluir padding en el cálculo del ancho */
+    width: 100%; /* Usar ancho completo hasta el máximo */
+    left: 0; /* Asegurar que no haya desplazamiento horizontal */
+    right: 0; /* Asegurar que no haya desplazamiento horizontal */
+  }
+  
+  form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, #25d366, #4fc3f7);
+    border-radius: 4px 4px 0 0;
+  }
+
+  /* Mejoras en labels del formulario */
+  form label {
+    display: block;
+    margin: 25px auto 12px auto; /* Centrado explícito con auto */
+    font-weight: 600; /* Texto más bold */
+    color: #ffffff;
+    text-align: left;
+    font-size: 1.1rem; /* Texto ligeramente más grande */
+    letter-spacing: 0.3px;
+    max-width: 700px; /* Ancho máximo para alineación */
+    width: 100%; /* Ancho completo hasta el máximo */
+    box-sizing: border-box; /* Incluir padding en el cálculo */
+  }
+
+  /* Inputs del formulario mejorados */
+  form input[type="text"] {
+    width: 100%;
+    max-width: 700px; /* Ancho máximo consistente */
+    padding: 18px 24px; /* Mayor padding para inputs más grandes */
+    margin: 0 auto 30px auto; /* Centrado explícito y más espaciado */
+    border: 2px solid rgba(255, 255, 255, 0.15); /* Borde más visible */
+    border-radius: 12px; /* Bordes más redondeados */
+    font-size: 16px;
+    background-color: rgba(42, 47, 74, 0.8); /* Fondo más consistente con el login */
+    color: #ffffff; /* Texto blanco */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: block; /* Asegurar que sea bloque para centrado */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra interior */
+    box-sizing: border-box; /* Incluir padding en el cálculo */
+  }
+
+  /* Placeholder para inputs del formulario */
+  form input[type="text"]::placeholder {
+    color: rgba(255, 255, 255, 0.5); /* Placeholder más visible */
+    font-weight: 400;
+  }
+
+  /* Hover para inputs del formulario */
+  form input[type="text"]:hover:not(:focus) {
+    border-color: rgba(37, 211, 102, 0.3);
+    background-color: rgba(47, 52, 81, 0.9);
+  }
+
+  /* Focus para inputs del formulario */
+  form input[type="text"]:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    background-color: rgba(47, 52, 81, 0.9);
+  }
+
+  /* Contenedor de números mejorado */
+  .numero-container {
+    display: flex;
+    align-items: center;
+    margin: 0 auto 25px auto; /* Centrado explícito */
+    width: 100%; /* Ancho completo */
+    max-width: 700px; /* Ancho máximo consistente */
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    box-sizing: border-box;
+    transition: transform 0.2s ease;
+  }
+
+  .numero-container:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  
+  .numero-container:focus-within {
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.25);
+  }
+  
+  /* Input número dentro del contenedor */
+  .numero {
+    flex: 1;
+    padding: 16px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    font-size: 16px;
+    background-color: rgba(42, 47, 74, 0.8); /* Consistente con otros inputs */
+    color: #ffffff; /* Texto blanco */
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0;
+  }
+
+  .numero::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 400;
+  }
+
+  .numero:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    background-color: rgba(47, 52, 81, 0.9);
+  }
+
+  /* Grid de números mejorado */
+  .numbers-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Mayor espaciado entre elementos */
+    margin: 30px auto; /* Centrado explícito y más margen */
+    width: 100%; /* Ancho completo */
+    max-width: 700px; /* Ancho máximo consistente */
+    box-sizing: border-box; /* Incluir padding en cálculo de ancho */
+  }
+
+  /* Grupo de botones mejorado */
+  .button-group {
+    display: flex;
+    justify-content: center; /* Centrado */
+    gap: 30px; /* Mayor espaciado entre botones */
+    margin: 40px auto; /* Más margen y centrado explícito */
+    max-width: 700px; /* Ancho máximo consistente */
+    width: 100%; /* Ancho completo hasta el máximo */
+  }
+
+  .button-group button {
+    flex: 1;
+    max-width: 300px; /* Ancho máximo para cada botón */
+    min-width: 200px; /* Ancho mínimo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 24px; /* Mayor padding */
+    font-size: 1rem; /* Texto más grande */
+    border-radius: 12px; /* Bordes más redondeados */
+    background: #25d366; /* Color verde para los botones */
+    color: #ffffff; /* Texto blanco */
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 15px rgba(37, 211, 102, 0.3); /* Sombra verde */
+    font-weight: 600;
+  }
+
+  .button-group button:hover {
+    background: #1da851; /* Verde más oscuro al hover */
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+  }
+
+  .button-group button:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.25);
+  }
+
+  /* Botón principal del formulario */
+  form button[onclick="generarLink()"] {
+    width: 100%;
+    max-width: 400px; /* Mayor ancho máximo */
+    padding: 20px 32px; /* Mayor padding */
+    margin: 40px auto 20px auto; /* Más margen y centrado explícito */
+    font-size: 1.2rem; /* Texto más grande */
+    font-weight: bold;
+    border-radius: 12px; /* Bordes más redondeados */
+    display: block; /* Asegurar centrado */
+    box-sizing: border-box; /* Incluir padding en el cálculo */
+    background: #25d366; /* Color verde para el botón principal */
+    color: #ffffff; /* Texto blanco */
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 15px rgba(37, 211, 102, 0.3); /* Sombra verde */
+  }
+
+  /* Título del formulario */
+  form h3 {
+    font-size: 1.6rem; /* Título más grande */
+    margin: 0 auto 30px auto; /* Centrado explícito y más espaciado debajo */
+    color: #25d366;
+    text-align: center;
+    max-width: 700px; /* Consistente con otros elementos */
+    width: 100%; /* Ancho completo hasta el máximo */
+  }
+
+  /* Output section optimized for desktop viewing */
+  .output {
+    max-width: 800px; /* Wider for desktop */
+    margin: 30px auto;
+    padding: 30px; /* More padding for desktop */
+    background: linear-gradient(145deg, #1c2541, #202f54);
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    color: #ffffff;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .output::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(to right, #25d366, #4fc3f7);
+    border-radius: 3px 3px 0 0;
+  }
+
+  .output:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+  }
+
+  .output a {
+    color: #4fc3f7;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    padding: 8px 16px;
+    border-radius: 6px;
+    background-color: rgba(79, 195, 247, 0.1);
+    display: inline-block;
+    margin-top: 10px;
+    border: 1px solid rgba(79, 195, 247, 0.2);
+  }
+
+  .output a:hover {
+    color: #b3e5fc;
+    text-decoration: none;
+    background-color: rgba(79, 195, 247, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .output a:active {
+    transform: translateY(0);
+  }
+
+  /* Phone number styling */
+  .numero-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    transition: transform 0.2s ease;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  .numero-container:hover {
+    transform: translateX(3px);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .bandera-container {
+    margin-right: 15px;
+    transition: transform 0.2s ease;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+  }
+
+  .bandera-container:hover {
+    transform: scale(1.1);
+  }
+
+  .bandera {
+    width: 32px;
+    height: 22px;
+    border-radius: 3px;
+    display: block;
+  }
+
+  .numero {
+    flex: 1;
+    padding: 14px 16px;
+    border: 2px solid rgba(58, 80, 107, 0.3);
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: rgba(212, 248, 232, 0.9);
+    color: #0a1128;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0;
+  }
+
+  .numero::placeholder {
+    color: #6c757d;
+    opacity: 0.7;
+  }
+
+  .numero:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+  }
+
+  /* Login container styling - improved */
+  #login-container {
+    width: 100%;
+    max-width: 450px;
+    margin: 60px auto;
+    padding: 50px 40px;
+    box-sizing: border-box;
+    background: linear-gradient(145deg, #1a1f3a, #1c2541);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(37, 211, 102, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  #login-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.07);
+  }
+  
+  #login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, #25d366, #4fc3f7);
+    border-radius: 4px 4px 0 0;
+  }
+
+  #login-container h2 {
+    font-size: 2.2rem;
+    margin-top: 0;
+    margin-bottom: 40px;
+    color: #ffffff;
+    font-weight: bold;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    letter-spacing: 0.5px;
+    position: relative;
+    display: inline-block;
+  }
+  
+  #login-container h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, rgba(37, 211, 102, 0.6), transparent);
+  }
+
+  /* Labels específicos para el login - improved */
+  #login-container label {
+    display: block;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #ffffff;
+    text-align: left;
+    font-size: 1.05rem;
+    letter-spacing: 0.3px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    width: 100%;
+    padding: 0;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+  
+  #login-container label:focus-within {
+    color: #25d366;
+    transform: translateX(5px);
+  }
+
+  /* Inputs específicos para el login container - improved */
+  #login-container input[type="email"],
+  #login-container input[type="password"] {
+    width: 100%;
+    padding: 18px 20px;
+    margin: 8px 0 25px 0;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-size: 16px;
+    background-color: rgba(42, 47, 74, 0.8);
+    color: #ffffff;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    display: block;
+  }
+  
+  #login-container input[type="email"]:hover,
+  #login-container input[type="password"]:hover {
+    border-color: rgba(37, 211, 102, 0.3);
+    background-color: rgba(47, 52, 81, 0.9);
+  }
+  
+  #login-container input[type="email"]:focus,
+  #login-container input[type="password"]:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    background-color: rgba(47, 52, 81, 0.9);
+  }
+  
+  #login-container input[type="email"]::placeholder,
+  #login-container input[type="password"]::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 400;
+    transition: color 0.2s ease;
+  }
+  
+  #login-container input[type="email"]:focus::placeholder,
+  #login-container input[type="password"]:focus::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Botón específico para el login container - improved */
+  #login-container button {
+    width: 100%;
+    padding: 18px 24px;
+    margin: 30px 0 0 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ffffff;
+    background: linear-gradient(to right, #25d366, #1da851);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: block;
+  }
+  
+  #login-container button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+    background: linear-gradient(to right, #1da851, #25d366);
+  }
+  
+  #login-container button:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+  }
+  
+  #login-container button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg, 
+      rgba(255, 255, 255, 0) 0%, 
+      rgba(255, 255, 255, 0.2) 50%, 
+      rgba(255, 255, 255, 0) 100%
+    );
+    transition: left 0.7s ease;
+  }
+  
+  #login-container button:hover::before {
+    left: 100%;
+  }
+
+  /* Mensaje de error - improved */
+  #login-error {
+    color: #ff6b6b;
+    background-color: rgba(255, 107, 107, 0.1);
+    border-left: 3px solid #ff6b6b;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin: 15px 0 0 0;
+    font-weight: 500;
+    display: none;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+    animation: fadeIn 0.3s ease;
+  }
+
+  /* Notification system - improved */
+  .notification {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 15px 25px;
+    background: linear-gradient(145deg, #1c2541, #202f54);
+    border-left: 4px solid #25d366;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transform: translateX(150%);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 9999;
+    font-weight: 500;
+    font-size: 1rem;
+  }
+  
+  .notification.error {
+    border-left-color: #ff6b6b;
+    background: linear-gradient(145deg, #2a1a28, #3a2838);
+  }
+  
+  .notification.show {
+    transform: translateX(0);
+  }
+
+  /* Footer styles */
+  footer {
+    margin-top: 60px;
+    padding: 30px 0;
+    text-align: center;
+    background: linear-gradient(145deg, rgba(28, 37, 65, 0.9), rgba(32, 47, 84, 0.9));
+    border-top: 1px solid rgba(79, 195, 247, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    width: 100%;
+    position: relative;
+  }
+  
+  footer .footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  footer .copyright {
+    color: #25d366;
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+  }
+  
+  footer .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 20px;
+  }
+  
+  footer a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-weight: 500;
+    position: relative;
+  }
+  
+  footer a:hover {
+    color: #4fc3f7;
+    background-color: rgba(79, 195, 247, 0.1);
+  }
+  
+  footer a:not(:last-child)::after {
+    content: '•';
+    position: absolute;
+    right: -12px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+  
+  @media (max-width: 768px) {
+    footer .footer-content {
+      padding: 0 20px;
+    }
+    
+    footer .footer-links {
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    footer a:not(:last-child)::after {
+      display: none;
+    }
+  }
+
+  /* Modal de planes - ajustado según imagen de referencia */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(10, 17, 40, 0.85);
+    z-index: 1000;
+    overflow-y: auto;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .modal-container {
+    background: #0a1128; /* Color azul oscuro sólido como en la imagen */
+    border-radius: 24px;
+    width: 90%;
+    max-width: 600px; /* Reducido para que sea más compacto como en la imagen */
+    margin: 50px auto;
+    padding: 30px; /* Reducido el padding */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    position: relative;
+    animation: slideUp 0.4s ease;
+    border: 1px solid rgba(79, 195, 247, 0.1);
+  }
+  
+  .modal-container::before {
+    display: none; /* Eliminar línea superior para coincidir con la imagen */
+  }
+  
+  /* Estilos ajustados para la tarjeta de plan según imagen */
+  .plans-container {
+    display: flex;
+    justify-content: center;
+    margin: 0; /* Sin margen como en la imagen */
+  }
+  
+  .plan-card {
+    background: #0a1128; /* Fondo oscuro sólido como en la imagen */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: 20px;
+    padding: 30px 20px; /* Padding reducido */
+    width: 100%;
+    max-width: 460px;
+    box-shadow: none; /* Sin sombra en la card interna como en la imagen */
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(13, 27, 55, 0.7); /* Borde sutil visible en la imagen */
+    transition: none;
+  }
+  
+  .plan-card:hover {
+    transform: none; /* Eliminar elevación al hover */
+    box-shadow: none;
+  }
+  
+  .plan-card::before {
+    display: none; /* Eliminar línea superior para coincidir con la imagen */
+  }
+  
+  .plan-name {
+    font-size: 2rem; /* Ligeramente más pequeño */
+    color: #25d366; /* Verde sólido como en la imagen */
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: none; /* Eliminar gradiente */
+    -webkit-text-fill-color: #25d366; /* Color verde sólido */
+  }
+  
+  .plan-price {
+    background: #0a2a20; /* Fondo verde oscuro como en la imagen */
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 10px;
+    box-shadow: none; /* Sin sombra como en la imagen */
+    text-align: center;
+  }
+  
+  .price-amount {
+    font-size: 2.8rem; /* Tamaño ajustado */
+    font-weight: 700;
+    color: #25d366; /* Verde sólido */
+    margin-bottom: 5px;
+    text-shadow: none; /* Sin sombra en el texto como en la imagen */
+    display: inline; /* Para que '$' quede al lado */
+  }
+  
+  .price-amount::before {
+    content: '$';
+    font-size: 1.6rem;
+    font-weight: 500;
+    margin-right: 2px;
+    color: #25d366;
+  }
+  
+  .price-period {
+    color: #ffffff; /* Blanco como en la imagen */
+    font-size: 0.95rem;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+    display: block; /* Mostrar en línea separada como en la imagen */
+  }
+  
+  .plan-features {
+    margin: 25px 0;
+  }
+  
+  .plan-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .plan-features li {
+    padding: 12px 0 12px 25px; /* Menos padding */
+    position: relative;
+    color: white;
+    font-size: 0.95rem; /* Texto más pequeño */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Línea más sutil */
+  }
+  
+  .plan-features li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 12px;
+    color: #25d366;
+    font-weight: normal;
+    font-size: 1rem;
+  }
+  
+  /* User section with improved styling */
+  .user-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 30px;
+    background: linear-gradient(145deg, #1c2541, #202f54);
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 900px;
+    align-self: center;
+    box-sizing: border-box;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #25d366, #128C7E);
+    color: white;
+    font-weight: 600;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .user-details {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .user-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 4px;
+  }
+  
+  .user-email {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: white;
+  }
+  
+  .logout-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+  
+  .logout-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  .logout-button .icon {
+    font-size: 1.1rem;
+  }
+
+  /* Premium Plans button styling */
+  .plans-button {
+    background: linear-gradient(135deg, #25d366 0%, #128C7E 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 10px 18px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .plans-button:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+      rgba(255, 255, 255, 0) 0%, 
+      rgba(255, 255, 255, 0.2) 50%, 
+      rgba(255, 255, 255, 0) 100%
+    );
+    transition: left 0.7s ease;
+    z-index: -1;
+  }
+
+  .plans-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
+    background: linear-gradient(135deg, #1da851 0%, #0d7164 100%);
+  }
+
+  .plans-button:hover:before {
+    left: 100%;
+  }
+
+  .plans-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+  }
+
+  .plans-button span {
+    font-size: 1.1rem;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  }
+
+  .premium-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff9800;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 3px 6px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* Estilos específicos para la sección de edición de links */
+  #editar-link-container {
+    display: none;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 40px auto;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  #editar-link-container h3 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    color: #25d366;
+    text-align: center;
+    font-weight: 700;
+  }
+  
+  #editar-numeros-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+  
+  .edit-title {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: #ffffff;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .edit-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, rgba(37, 211, 102, 0.6), transparent);
+  }
+
+  .message-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #ffffff;
+    text-align: left;
+    font-size: 1.05rem;
+    letter-spacing: 0.3px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    width: 100%;
+    padding: 0;
+  }
+  
+  .message-input {
+    width: 100%;
+    padding: 16px 20px;
+    margin: 0 0 25px 0;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-size: 16px;
+    background-color: rgba(42, 47, 74, 0.8);
+    color: #ffffff;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    display: block;
+    resize: none; /* Evitar cambio de tamaño */
+  }
+  
+  .message-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 400;
+  }
+  
+  .message-input:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    background-color: rgba(47, 52, 81, 0.9);
+  }
+
+  .buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+  }
+
+  /* Estilos para los botones de la sección de edición */
+  .btn {
+    flex: 1;
+    max-width: 200px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .btn-primary {
+    background: #25d366;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 6px 15px rgba(37, 211, 102, 0.3);
+  }
+  
+  .btn-primary:hover {
+    background: #1da851;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+  }
+  
+  .btn-primary:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.25);
+  }
+  
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: none;
+  }
+  
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  .btn-secondary:active {
+    transform: translateY(1px);
+  }
+
+  /* Modern styling for stats container */
+  .stats-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 30px auto;
+    padding: 20px;
+    max-width: 800px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .stat-card {
+    flex: 1;
+    background: linear-gradient(145deg, #1c2541, #202f54);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+  }
+
+  .stat-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-value {
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: #25d366;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .stats-container {
+      flex-direction: column;
+      gap: 15px;
+      padding: 15px;
+    }
+
+    .stat-card {
+      padding: 15px;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+    }
+  }
+
+  /* Modal de planes - ajustado según imagen de referencia */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(10, 17, 40, 0.85);
+    z-index: 1000;
+    overflow-y: auto;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .modal-container {
+    background: #0a1128; /* Color azul oscuro sólido como en la imagen */
+    border-radius: 24px;
+    width: 90%;
+    max-width: 600px; /* Reducido para que sea más compacto como en la imagen */
+    margin: 50px auto;
+    padding: 30px; /* Reducido el padding */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    position: relative;
+    animation: slideUp 0.4s ease;
+    border: 1px solid rgba(79, 195, 247, 0.1);
+  }
+  
+  .modal-container::before {
+    display: none; /* Eliminar línea superior para coincidir con la imagen */
+  }
+  
+  /* Estilos ajustados para la tarjeta de plan según imagen */
+  .plans-container {
+    display: flex;
+    justify-content: center;
+    margin: 0; /* Sin margen como en la imagen */
+  }
+  
+  .plan-card {
+    background: #0a1128; /* Fondo oscuro sólido como en la imagen */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: 20px;
+    padding: 30px 20px; /* Padding reducido */
+    width: 100%;
+    max-width: 460px;
+    box-shadow: none; /* Sin sombra en la card interna como en la imagen */
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(13, 27, 55, 0.7); /* Borde sutil visible en la imagen */
+    transition: none;
+  }
+  
+  .plan-card:hover {
+    transform: none; /* Eliminar elevación al hover */
+    box-shadow: none;
+  }
+  
+  .plan-card::before {
+    display: none; /* Eliminar línea superior para coincidir con la imagen */
+  }
+  
+  .plan-name {
+    font-size: 2rem; /* Ligeramente más pequeño */
+    color: #25d366; /* Verde sólido como en la imagen */
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: none; /* Eliminar gradiente */
+    -webkit-text-fill-color: #25d366; /* Color verde sólido */
+  }
+  
+  .plan-price {
+    background: #0a2a20; /* Fondo verde oscuro como en la imagen */
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 10px;
+    box-shadow: none; /* Sin sombra como en la imagen */
+    text-align: center;
+  }
+  
+  .price-amount {
+    font-size: 2.8rem; /* Tamaño ajustado */
+    font-weight: 700;
+    color: #25d366; /* Verde sólido */
+    margin-bottom: 5px;
+    text-shadow: none; /* Sin sombra en el texto como en la imagen */
+    display: inline; /* Para que '$' quede al lado */
+  }
+  
+  .price-amount::before {
+    content: '$';
+    font-size: 1.6rem;
+    font-weight: 500;
+    margin-right: 2px;
+    color: #25d366;
+  }
+  
+  .price-period {
+    color: #ffffff; /* Blanco como en la imagen */
+    font-size: 0.95rem;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+    display: block; /* Mostrar en línea separada como en la imagen */
+  }
+  
+  .plan-features {
+    margin: 25px 0;
+  }
+  
+  .plan-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .plan-features li {
+    padding: 12px 0 12px 25px; /* Menos padding */
+    position: relative;
+    color: white;
+    font-size: 0.95rem; /* Texto más pequeño */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Línea más sutil */
+  }
+  
+  .plan-features li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 12px;
+    color: #25d366;
+    font-weight: normal;
+    font-size: 1rem;
+  }
+  
+  /* Login container styling - improved */
+  #login-container {
+    width: 100%;
+    max-width: 450px;
+    margin: 60px auto;
+    padding: 50px 40px;
+    box-sizing: border-box;
+    background: linear-gradient(145deg, #1a1f3a, #1c2541);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(37, 211, 102, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  #login-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.07);
+  }
+  
+  #login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, #25d366, #4fc3f7);
+    border-radius: 4px 4px 0 0;
+  }
+
+  #login-container h2 {
+    font-size: 2.2rem;
+    margin-top: 0;
+    margin-bottom: 40px;
+    color: #ffffff;
+    font-weight: bold;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    letter-spacing: 0.5px;
+    position: relative;
+    display: inline-block;
+  }
+  
+  #login-container h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, rgba(37, 211, 102, 0.6), transparent);
+  }
+
+  /* Labels específicos para el login - improved */
+  #login-container label {
+    display: block;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #ffffff;
+    text-align: left;
+    font-size: 1.05rem;
+    letter-spacing: 0.3px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    width: 100%;
+    padding: 0;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+  
+  #login-container label:focus-within {
+    color: #25d366;
+    transform: translateX(5px);
+  }
+
+  /* Inputs específicos para el login container - improved */
+  #login-container input[type="email"],
+  #login-container input[type="password"] {
+    width: 100%;
+    padding: 18px 20px;
+    margin: 8px 0 25px 0;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-size: 16px;
+    background-color: rgba(42, 47, 74, 0.8);
+    color: #ffffff;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    display: block;
+  }
+  
+  #login-container input[type="email"]:hover,
+  #login-container input[type="password"]:hover {
+    border-color: rgba(37, 211, 102, 0.3);
+    background-color: rgba(47, 52, 81, 0.9);
+  }
+  
+  #login-container input[type="email"]:focus,
+  #login-container input[type="password"]:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    background-color: rgba(47, 52, 81, 0.9);
+  }
+  
+  #login-container input[type="email"]::placeholder,
+  #login-container input[type="password"]::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 400;
+    transition: color 0.2s ease;
+  }
+  
+  #login-container input[type="email"]:focus::placeholder,
+  #login-container input[type="password"]:focus::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Botón específico para el login container - improved */
+  #login-container button {
+    width: 100%;
+    padding: 18px 24px;
+    margin: 30px 0 0 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ffffff;
+    background: linear-gradient(to right, #25d366, #1da851);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: block;
+  }
+  
+  #login-container button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+    background: linear-gradient(to right, #1da851, #25d366);
+  }
+  
+  #login-container button:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+  }
+  
+  #login-container button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg, 
+      rgba(255, 255, 255, 0) 0%, 
+      rgba(255, 255, 255, 0.2) 50%, 
+      rgba(255, 255, 255, 0) 100%
+    );
+    transition: left 0.7s ease;
+  }
+  
+  #login-container button:hover::before {
+    left: 100%;
+  }
+
+  /* Notification system - improved */
+  .notification {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 15px 25px;
+    background: linear-gradient(145deg, #1c2541, #202f54);
+    border-left: 4px solid #25d366;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transform: translateX(150%);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 9999;
+    font-weight: 500;
+    font-size: 1rem;
+  }
+  
+  .notification.error {
+    border-left-color: #ff6b6b;
+    background: linear-gradient(145deg, #2a1a28, #3a2838);
+  }
+  
+  .notification.show {
+    transform: translateX(0);
+  }
+
+  /* Footer styles */
+  footer {
+    margin-top: 60px;
+    padding: 30px 0;
+    text-align: center;
+    background: linear-gradient(145deg, rgba(28, 37, 65, 0.9), rgba(32, 47, 84, 0.9));
+    border-top: 1px solid rgba(79, 195, 247, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    width: 100%;
+    position: relative;
+  }
+  
+  footer .footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  footer .copyright {
+    color: #25d366;
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+  }
+  
+  footer .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 20px;
+  }
+  
+  footer a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-weight: 500;
+    position: relative;
+  }
+  
+  footer a:hover {
+    color: #4fc3f7;
+    background-color: rgba(79, 195, 247, 0.1);
+  }
+  
+  footer a:not(:last-child)::after {
+    content: '•';
+    position: absolute;
+    right: -12px;
+    color: rgba(255, 255, 255, 0.4);
+  }
+  
+  @media (max-width: 768px) {
+    footer .footer-content {
+      padding: 0 20px;
+    }
+    
+    footer .footer-links {
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    footer a:not(:last-child)::after {
+      display: none;
+    }
+  }
+
+  /* Modal de planes - ajustado según imagen de referencia */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(10, 17, 40, 0.85);
+    z-index: 1000;
+    overflow-y: auto;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .modal-container {
+    background: #0a1128; /* Color azul oscuro sólido como en la imagen */
+    border-radius: 24px;
+    width: 90%;
+    max-width: 600px; /* Reducido para que sea más compacto como en la imagen */
+    margin: 50px auto;
+    padding: 30px; /* Reducido el padding */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    position: relative;
+    animation: slideUp 0.4s ease;
+    border: 1px solid rgba(79, 195, 247, 0.1);
+  }
+  
+  .modal-container::before {
+    display: none; /* Eliminar línea superior para coincidir con la imagen */
+  }
+  
+  /* Estilos ajustados para la tarjeta de plan según imagen */
+  .plans-container {
+    display: flex;
+    justify-content: center;
+    margin: 0; /* Sin margen como en la imagen */
+  }
+  
+  .plan-card {
+    background: #0a1128; /* Fondo oscuro sólido como en la imagen */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: 20px;
+    padding: 30px 20px; /* Padding reducido */
+    width: 100%;
+    max-width: 460px;
+    box-shadow: none; /* Sin sombra en la card interna como en la imagen */
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(13, 27, 55, 0.7); /* Borde sutil visible en la imagen */
+    transition: none;
+  }
+  
+  .plan-card:hover {
+    transform: none; /* Eliminar elevación al hover */
+    box-shadow: none;
+  }
+  
+  .plan-card::before {
+    display: none; /* Eliminar línea superior para coincidir con la imagen */
+  }
+  
+  .plan-name {
+    font-size: 2rem; /* Ligeramente más pequeño */
+    color: #25d366; /* Verde sólido como en la imagen */
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: none; /* Eliminar gradiente */
+    -webkit-text-fill-color: #25d366; /* Color verde sólido */
+  }
+  
+  .plan-price {
+    background: #0a2a20; /* Fondo verde oscuro como en la imagen */
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 10px;
+    box-shadow: none; /* Sin sombra como en la imagen */
+    text-align: center;
+  }
+  
+  .price-amount {
+    font-size: 2.8rem; /* Tamaño ajustado */
+    font-weight: 700;
+    color: #25d366; /* Verde sólido */
+    margin-bottom: 5px;
+    text-shadow: none; /* Sin sombra en el texto como en la imagen */
+    display: inline; /* Para que '$' quede al lado */
+  }
+  
+  .price-amount::before {
+    content: '$';
+    font-size: 1.6rem;
+    font-weight: 500;
+    margin-right: 2px;
+    color: #25d366;
+  }
+  
+  .price-period {
+    color: #ffffff; /* Blanco como en la imagen */
+    font-size: 0.95rem;
+    font-weight: normal;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+    display: block; /* Mostrar en línea separada como en la imagen */
+  }
+  
+  .plan-features {
+    margin: 25px 0;
+  }
+  
+  .plan-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .plan-features li {
+    padding: 12px 0 12px 25px; /* Menos padding */
+    position: relative;
+    color: white;
+    font-size: 0.95rem; /* Texto más pequeño */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Línea más sutil */
+  }
+  
+  .plan-features li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 12px;
+    color: #25d366;
+    font-weight: normal;
+    font-size: 1rem;
+  }
+  
+  /* User section with improved styling */
+  .user-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 30px;
+    background: linear-gradient(145deg, #1c2541, #202f54);
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 900px;
+    align-self: center;
+    box-sizing: border-box;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #25d366, #128C7E);
+    color: white;
+    font-weight: 600;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .user-details {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .user-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 4px;
+  }
+  
+  .user-email {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: white;
+  }
+  
+  .logout-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+  
+  .logout-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  .logout-button .icon {
+    font-size: 1.1rem;
+  }
+
+  /* Premium Plans button styling */
+  .plans-button {
+    background: linear-gradient(135deg, #25d366 0%, #128C7E 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 10px 18px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .plans-button:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+      rgba(255, 255, 255, 0) 0%, 
+      rgba(255, 255, 255, 0.2) 50%, 
+      rgba(255, 255, 255, 0) 100%
+    );
+    transition: left 0.7s ease;
+    z-index: -1;
+  }
+
+  .plans-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4);
+    background: linear-gradient(135deg, #1da851 0%, #0d7164 100%);
+  }
+
+  .plans-button:hover:before {
+    left: 100%;
+  }
+
+  .plans-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+  }
+
+  .plans-button span {
+    font-size: 1.1rem;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  }
+
+  .premium-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff9800;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 3px 6px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* Estilos específicos para la sección de edición de links */
+  #editar-link-container {
+    display: none;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 40px auto;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  #editar-link-container h3 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    color: #25d366;
+    text-align: center;
+    font-weight: 700;
+  }
+  
+  #editar-numeros-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+  
+  .edit-title {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: #ffffff;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .edit-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, rgba(37, 211, 102, 0.6), transparent);
+  }
+
+  .message-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #ffffff;
+    text-align: left;
+    font-size: 1.05rem;
+    letter-spacing: 0.3px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    width: 100%;
+    padding: 0;
+  }
+  
+  .message-input {
+    width: 100%;
+    padding: 16px 20px;
+    margin: 0 0 25px 0;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-size: 16px;
+    background-color: rgba(42, 47, 74, 0.8);
+    color: #ffffff;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    display: block;
+    resize: none; /* Evitar cambio de tamaño */
+  }
+  
+  .message-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 400;
+  }
+  
+  .message-input:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    background-color: rgba(47, 52, 81, 0.9);
+  }
+
+  .buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+  }
+
+  /* Estilos para los botones de la sección de edición */
+  .btn {
+    flex: 1;
+    max-width: 200px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .btn-primary {
+    background: #25d366;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 6px 15px rgba(37, 211, 102, 0.3);
+  }
+  
+  .btn-primary:hover {
+    background: #1da851;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+  }
+  
+  .btn-primary:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.25);
+  }
+  
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: none;
+  }
+  
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  .btn-secondary:active {
+    transform: translateY(1px);
+  }
+
+  /* User section - responsive adjustments */
+  @media (max-width: 768px) {
+    .user-section {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 15px;
+    }
+    
+    .user-info {
+      width: 100%;
+      justify-content: space-between;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+    }
+    
+    .user-name {
+      font-size: 0.8rem;
+    }
+    
+    .user-email {
+      font-size: 0.9rem;
+    }
+    
+    .logout-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  /* Edits for improved usability and design in "Editar Link" section */
+  #editar-link-container {
+    display: none;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 40px auto;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  #editar-link-container h3 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    color: #25d366;
+    text-align: center;
+    font-weight: 700;
+  }
+  
+  #editar-numeros-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+  
+  .edit-title {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: #ffffff;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .edit-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, rgba(37, 211, 102, 0.6), transparent);
+  }
+
+  .message-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #ffffff;
+    text-align: left;
+    font-size: 1.05rem;
+    letter-spacing: 0.3px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    width: 100%;
+    padding: 0;
+  }
+  
+  .message-input {
+    width: 100%;
+    padding: 16px 20px;
+    margin: 0 0 25px 0;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-size: 16px;
+    background-color: rgba(42, 47, 74, 0.8);
+    color: #ffffff;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    display: block;
+    resize: none; /* Evitar cambio de tamaño */
+  }
+  
+  .message-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 400;
+  }
+  
+  .message-input:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    background-color: rgba(47, 52, 81, 0.9);
+  }
+
+  .buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+  }
+
+  /* Estilos para los botones de la sección de edición */
+  .btn {
+    flex: 1;
+    max-width: 200px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .btn-primary {
+    background: #25d366;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 6px 15px rgba(37, 211, 102, 0.3);
+  }
+  
+  .btn-primary:hover {
+    background: #1da851;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+  }
+  
+  .btn-primary:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.25);
+  }
+  
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: none;
+  }
+  
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  .btn-secondary:active {
+    transform: translateY(1px);
+  }
+
+  /* Modal de edición - estilos adicionales */
+  #editar-link-container {
+    display: none;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 40px auto;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  #editar-link-container h3 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    color: #25d366;
+    text-align: center;
+    font-weight: 700;
+  }
+  
+  #editar-numeros-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+  
+  .edit-title {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: #ffffff;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .edit-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, rgba(37, 211, 102, 0.6), transparent);
+  }
+
+  .message-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #ffffff;
+    text-align: left;
+    font-size: 1.05rem;
+    letter-spacing: 0.3px;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    width: 100%;
+    padding: 0;
+  }
+  
+  .message-input {
+    width: 100%;
+    padding: 16px 20px;
+    margin: 0 0 25px 0;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-size: 16px;
+    background-color: rgba(42, 47, 74, 0.8);
+    color: #ffffff;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    display: block;
+    resize: none; /* Evitar cambio de tamaño */
+  }
+  
+  .message-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 400;
+  }
+  
+  .message-input:focus {
+    outline: none;
+    border-color: #25d366;
+    box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    background-color: rgba(47, 52, 81, 0.9);
+  }
+
+  .buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+  }
+
+  /* Estilos para los botones de la sección de edición */
+  .btn {
+    flex: 1;
+    max-width: 200px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .btn-primary {
+    background: #25d366;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 6px 15px rgba(37, 211, 102, 0.3);
+  }
+  
+  .btn-primary:hover {
+    background: #1da851;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+  }
+  
+  .btn-primary:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.25);
+  }
+  
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: none;
+  }
+  
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  .btn-secondary:active {
+    transform: translateY(1px);
+  }
+
+  /* User section - responsive adjustments */
+  @media (max-width: 768px) {
+    .user-section {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 15px;
+    }
+    
+    .user-info {
+      width: 100%;
+      justify-content: space-between;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+    }
+    
+    .user-name {
+      font-size: 0.8rem;
+    }
+    
+    .user-email {
+      font-size: 0.9rem;
+    }
+    
+    .logout-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+  </style>
 </head>
 <body>
   <header id="main-header">
     <div class="logo-container">
-      <img src="https://raw.githubusercontent.com/username/linkify/main/assets/logo.png" alt="Linkify" class="logo">
+      <img src="https://raw.githubusercontent.com/username/linkify/main/assets/logo.png" alt="Linkify" class="logo" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0ZXh0IHg9IjEwIiB5PSI1MCIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzI1ZDM2NiI+TGlua2lmeTwvdGV4dD48L3N2Zz4=';">
       <button class="plans-button" onclick="openPlansModal()">
         <span>💎</span> Ver Planes <span class="premium-badge">Pro</span>
       </button>
@@ -43,10 +2518,17 @@
           </div>
           <div class="plan-actions">
             <a href="https://wa.me/+5491123456789?text=Hola%2C%20quiero%20información%20sobre%20los%20planes%20de%20Linkify" class="whatsapp-button" target="_blank">
-              Contratar por WhatsApp
+              <svg viewBox="0 0 24 24" width="20" height="20">
+                <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path>
+                <path fill="currentColor" d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"></path>
+              </svg>
+              <span>Contratar por WhatsApp</span>
             </a>
             <a href="https://www.mercadopago.com.ar" class="mercadopago-button" target="_blank">
-              Pagar con Mercado Pago
+              <svg viewBox="0 0 24 24" width="20" height="20">
+                <path fill="currentColor" d="M19.07,7.32H4.93c-1.74,0-3.15,1.41-3.15,3.15v3.06c0,1.74,1.41,3.15,3.15,3.15h14.14c1.74,0,3.15-1.41,3.15-3.15v-3.06c0-1.74-1.41-3.15-3.15-3.15Zm-14.14,1.5h14.14c0.91,0,1.65,0.74,1.65,1.65v0.19h-17.44v-0.19c0-0.91,0.74-1.65,1.65-1.65Zm14.14,6.36H4.93c-0.91,0-1.65-0.74-1.65-1.65v-1.37h17.44v1.37c0,0.91-0.74,1.65-1.65,1.65Z"></path>
+              </svg>
+              <span>Pagar con Mercado Pago</span>
             </a>
           </div>
         </div>
@@ -55,44 +2537,163 @@
   </div>
 
   <div class="container">
-    <!-- Contenedor de inicio de sesión -->
+    <!-- Login container with improved styling -->
     <div id="login-container" class="active card">
       <h2>Iniciar sesión</h2>
       <label for="email">Correo electrónico:</label>
-      <input type="email" id="email" placeholder="Ingresa tu correo electrónico" required>
+      <input type="email" id="email" placeholder="Ingresa tu correo electrónico" required aria-label="Correo electrónico">
       <label for="password">Contraseña:</label>
-      <input type="password" id="password" placeholder="Ingresa tu contraseña" required>
-      <button onclick="login()">Iniciar sesión</button>
+      <input type="password" id="password" placeholder="Ingresa tu contraseña" required aria-label="Contraseña">
+      
+      <!-- Checkbox para recordar credenciales -->
+      <div class="remember-me-container">
+        <label class="remember-me">
+          <input type="checkbox" id="remember-me" name="remember-me">
+          <span class="checkmark"></span>
+          <span class="label-text">Recordarme</span>
+        </label>
+      </div>
+      
+      <button onclick="login()" aria-label="Iniciar sesión">Iniciar sesión</button>
       <p id="login-error"></p>
     </div>
 
-    <!-- Contenedor principal del generador -->
-    <div id="generador-container" style="display: none;">
-      <h1>Generador de Links Multiagente</h1>
-      <form id="form">
-        <div id="numeros-container">
-          <div class="numero-container" id="numero-container-1">
-            <span class="bandera-container">
-              <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
-            </span>
-            <input type="text" id="numero-1" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
-          </div>
-        </div>
-        <button type="button" onclick="agregarNumero()">Agregar otro número</button>
-        <button type="button" onclick="quitarUltimoNumero()">Quitar último número</button>
-        <label for="mensaje">Mensaje automático:</label>
-        <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
-        <button type="button" onclick="generarLink()">Generar Link</button>
-      </form>
-      <div class="output" id="output"></div>
-      <div class="detalles-link" id="detalles-link" style="display: none;">
-        <h3>Detalles del Link Generado:</h3>
-        <p><strong>Números:</strong> <span id="numeros-generados"></span></p>
-        <p><strong>Mensaje Automático:</strong> <span id="mensaje-generado"></span></p>
+    <!-- Info container moved to appear only in login screen -->
+    <div class="desktop-wrapper" id="login-info">
+      <div class="info-container card">
+        <h2 class="info-title">¿Para qué sirve Linkify?</h2>
+        <p>Linkify es una herramienta creada especialmente para creadores de contenido, emprendedores y vendedores que usan WhatsApp como su canal principal de ventas y atención al cliente.</p>
+        <ul>
+          <li>✅ Evitá bloqueos por enviar demasiados mensajes desde un solo número</li>
+          <li>✅ Distribuí el flujo de clientes entre diferentes agentes u operadores</li>
+          <li>✅ Atendé más rápido y de forma ordenada</li>
+          <li>✅ Escalá tu negocio sin complicaciones</li>
+        </ul>
+        <p>Si vendés o atendés por WhatsApp, Linkify te ayuda a organizar tu operación, mejorar la experiencia del cliente y aumentar tus conversiones.</p>
       </div>
     </div>
+
+    <!-- Dashboard layout for generator -->
+    <div id="generador-container" style="display: none;">
+      <!-- User section with logout button -->
+      <div class="user-section">
+        <div class="user-info">
+          <div class="user-avatar" id="user-avatar">T</div>
+          <div class="user-details">
+            <span class="user-name">Bienvenido</span>
+            <span class="user-email" id="user-email-display">tobi@gmail.com</span>
+          </div>
+        </div>
+        <button class="logout-button" onclick="cerrarSesion()">
+          <span class="icon">↩</span>
+          Cerrar sesión
+        </button>
+      </div>
+
+      <h1>Generador de Links Multiagente</h1>
+      
+      <!-- Quick stats for dashboard feel -->
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-label">Links Generados</div>
+          <div class="stat-value" id="stats-links-count">1</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Números Activos</div>
+          <div class="stat-value" id="stats-numbers-count">2</div>
+        </div>
+      </div>
+      
+      <!-- Two-column desktop layout -->
+      <div class="dashboard-layout">
+        <div class="main-column">
+          <form id="form" class="card">
+            <h3>Números de WhatsApp</h3>
+            <!-- Grid layout for number inputs -->
+            <div id="numeros-container" class="numbers-grid">
+              <div class="numero-container" id="numero-container-1">
+                <span class="bandera-container">
+                  <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
+                </span>
+                <input type="text" id="numero-1" class="numero" value="+549" placeholder="Ejemplo: 2944585356" aria-label="Número de WhatsApp">
+              </div>
+            </div>
+            
+            <div class="button-group">
+              <button type="button" onclick="agregarNumero()" aria-label="Agregar otro número"><i>+</i> Agregar otro número</button>
+              <button type="button" onclick="quitarUltimoNumero()" aria-label="Quitar último número"><i>-</i> Quitar último número</button>
+            </div>
+
+            <!-- Campo de mensaje automático en el generador principal -->
+            <label for="mensaje">Mensaje automático:</label>
+            <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda" aria-label="Mensaje automático">
+
+            <button type="button" onclick="generarLink()" aria-label="Generar Link">Generar Link</button>
+          </form>
+
+          <!-- Enhanced output with copy button -->
+          <div class="output-container">
+            <div class="output card" id="output"></div>
+            <button class="copy-btn" id="copy-link-btn" onclick="copyToClipboard()" style="display: none;" aria-label="Copiar al portapapeles"></button>
+          </div>
+          
+          <!-- Details card with consistent styling -->
+          <div class="detalles-link card" id="detalles-link" style="display: none;">
+            <h3>Detalles del Link Generado</h3>
+            <p><strong>Números:</strong> <span id="numeros-generados"></span></p>
+            <p><strong>Mensaje Automático:</strong> <span id="mensaje-generado"></span></p>
+          </div>
+        </div>
+        
+        <!-- Side column for editing -->
+        <div class="side-column">
+          <!-- Edit link container -->
+          <div id="editar-link-container" class="card" style="display: none;">
+            <h3 class="edit-title">Editar Link</h3>
+            <div id="editar-numeros-container" class="numbers-grid">
+              <!-- Dynamic phone number fields will be added here -->
+              <div class="numero-container">
+                <span class="bandera-container">
+                  <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
+                </span>
+                <input type="text" id="editar-numero-1" class="numero" value="+549" placeholder="Ejemplo: +5492944585356" aria-label="Editar número 1">
+              </div>
+            </div>
+            <label for="editar-mensaje" class="message-label">Mensaje Automático:</label>
+            <textarea id="editar-mensaje" class="message-input" rows="3" placeholder="Escribe tu mensaje aquí"></textarea>
+            <div class="buttons-container">
+              <button onclick="actualizarLink()" class="btn btn-primary" aria-label="Actualizar Link">Actualizar Link</button>
+              <button onclick="resetEditarLink()" class="btn btn-secondary" aria-label="Cancelar Edición">Cancelar</button>
+            </div>
+          </div>
+          
+          <!-- Shortened link stats could go here -->
+          <div id="link-stats-container" class="card" style="display: none;">
+            <h3>Estadísticas de Links</h3>
+            <div id="link-stats-content">
+              <p>Las estadísticas de tu link se mostrarán aquí.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acortar link container -->
+    <div id="acortar-link-container" class="card" style="display: none;">
+      <h3>Acortar Link</h3>
+      <form id="acortar-link-form">
+        <label for="link-original">Ingresa un link para acortar:</label>
+        <input type="text" id="link-original" placeholder="Ejemplo: https://www.ejemplo.com" aria-label="Link para acortar" />
+        <button type="button" onclick="acortarLinkManual()" aria-label="Acortar Link">Acortar Link</button>
+      </form>
+      <div id="acortar-link-output" class="output"></div>
+    </div>
+
+    <!-- Remove this info container that appears after login -->
+    <!-- Keep only the info container inside the login-info div -->
   </div>
 
+  <!-- Footer with updated copyright year -->
   <footer>
     <div class="footer-content">
       <div class="copyright">&copy; 2024 Linkify</div>
@@ -104,6 +2705,541 @@
     </div>
   </footer>
 
-  <script src="scripts.js"></script> <!-- Archivo de scripts -->
+  <!-- Notification element with improved styling -->
+  <div class="notification" id="notification"></div>
+
+  <script>
+  let contadorNumeros = 1;
+  let limiteNumeros = 5; // Default value, will be updated on login
+
+  // Function to add a new phone number field
+  function agregarNumero() {
+    if (contadorNumeros >= limiteNumeros) {
+      showNotification(`Solo puedes agregar hasta ${limiteNumeros} números.`, 'error');
+      document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
+      return;
+    }
+
+    contadorNumeros++;
+    const container = document.getElementById('numeros-container');
+    const nuevoCampo = document.createElement('div');
+    nuevoCampo.classList.add('numero-container');
+    nuevoCampo.id = `numero-container-${contadorNumeros}`;
+    nuevoCampo.innerHTML = `
+      <span class="bandera-container">
+        <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
+      </span>
+      <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356" aria-label="Número de WhatsApp">
+    `;
+    container.appendChild(nuevoCampo);
+
+    if (contadorNumeros >= limiteNumeros) {
+      document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
+    }
+  }
+
+  // Function to remove the last phone number field
+  function quitarUltimoNumero() {
+    if (contadorNumeros > 1) {
+      const container = document.getElementById('numeros-container');
+      const ultimoCampo = document.getElementById(`numero-container-${contadorNumeros}`);
+      if (ultimoCampo) {
+        container.removeChild(ultimoCampo);
+        contadorNumeros--;
+        document.querySelector('button[onclick="agregarNumero()"]').disabled = false;
+      }
+    } else {
+      showNotification('Debe haber al menos un número.', 'error');
+    }
+  }
+
+  // Function to handle login
+  async function login() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const rememberMe = document.getElementById('remember-me').checked;
+    const loginButton = document.querySelector('#login-container button');
+    const loginError = document.getElementById('login-error');
+    
+    loginError.style.display = 'none';
+    loginError.textContent = '';
+
+    if (!email || !password) {
+      loginError.textContent = 'Por favor, ingresa tu correo y contraseña.';
+      loginError.style.display = 'block';
+      return;
+    }
+
+    // Show loading state
+    loginButton.innerHTML = '<span class="loading"></span> Iniciando sesión...';
+    loginButton.disabled = true;
+
+    try {
+      // For demonstration purposes, we'll simulate a successful login
+      setTimeout(() => {
+        // Hide login container and info section
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('login-info').style.display = 'none';
+        
+        // Show generator container
+        document.getElementById('generador-container').style.display = 'block';
+        
+        // Configure user info - Actualizado para mostrar inicial y email
+        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+        document.getElementById('user-email-display').textContent = email;
+        
+        // Set the limit of numbers
+        limiteNumeros = 5;
+        
+        // Store email in localStorage
+        localStorage.setItem('usuarioEmail', email);
+        
+        // If remember me is checked, store credentials securely
+        if (rememberMe) {
+          localStorage.setItem('rememberedEmail', email);
+          // Nota: En una implementación real, no se debe almacenar la contraseña en localStorage
+          // Aquí solo almacenamos un indicador de que el usuario desea ser recordado
+          localStorage.setItem('rememberMe', 'true');
+        } else {
+          localStorage.removeItem('rememberedEmail');
+          localStorage.removeItem('rememberMe');
+        }
+        
+        // Show success notification
+        showNotification('Sesión iniciada correctamente');
+        
+        // Show link details if available
+        mostrarDetallesLink();
+        
+        // Reset button state
+        loginButton.innerHTML = 'Iniciar sesión';
+        loginButton.disabled = false;
+      }, 1500);
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      loginError.textContent = 'Error al iniciar sesión. Por favor, inténtalo de nuevo.';
+      loginError.style.display = 'block';
+      loginButton.innerHTML = 'Iniciar sesión';
+      loginButton.disabled = false;
+    }
+  }
+
+  // Function to handle logout
+  function cerrarSesion() {
+    const email = localStorage.getItem('usuarioEmail');
+    
+    // Clear user data from localStorage
+    localStorage.removeItem('usuarioEmail');
+    localStorage.removeItem(`linkGenerado_${email}`);
+    localStorage.removeItem(`numerosGenerados_${email}`);
+    localStorage.removeItem(`mensajeGenerado_${email}`);
+    localStorage.removeItem(`linkID_${email}`);
+    
+    // Show login container and info section, hide generator container
+    document.getElementById('login-container').style.display = 'block';
+    document.getElementById('login-info').style.display = 'block';
+    document.getElementById('generador-container').style.display = 'none';
+    
+    // Clear login form
+    document.getElementById('email').value = '';
+    document.getElementById('password').value = '';
+    
+    // Reset the form state
+    resetFormState();
+    
+    // Show notification with improved message
+    showNotification('Sesión cerrada correctamente. ¡Hasta pronto!');
+  }
+
+  // Function to reset form state
+  function resetFormState() {
+    contadorNumeros = 1;
+    
+    // Reset the numbers container
+    document.getElementById('numeros-container').innerHTML = `
+      <div class="numero-container" id="numero-container-1">
+        <span class="bandera-container">
+          <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
+        </span>
+        <input type="text" id="numero-1" class="numero" value="+549" placeholder="Ejemplo: 2944585356" aria-label="Número de WhatsApp">
+      </div>
+    `;
+    
+    // Clear message input
+    document.getElementById('mensaje').value = '';
+    
+    // Clear output and details
+    document.getElementById('output').innerHTML = '';
+    document.getElementById('detalles-link').style.display = 'none';
+    
+    // Enable add number button
+    const addButton = document.querySelector('button[onclick="agregarNumero()"]');
+    if (addButton) addButton.disabled = false;
+  }
+
+  // Function to show notification - improved
+  function showNotification(message, type = 'success') {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    
+    if (type === 'error') {
+      notification.classList.add('error');
+    } else {
+      notification.classList.remove('error');
+    }
+    
+    notification.classList.add('show');
+    
+    // Clear any existing timeout to prevent multiple timeouts
+    if (notification.timeoutId) {
+      clearTimeout(notification.timeoutId);
+    }
+    
+    // Set new timeout
+    notification.timeoutId = setTimeout(() => {
+      notification.classList.remove('show');
+    }, 3000);
+  }
+
+  // Function to generate a new link
+  async function generarLink() {
+    const numeros = Array.from(document.querySelectorAll('.numero'))
+      .map(input => input.value.trim())
+      .filter(num => num !== '');
+
+    const mensaje = document.getElementById('mensaje').value.trim();
+    const email = localStorage.getItem('usuarioEmail');
+    const generarButton = document.querySelector('button[onclick="generarLink()"]');
+
+    if (!email) {
+      showNotification('Por favor, inicia sesión antes de generar un link.', 'error');
+      return;
+    }
+
+    if (numeros.length === 0) {
+      showNotification('Por favor, ingresa al menos un número válido.', 'error');
+      return;
+    }
+
+    // Show loading state
+    generarButton.innerHTML = '<span class="loading"></span> Generando...';
+    generarButton.disabled = true;
+
+    try {
+      // For demonstration purposes, we'll simulate a successful API response
+      setTimeout(() => {
+        const demoLink = `https://linkify.to/${Math.random().toString(36).substring(2, 8)}`;
+        
+        // Update UI with the generated link
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${demoLink}" target="_blank">${demoLink}</a>
+        `;
+        document.getElementById('output').style.display = 'block';
+        document.getElementById('copy-link-btn').style.display = 'block';
+        
+        // Save data to localStorage
+        localStorage.setItem(`linkGenerado_${email}`, demoLink);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
+        localStorage.setItem(`linkID_${email}`, Math.random().toString(36).substring(2, 10));
+        
+        // Show link details
+        document.getElementById('detalles-link').style.display = 'block';
+        document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+        
+        // Show edit link container
+        document.getElementById('editar-link-container').style.display = 'block';
+        mostrarEditarLink(numeros);
+        
+        // Show success notification
+        showNotification('¡Link generado con éxito!');
+        
+        // Update stats
+        updateStats();
+        
+        // Reset button state
+        generarButton.innerHTML = 'Generar Link';
+        generarButton.disabled = false;
+      }, 1500);
+    } catch (error) {
+      console.error('Error generando link:', error);
+      showNotification('Error al generar el link. Inténtalo de nuevo.', 'error');
+      generarButton.innerHTML = 'Generar Link';
+      generarButton.disabled = false;
+    }
+  }
+
+  // Function to show the edit link form
+  function mostrarEditarLink(numeros) {
+    const editarNumerosContainer = document.getElementById('editar-numeros-container');
+    editarNumerosContainer.innerHTML = '';
+    
+    numeros.forEach((numero, index) => {
+      const numeroItem = document.createElement('div');
+      numeroItem.classList.add('numero-container');
+      numeroItem.innerHTML = `
+        <span class="bandera-container">
+          <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
+        </span>
+        <input type="text" id="editar-numero-${index}" class="numero" value="${numero}" placeholder="Ejemplo: +5492944585356" aria-label="Editar número ${index + 1}">
+      `;
+      editarNumerosContainer.appendChild(numeroItem);
+    });
+    
+    const email = localStorage.getItem('usuarioEmail');
+    const mensaje = localStorage.getItem(`mensajeGenerado_${email}`) || '';
+    document.getElementById('editar-mensaje').value = mensaje;
+  }
+
+  // Function to update a link
+  async function actualizarLink() {
+    const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
+      .map(input => input.value.trim())
+      .filter(num => num !== '');
+    
+    const mensaje = document.getElementById('editar-mensaje').value.trim();
+    const email = localStorage.getItem('usuarioEmail');
+    const id = localStorage.getItem(`linkID_${email}`);
+    const actualizarButton = document.querySelector('button[onclick="actualizarLink()"]');
+
+    if (!email || !id) {
+      showNotification('No se encontró un usuario o ID guardado. Por favor, inicia sesión y genera un link primero.', 'error');
+      return;
+    }
+
+    if (numeros.length === 0) {
+      showNotification('Por favor, ingresa al menos un número válido.', 'error');
+      return;
+    }
+
+    // Show loading state
+    actualizarButton.innerHTML = '<span class="loading"></span> Actualizando...';
+    actualizarButton.disabled = true;
+
+    try {
+      // For demonstration purposes, we'll simulate a successful update
+      setTimeout(() => {
+        // Update localStorage data
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
+        
+        // Update UI with new data
+        document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+        
+        // Show success notification
+        showNotification('Link actualizado correctamente');
+        
+        // Reset button state
+        actualizarButton.innerHTML = 'Actualizar Link';
+        actualizarButton.disabled = false;
+      }, 1500);
+    } catch (error) {
+      console.error('Error actualizando el link:', error);
+      showNotification('Error al actualizar el link. Inténtalo de nuevo.', 'error');
+      actualizarButton.innerHTML = 'Actualizar Link';
+      actualizarButton.disabled = false;
+    }
+  }
+
+  // Function to display existing link details
+  async function mostrarDetallesLink() {
+    const email = localStorage.getItem('usuarioEmail');
+    
+    if (!email) {
+      console.log('No hay usuario logueado');
+      return;
+    }
+    
+    // Get data from localStorage
+    const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
+    const numerosGuardados = localStorage.getItem(`numerosGenerados_${email}`);
+    const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`);
+    
+    if (linkGuardado && numerosGuardados) {
+      // Parse and display saved data
+      const numeros = JSON.parse(numerosGuardados);
+      
+      document.getElementById('detalles-link').style.display = 'block';
+      document.getElementById('output').innerHTML = `
+        <p>Tu link generado:</p>
+        <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
+      `;
+      document.getElementById('output').style.display = 'block';
+      document.getElementById('numeros-generados').textContent = numeros.join(', ');
+      document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
+      
+      // Show edit link container
+      document.getElementById('editar-link-container').style.display = 'block';
+      mostrarEditarLink(numeros);
+    }
+  }
+
+  // Function to manually shorten a link
+  async function acortarLinkManual() {
+    const linkOriginal = document.getElementById('link-original').value.trim();
+    const acortarButton = document.querySelector('button[onclick="acortarLinkManual()"]');
+
+    if (!linkOriginal) {
+      showNotification('Por favor, ingresa un link para acortar.', 'error');
+      return;
+    }
+
+    // Show loading state
+    acortarButton.innerHTML = '<span class="loading"></span> Acortando...';
+    acortarButton.disabled = true;
+
+    try {
+      // For demonstration purposes, we'll simulate a successful API response
+      setTimeout(() => {
+        const shortLink = `https://linkify.to/${Math.random().toString(36).substring(2, 8)}`;
+        
+        // Update UI with shortened link
+        document.getElementById('acortar-link-output').innerHTML = `
+          <p>Link acortado con éxito:</p>
+          <a href="${shortLink}" target="_blank">${shortLink}</a>
+        `;
+        document.getElementById('acortar-link-output').style.display = 'block';
+        
+        // Show success notification
+        showNotification('Link acortado correctamente');
+        
+        // Reset button state
+        acortarButton.innerHTML = 'Acortar Link';
+        acortarButton.disabled = false;
+      }, 1500);
+    } catch (error) {
+      console.error('Error al acortar el link:', error);
+      showNotification('Error al acortar el link. Inténtalo de nuevo.', 'error');
+      acortarButton.innerHTML = 'Acortar Link';
+      acortarButton.disabled = false;
+    }
+  }
+
+  // Check login status on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    const email = localStorage.getItem('usuarioEmail');
+    const rememberedEmail = localStorage.getItem('rememberedEmail');
+    const rememberMe = localStorage.getItem('rememberMe');
+    
+    // Si hay credenciales guardadas, rellenar el campo de email
+    if (rememberedEmail && rememberMe === 'true') {
+      document.getElementById('email').value = rememberedEmail;
+      document.getElementById('remember-me').checked = true;
+    }
+    
+    if (email) {
+      // User is logged in, show generator container and hide info
+      document.getElementById('login-container').style.display = 'none';
+      document.getElementById('login-info').style.display = 'none';
+      document.getElementById('generador-container').style.display = 'block';
+      
+      // Update user info
+      document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+      document.getElementById('user-email-display').textContent = email;
+      
+      // Show link details if available
+      mostrarDetallesLink();
+      
+      // Update stats on load
+      updateStats();
+    } else {
+      // Check if password is saved and autofill the form
+      const savedPassword = localStorage.getItem('usuarioPassword');
+      if (savedPassword) {
+        document.getElementById('password').value = savedPassword;
+        document.getElementById('remember-me').checked = true;
+      }
+    }
+  });
+
+  // Additional function for copy to clipboard
+  function copyToClipboard() {
+    const outputElement = document.querySelector('#output a');
+    if (outputElement) {
+      const textToCopy = outputElement.href;
+      navigator.clipboard.writeText(textToCopy)
+        .then(() => {
+          const copyBtn = document.getElementById('copy-link-btn');
+          copyBtn.classList.add('copied');
+          showNotification('Link copiado al portapapeles');
+          setTimeout(() => copyBtn.classList.remove('copied'), 2000);
+        })
+        .catch(err => {
+          showNotification('Error al copiar el link', 'error');
+        });
+    }
+  }
+
+  // Function to update stats
+  function updateStats() {
+    const email = localStorage.getItem('usuarioEmail');
+    if (!email) return;
+    
+    // Demo stats
+    document.getElementById('stats-links-count').textContent = "1";
+    
+    const numerosGuardados = localStorage.getItem(`numerosGenerados_${email}`);
+    if (numerosGuardados) {
+      const numeros = JSON.parse(numerosGuardados);
+      document.getElementById('stats-numbers-count').textContent = numeros.length.toString();
+    } else {
+      document.getElementById('stats-numbers-count').textContent = "0";
+    }
+  }
+
+  // Shrink header on scroll for better UX
+  window.addEventListener('scroll', function() {
+    const header = document.getElementById('main-header');
+    if (window.scrollY > 50) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  });
+
+  // Funciones para el modal de planes
+  function openPlansModal() {
+    const modal = document.getElementById('plans-modal');
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Prevenir scroll en el body
+  }
+  
+  function closePlansModal() {
+    document.getElementById('plans-modal').style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restaurar scroll
+  }
+  
+  // Close plans modal when clicking outside of it
+  window.addEventListener('click', function(event) {
+    const modal = document.getElementById('plans-modal');
+    if (event.target === modal) {
+      closePlansModal();
+    }
+  });
+  
+  // Cerrar modal con tecla ESC
+  window.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closePlansModal();
+    }
+  });
+  </script>
+  
+  <!--Start of Tawk.to Script-->
+  <script type="text/javascript">
+  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+  (function(){
+  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+  s1.async=true;
+  s1.src='https://embed.tawk.to/67dd9990b0e46e1906b50d72/1imsrg1n9';
+  s1.charset='UTF-8';
+  s1.setAttribute('crossorigin','*');
+  s0.parentNode.insertBefore(s1,s0);
+  })();
+  </script>
+  <!--End of Tawk.to Script-->
 </body>
 </html>
