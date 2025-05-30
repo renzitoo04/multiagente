@@ -446,51 +446,43 @@
       return;
     }
 
-    // Show loading state
+    // Mostrar estado de carga
     generarButton.innerHTML = '<span class="loading"></span> Generando...';
     generarButton.disabled = true;
 
     try {
-      // For demonstration purposes, we'll simulate a successful API response
-      setTimeout(() => {
-        const demoLink = `https://linkify.to/${Math.random().toString(36).substring(2, 8)}`;
-        
-        // Update UI with the generated link
+      const response = await fetch('/api/soporte', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, numeros, mensaje }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
         document.getElementById('output').innerHTML = `
           <p>Tu link generado:</p>
-          <a href="${demoLink}" target="_blank">${demoLink}</a>
+          <a href="${data.link}" target="_blank">${data.link}</a>
         `;
         document.getElementById('output').style.display = 'block';
-        document.getElementById('copy-link-btn').style.display = 'block';
-        
-        // Save data to localStorage
-        localStorage.setItem(`linkGenerado_${email}`, demoLink);
+
+        localStorage.setItem(`linkGenerado_${email}`, data.link);
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-        localStorage.setItem(`linkID_${email}`, Math.random().toString(36).substring(2, 10));
-        
-        // Show link details
+        localStorage.setItem(`linkID_${email}`, data.id);
+
         document.getElementById('detalles-link').style.display = 'block';
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-        
-        // Show edit link container
-        document.getElementById('editar-link-container').style.display = 'block';
-        mostrarEditarLink(numeros);
-        
-        // Show success notification
+
         showNotification('¡Link generado con éxito!');
-        
-        // Update stats
-        updateStats();
-        
-        // Reset button state
-        generarButton.innerHTML = 'Generar Link';
-        generarButton.disabled = false;
-      }, 1500);
+      } else {
+        showNotification('Error al generar el link: ' + data.error, 'error');
+      }
     } catch (error) {
       console.error('Error generando link:', error);
       showNotification('Error al generar el link. Inténtalo de nuevo.', 'error');
+    } finally {
       generarButton.innerHTML = 'Generar Link';
       generarButton.disabled = false;
     }
