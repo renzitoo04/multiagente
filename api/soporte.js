@@ -37,7 +37,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Datos inválidos' });
     }
 
-    // Filtrar números válidos en el backend
+    // Filtrar números válidos
     const numerosValidos = numeros.filter(num => num !== '' && num !== '+549');
 
     if (numerosValidos.length === 0) {
@@ -49,13 +49,14 @@ export default async function handler(req, res) {
       const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
       const linkAcortado = await acortarLink(linkOriginal);
 
+      // Guardar el link en Supabase asociado al usuario
       const { error } = await supabase
-        .from('link')
+        .from('links')
         .insert([{ id, email, numeros: numerosValidos, mensaje, link: linkAcortado }]);
 
       if (error) {
         console.error('Error al guardar en Supabase:', error);
-        return res.status(500).json({ error: 'Error al guardar la configuración.' });
+        return res.status(500).json({ error: 'Error al guardar el link.' });
       }
 
       return res.status(200).json({ id, link: linkAcortado });
@@ -63,74 +64,27 @@ export default async function handler(req, res) {
       console.error('Error generando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
-  }
+  } else if (req.method === 'GET') {
+    const { email } = req.query;
 
-  if (req.method === 'GET') {
-    const { id } = req.query;
-
-    if (!id) {
-      return res.status(400).json({ error: 'Falta el ID en la consulta.' });
+    if (!email) {
+      return res.status(400).json({ error: 'Falta el email del usuario.' });
     }
 
     try {
-      const { data: configuracion, error } = await supabase
-        .from('link')
-        .select('numeros, mensaje')
-        .eq('id', id)
-        .single();
-
-      if (error || !configuracion) {
-        return res.status(404).json({ error: 'No se encontró la configuración para este ID.' });
-      }
-
-      if (!indicesRotacion[id]) {
-        indicesRotacion[id] = 0;
-      }
-
-      const indiceActual = indicesRotacion[id];
-      const numeroActual = configuracion.numeros[indiceActual];
-      indicesRotacion[id] = (indiceActual + 1) % configuracion.numeros.length;
-
-      const whatsappLink = `https://wa.me/${numeroActual}?text=${encodeURIComponent(configuracion.mensaje)}`;
-      return res.redirect(302, whatsappLink);
-    } catch (error) {
-      console.error('Error al redirigir al número de WhatsApp:', error);
-      return res.status(500).json({ error: 'Error interno del servidor.' });
-    }
-  }
-
-  if (req.method === 'PATCH') {
-    const { email, numeros, mensaje, id } = req.body;
-
-    if (!email || !numeros || numeros.length === 0 || !id) {
-      return res.status(400).json({ error: 'Datos inválidos para actualizar el link.' });
-    }
-
-    // Filtrar números válidos en el backend
-    const numerosValidos = numeros.filter(num => num !== '' && num !== '+549');
-
-    if (numerosValidos.length === 0) {
-      return res.status(400).json({ error: 'No se encontraron números válidos.' });
-    }
-
-    try {
-      const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
-      const linkAcortado = await acortarLink(linkOriginal);
-
-      const { error } = await supabase
-        .from('link')
-        .update({ numeros: numerosValidos, mensaje, link: linkAcortado })
-        .eq('id', id)
+      const { data: links, error } = await supabase
+        .from('links')
+        .select('*')
         .eq('email', email);
 
       if (error) {
-        console.error('Error al actualizar en Supabase:', error);
-        return res.status(500).json({ error: 'Error al actualizar el link.' });
+        console.error('Error al recuperar links:', error);
+        return res.status(500).json({ error: 'Error al recuperar los links.' });
       }
 
-      return res.status(200).json({ link: linkAcortado });
+      return res.status(200).json({ links });
     } catch (error) {
-      console.error('Error actualizando el link:', error);
+      console.error('Error interno del servidor:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
   }
