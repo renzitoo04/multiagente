@@ -234,8 +234,8 @@
   <div class="notification" id="notification"></div>
 
   <script>
-  let limiteNumeros = 0; // Se asignará al iniciar sesión
-  let contadorNumeros = 1; // Comienza con un número por defecto
+  let contadorNumeros = 1;
+  let limiteNumeros = 5; // Default value, will be updated on login
 
   // Function to add a new phone number field
   function agregarNumero() {
@@ -256,9 +256,6 @@
       <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
     `;
     container.appendChild(nuevoCampo);
-
-    // Actualiza el estado del botón después de agregar un número
-    actualizarEstadoBotonAgregar();
   }
 
   // Function to remove the last phone number field
@@ -269,7 +266,7 @@
       if (ultimoCampo) {
         container.removeChild(ultimoCampo);
         contadorNumeros--;
-        actualizarEstadoBotonAgregar(); // Actualiza el estado del botón
+        document.querySelector('button[onclick="agregarNumero()"]').disabled = false;
       }
     } else {
       showNotification('Debe haber al menos un número.', 'error');
@@ -280,44 +277,70 @@
   async function login() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
+    const rememberMe = document.getElementById('remember-me').checked;
+    const loginButton = document.querySelector('#login-container button');
+    const loginError = document.getElementById('login-error');
+    
+    loginError.style.display = 'none';
+    loginError.textContent = '';
 
     if (!email || !password) {
-      showNotification('Por favor, ingresa tu correo y contraseña.', 'error');
+      loginError.textContent = 'Por favor, ingresa tu correo y contraseña.';
+      loginError.style.display = 'block';
       return;
     }
 
+    // Show loading state
+    loginButton.innerHTML = '<span class="loading"></span> Iniciando sesión...';
+    loginButton.disabled = true;
+
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        limiteNumeros = data.limiteNumeros; // Guarda el límite de números
-        localStorage.setItem('limiteNumeros', limiteNumeros); // Opcional: guardar en localStorage
-
-        // Actualiza el estado del botón "Agregar número"
-        actualizarEstadoBotonAgregar();
-
-        showNotification('Inicio de sesión exitoso.');
-      } else {
-        showNotification(data.error, 'error');
-      }
+      // For demonstration purposes, we'll simulate a successful login
+      setTimeout(() => {
+        // Hide login container and info section
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('login-info').style.display = 'none';
+        
+        // Show generator container
+        document.getElementById('generador-container').style.display = 'block';
+        
+        // Configure user info - Actualizado para mostrar inicial y email
+        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+        document.getElementById('user-email-display').textContent = email;
+        
+        // Set the limit of numbers
+        limiteNumeros = 5;
+        
+        // Store email in localStorage
+        localStorage.setItem('usuarioEmail', email);
+        
+        // If remember me is checked, store credentials securely
+        if (rememberMe) {
+          localStorage.setItem('rememberedEmail', email);
+          // Nota: En una implementación real, no se debe almacenar la contraseña en localStorage
+          // Aquí solo almacenamos un indicador de que el usuario desea ser recordado
+          localStorage.setItem('rememberMe', 'true');
+        } else {
+          localStorage.removeItem('rememberedEmail');
+          localStorage.removeItem('rememberMe');
+        }
+        
+        // Show success notification
+        showNotification('Sesión iniciada correctamente');
+        
+        // Show link details if available
+        mostrarDetallesLink();
+        
+        // Reset button state
+        loginButton.innerHTML = 'Iniciar sesión';
+        loginButton.disabled = false;
+      }, 1500);
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      showNotification('Error al iniciar sesión.', 'error');
-    }
-  }
-
-  function actualizarEstadoBotonAgregar() {
-    const botonAgregar = document.querySelector('button[onclick="agregarNumero()"]');
-    if (contadorNumeros >= limiteNumeros) {
-      botonAgregar.disabled = true; // Deshabilita el botón si se alcanza el límite
-    } else {
-      botonAgregar.disabled = false; // Habilita el botón si no se alcanza el límite
+      loginError.textContent = 'Error al iniciar sesión. Por favor, inténtalo de nuevo.';
+      loginError.style.display = 'block';
+      loginButton.innerHTML = 'Iniciar sesión';
+      loginButton.disabled = false;
     }
   }
 
