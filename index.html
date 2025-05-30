@@ -234,8 +234,8 @@
   <div class="notification" id="notification"></div>
 
   <script>
-  let contadorNumeros = 1;
-  let limiteNumeros = 5; // Default value, will be updated on login
+  let limiteNumeros = 0; // Variable global para almacenar el límite
+  let contadorNumeros = 1; // Contador de números agregados
 
   // Function to add a new phone number field
   function agregarNumero() {
@@ -256,6 +256,9 @@
       <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
     `;
     container.appendChild(nuevoCampo);
+
+    // Actualiza el estado del botón después de agregar un número
+    actualizarEstadoBotonAgregar();
   }
 
   // Function to remove the last phone number field
@@ -295,8 +298,21 @@
     loginButton.disabled = true;
 
     try {
-      // For demonstration purposes, we'll simulate a successful login
-      setTimeout(() => {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        limiteNumeros = data.limiteNumeros; // Guarda el límite de números
+        localStorage.setItem('limiteNumeros', limiteNumeros); // Opcional: guardar en localStorage
+
+        // Actualiza el estado del botón "Agregar número"
+        actualizarEstadoBotonAgregar();
+
         // Hide login container and info section
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('login-info').style.display = 'none';
@@ -334,13 +350,24 @@
         // Reset button state
         loginButton.innerHTML = 'Iniciar sesión';
         loginButton.disabled = false;
-      }, 1500);
+      } else {
+        showNotification(data.error, 'error');
+      }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       loginError.textContent = 'Error al iniciar sesión. Por favor, inténtalo de nuevo.';
       loginError.style.display = 'block';
       loginButton.innerHTML = 'Iniciar sesión';
       loginButton.disabled = false;
+    }
+  }
+
+  function actualizarEstadoBotonAgregar() {
+    const botonAgregar = document.querySelector('button[onclick="agregarNumero()"]');
+    if (contadorNumeros >= limiteNumeros) {
+      botonAgregar.disabled = true; // Deshabilita el botón si se alcanza el límite
+    } else {
+      botonAgregar.disabled = false; // Habilita el botón si no se alcanza el límite
     }
   }
 
