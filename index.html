@@ -234,8 +234,8 @@
   <div class="notification" id="notification"></div>
 
   <script>
-  let limiteNumeros = 0; // Variable global para almacenar el límite
-  let contadorNumeros = 1; // Contador de números agregados
+  let limiteNumeros = 0; // Se asignará al iniciar sesión
+  let contadorNumeros = 1; // Comienza con un número por defecto
 
   // Function to add a new phone number field
   function agregarNumero() {
@@ -269,7 +269,7 @@
       if (ultimoCampo) {
         container.removeChild(ultimoCampo);
         contadorNumeros--;
-        document.querySelector('button[onclick="agregarNumero()"]').disabled = false;
+        actualizarEstadoBotonAgregar(); // Actualiza el estado del botón
       }
     } else {
       showNotification('Debe haber al menos un número.', 'error');
@@ -280,22 +280,11 @@
   async function login() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
-    const rememberMe = document.getElementById('remember-me').checked;
-    const loginButton = document.querySelector('#login-container button');
-    const loginError = document.getElementById('login-error');
-    
-    loginError.style.display = 'none';
-    loginError.textContent = '';
 
     if (!email || !password) {
-      loginError.textContent = 'Por favor, ingresa tu correo y contraseña.';
-      loginError.style.display = 'block';
+      showNotification('Por favor, ingresa tu correo y contraseña.', 'error');
       return;
     }
-
-    // Show loading state
-    loginButton.innerHTML = '<span class="loading"></span> Iniciando sesión...';
-    loginButton.disabled = true;
 
     try {
       const response = await fetch('/api/login', {
@@ -313,52 +302,13 @@
         // Actualiza el estado del botón "Agregar número"
         actualizarEstadoBotonAgregar();
 
-        // Hide login container and info section
-        document.getElementById('login-container').style.display = 'none';
-        document.getElementById('login-info').style.display = 'none';
-        
-        // Show generator container
-        document.getElementById('generador-container').style.display = 'block';
-        
-        // Configure user info - Actualizado para mostrar inicial y email
-        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
-        document.getElementById('user-email-display').textContent = email;
-        
-        // Set the limit of numbers
-        limiteNumeros = 5;
-        
-        // Store email in localStorage
-        localStorage.setItem('usuarioEmail', email);
-        
-        // If remember me is checked, store credentials securely
-        if (rememberMe) {
-          localStorage.setItem('rememberedEmail', email);
-          // Nota: En una implementación real, no se debe almacenar la contraseña en localStorage
-          // Aquí solo almacenamos un indicador de que el usuario desea ser recordado
-          localStorage.setItem('rememberMe', 'true');
-        } else {
-          localStorage.removeItem('rememberedEmail');
-          localStorage.removeItem('rememberMe');
-        }
-        
-        // Show success notification
-        showNotification('Sesión iniciada correctamente');
-        
-        // Show link details if available
-        mostrarDetallesLink();
-        
-        // Reset button state
-        loginButton.innerHTML = 'Iniciar sesión';
-        loginButton.disabled = false;
+        showNotification('Inicio de sesión exitoso.');
       } else {
         showNotification(data.error, 'error');
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
-      loginError.textContent = 'Error al iniciar sesión. Por favor, inténtalo de nuevo.';
-      loginError.style.display = 'block';
-      loginButton.innerHTML = 'Iniciar sesión';
-      loginButton.disabled = false;
+      showNotification('Error al iniciar sesión.', 'error');
     }
   }
 
