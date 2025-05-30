@@ -37,6 +37,13 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Datos inválidos' });
     }
 
+    // Filtrar números válidos en el backend
+    const numerosValidos = numeros.filter(num => num !== '' && num !== '+549');
+
+    if (numerosValidos.length === 0) {
+      return res.status(400).json({ error: 'No se encontraron números válidos.' });
+    }
+
     try {
       const id = Math.random().toString(36).substring(2, 8);
       const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
@@ -44,7 +51,7 @@ export default async function handler(req, res) {
 
       const { error } = await supabase
         .from('link')
-        .insert([{ id, email, numeros, mensaje, link: linkAcortado }]);
+        .insert([{ id, email, numeros: numerosValidos, mensaje, link: linkAcortado }]);
 
       if (error) {
         console.error('Error al guardar en Supabase:', error);
@@ -88,6 +95,42 @@ export default async function handler(req, res) {
       return res.redirect(302, whatsappLink);
     } catch (error) {
       console.error('Error al redirigir al número de WhatsApp:', error);
+      return res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+  }
+
+  if (req.method === 'PATCH') {
+    const { email, numeros, mensaje, id } = req.body;
+
+    if (!email || !numeros || numeros.length === 0 || !id) {
+      return res.status(400).json({ error: 'Datos inválidos para actualizar el link.' });
+    }
+
+    // Filtrar números válidos en el backend
+    const numerosValidos = numeros.filter(num => num !== '' && num !== '+549');
+
+    if (numerosValidos.length === 0) {
+      return res.status(400).json({ error: 'No se encontraron números válidos.' });
+    }
+
+    try {
+      const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
+      const linkAcortado = await acortarLink(linkOriginal);
+
+      const { error } = await supabase
+        .from('link')
+        .update({ numeros: numerosValidos, mensaje, link: linkAcortado })
+        .eq('id', id)
+        .eq('email', email);
+
+      if (error) {
+        console.error('Error al actualizar en Supabase:', error);
+        return res.status(500).json({ error: 'Error al actualizar el link.' });
+      }
+
+      return res.status(200).json({ link: linkAcortado });
+    } catch (error) {
+      console.error('Error actualizando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
   }

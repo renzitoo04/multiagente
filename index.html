@@ -241,7 +241,6 @@
   function agregarNumero() {
     if (contadorNumeros >= limiteNumeros) {
       showNotification(`Solo puedes agregar hasta ${limiteNumeros} números.`, 'error');
-      document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
       return;
     }
 
@@ -254,13 +253,9 @@
       <span class="bandera-container">
         <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
       </span>
-      <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356" aria-label="Número de WhatsApp">
+      <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
     `;
     container.appendChild(nuevoCampo);
-
-    if (contadorNumeros >= limiteNumeros) {
-      document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
-    }
   }
 
   // Function to remove the last phone number field
@@ -430,7 +425,7 @@
   async function generarLink() {
     const numeros = Array.from(document.querySelectorAll('.numero'))
       .map(input => input.value.trim())
-      .filter(num => num !== '');
+      .filter(num => num !== '' && num !== '+549'); // Filtra números vacíos y el valor predeterminado
 
     const mensaje = document.getElementById('mensaje').value.trim();
     const email = localStorage.getItem('usuarioEmail');
@@ -514,8 +509,8 @@
   async function actualizarLink() {
     const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
       .map(input => input.value.trim())
-      .filter(num => num !== '');
-    
+      .filter(num => num !== '' && num !== '+549'); // Filtra números vacíos y el valor predeterminado
+
     const mensaje = document.getElementById('editar-mensaje').value.trim();
     const email = localStorage.getItem('usuarioEmail');
     const id = localStorage.getItem(`linkID_${email}`);
@@ -531,31 +526,40 @@
       return;
     }
 
-    // Show loading state
+    // Mostrar estado de carga
     actualizarButton.innerHTML = '<span class="loading"></span> Actualizando...';
     actualizarButton.disabled = true;
 
     try {
-      // For demonstration purposes, we'll simulate a successful update
-      setTimeout(() => {
-        // Update localStorage data
+      const response = await fetch('/api/soporte', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, numeros, mensaje, id }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-        
-        // Update UI with new data
+
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-        
-        // Show success notification
-        showNotification('Link actualizado correctamente');
-        
-        // Reset button state
-        actualizarButton.innerHTML = 'Actualizar Link';
-        actualizarButton.disabled = false;
-      }, 1500);
+
+        document.getElementById('output').innerHTML = `
+          <p>Tu link actualizado:</p>
+          <a href="${data.link}" target="_blank">${data.link}</a>
+        `;
+        document.getElementById('output').style.display = 'block';
+
+        showNotification('¡Link actualizado con éxito!');
+      } else {
+        showNotification('Error al actualizar el link: ' + data.error, 'error');
+      }
     } catch (error) {
       console.error('Error actualizando el link:', error);
       showNotification('Error al actualizar el link. Inténtalo de nuevo.', 'error');
+    } finally {
       actualizarButton.innerHTML = 'Actualizar Link';
       actualizarButton.disabled = false;
     }
