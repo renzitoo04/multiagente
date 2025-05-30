@@ -308,18 +308,7 @@
 
         // Mostrar el generador y ocultar el login
         document.getElementById('login-container').style.display = 'none';
-        document.getElementById('login-info').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
-
-        // Recuperar y mostrar links del usuario
-        const linksResponse = await fetch(`/api/links?email=${email}`);
-        const linksData = await linksResponse.json();
-
-        if (linksResponse.ok) {
-          mostrarLinks(linksData.links);
-        } else {
-          console.error('Error al recuperar links:', linksData.error);
-        }
 
         showNotification('Inicio de sesión exitoso.');
       } else {
@@ -361,7 +350,6 @@
 
     // Mostrar el contenedor de inicio de sesión
     document.getElementById('login-container').style.display = 'block';
-    document.getElementById('login-info').style.display = 'block';
     document.getElementById('generador-container').style.display = 'none';
 
     // Limpiar el formulario de inicio de sesión
@@ -430,7 +418,6 @@
 
     const mensaje = document.getElementById('mensaje').value.trim();
     const email = localStorage.getItem('usuarioEmail');
-    const generarButton = document.querySelector('button[onclick="generarLink()"]');
 
     if (!email) {
       showNotification('Por favor, inicia sesión antes de generar un link.', 'error');
@@ -442,10 +429,6 @@
       return;
     }
 
-    // Mostrar estado de carga
-    generarButton.innerHTML = '<span class="loading"></span> Generando...';
-    generarButton.disabled = true;
-
     try {
       const response = await fetch('/api/soporte', {
         method: 'POST',
@@ -456,21 +439,6 @@
       const data = await response.json();
 
       if (response.ok) {
-        document.getElementById('output').innerHTML = `
-          <p>Tu link generado:</p>
-          <a href="${data.link}" target="_blank">${data.link}</a>
-        `;
-        document.getElementById('output').style.display = 'block';
-
-        localStorage.setItem(`linkGenerado_${email}`, data.link);
-        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
-        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-        localStorage.setItem(`linkID_${email}`, data.id);
-
-        document.getElementById('detalles-link').style.display = 'block';
-        document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
         showNotification('¡Link generado con éxito!');
       } else {
         showNotification('Error al generar el link: ' + data.error, 'error');
@@ -478,9 +446,6 @@
     } catch (error) {
       console.error('Error generando link:', error);
       showNotification('Error al generar el link. Inténtalo de nuevo.', 'error');
-    } finally {
-      generarButton.innerHTML = 'Generar Link';
-      generarButton.disabled = false;
     }
   }
 

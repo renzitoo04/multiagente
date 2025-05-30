@@ -64,29 +64,6 @@ export default async function handler(req, res) {
       console.error('Error generando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
-  } else if (req.method === 'GET') {
-    const { email } = req.query;
-
-    if (!email) {
-      return res.status(400).json({ error: 'Falta el email del usuario.' });
-    }
-
-    try {
-      const { data: links, error } = await supabase
-        .from('links')
-        .select('*')
-        .eq('email', email);
-
-      if (error) {
-        console.error('Error al recuperar links:', error);
-        return res.status(500).json({ error: 'Error al recuperar los links.' });
-      }
-
-      return res.status(200).json({ links });
-    } catch (error) {
-      console.error('Error interno del servidor:', error);
-      return res.status(500).json({ error: 'Error interno del servidor.' });
-    }
   }
 
   return res.status(405).json({ error: 'Método no permitido.' });
