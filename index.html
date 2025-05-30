@@ -256,6 +256,11 @@
       <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
     `;
     container.appendChild(nuevoCampo);
+
+    // Deshabilitar el botón si se alcanza el límite
+    if (contadorNumeros >= limiteNumeros) {
+      document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
+    }
   }
 
   // Function to remove the last phone number field
@@ -266,7 +271,11 @@
       if (ultimoCampo) {
         container.removeChild(ultimoCampo);
         contadorNumeros--;
-        document.querySelector('button[onclick="agregarNumero()"]').disabled = false;
+
+        // Habilitar el botón si el contador está por debajo del límite
+        if (contadorNumeros < limiteNumeros) {
+          document.querySelector('button[onclick="agregarNumero()"]').disabled = false;
+        }
       }
     } else {
       showNotification('Debe haber al menos un número.', 'error');
@@ -290,55 +299,55 @@
       return;
     }
 
-    // Show loading state
+    // Mostrar estado de carga
     loginButton.innerHTML = '<span class="loading"></span> Iniciando sesión...';
     loginButton.disabled = true;
 
     try {
-      // For demonstration purposes, we'll simulate a successful login
-      setTimeout(() => {
-        // Hide login container and info section
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Guardar el límite de números
+        limiteNumeros = data.limiteNumeros;
+        localStorage.setItem('limiteNumeros', limiteNumeros);
+
+        // Mostrar el generador y ocultar el login
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('login-info').style.display = 'none';
-        
-        // Show generator container
         document.getElementById('generador-container').style.display = 'block';
-        
-        // Configure user info - Actualizado para mostrar inicial y email
+
+        // Configurar información del usuario
         document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
         document.getElementById('user-email-display').textContent = email;
-        
-        // Set the limit of numbers
-        limiteNumeros = 5;
-        
-        // Store email in localStorage
+
+        // Guardar email en localStorage
         localStorage.setItem('usuarioEmail', email);
-        
-        // If remember me is checked, store credentials securely
+
         if (rememberMe) {
           localStorage.setItem('rememberedEmail', email);
-          // Nota: En una implementación real, no se debe almacenar la contraseña en localStorage
-          // Aquí solo almacenamos un indicador de que el usuario desea ser recordado
           localStorage.setItem('rememberMe', 'true');
         } else {
           localStorage.removeItem('rememberedEmail');
           localStorage.removeItem('rememberMe');
         }
-        
-        // Show success notification
+
+        // Mostrar notificación de éxito
         showNotification('Sesión iniciada correctamente');
-        
-        // Show link details if available
-        mostrarDetallesLink();
-        
-        // Reset button state
-        loginButton.innerHTML = 'Iniciar sesión';
-        loginButton.disabled = false;
-      }, 1500);
+      } else {
+        loginError.textContent = data.error;
+        loginError.style.display = 'block';
+      }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       loginError.textContent = 'Error al iniciar sesión. Por favor, inténtalo de nuevo.';
       loginError.style.display = 'block';
+    } finally {
       loginButton.innerHTML = 'Iniciar sesión';
       loginButton.disabled = false;
     }
