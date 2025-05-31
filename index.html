@@ -477,19 +477,15 @@
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
         showNotification('¡Link generado con éxito!');
-
-        // Deshabilitar el botón después de generar el link
-        generarButton.disabled = true;
       } else {
         showNotification(data.error, 'error');
-        generarButton.disabled = false; // Rehabilitar el botón si hay un error
       }
     } catch (error) {
       console.error('Error generando link:', error);
       showNotification('Error al generar el link. Inténtalo de nuevo.', 'error');
-      generarButton.disabled = false; // Rehabilitar el botón si hay un error
     } finally {
       generarButton.innerHTML = 'Generar Link';
+      generarButton.disabled = false;
     }
   }
 

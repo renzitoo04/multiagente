@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     const { email, numeros, mensaje } = req.body;
 
     if (!email || !numeros || numeros.length === 0) {
-      return res.status(400).json({ error: 'Datos inválidos' });
+      return res.status(400).json({ error: 'Datos inválidos. Asegúrate de enviar el email, los números y el mensaje.' });
     }
 
     // Filtrar números válidos
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
       }
 
       const id = Math.random().toString(36).substring(2, 8);
-      const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
+      const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/api/redirect?id=${id}`;
       const linkAcortado = await acortarLink(linkOriginal);
 
       const { error } = await supabase
