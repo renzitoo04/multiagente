@@ -80,6 +80,29 @@ export default async function handler(req, res) {
       console.error('Error generando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
+  } else if (req.method === 'GET') {
+    const { email } = req.query;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Falta el email en la consulta.' });
+    }
+
+    try {
+      const { data: link, error } = await supabase
+        .from('link')
+        .select('id, numeros, mensaje, link')
+        .eq('email', email)
+        .single();
+
+      if (error || !link) {
+        return res.status(404).json({ error: 'No se encontró un link asociado a este usuario.' });
+      }
+
+      return res.status(200).json(link);
+    } catch (error) {
+      console.error('Error al recuperar el link:', error);
+      return res.status(500).json({ error: 'Error interno del servidor.' });
+    }
   }
 
   return res.status(405).json({ error: 'Método no permitido.' });
