@@ -546,12 +546,6 @@
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
-        document.getElementById('output').innerHTML = `
-          <p>Tu link actualizado:</p>
-          <a href="${data.link}" target="_blank">${data.link}</a>
-        `;
-        document.getElementById('output').style.display = 'block';
-
         showNotification('¡Link actualizado con éxito!');
       } else {
         showNotification('Error al actualizar el link: ' + data.error, 'error');
