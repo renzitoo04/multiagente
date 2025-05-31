@@ -56,10 +56,16 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Ya tienes un link generado. No puedes crear más de uno.' });
       }
 
+      // Generar un ID único para el link
       const id = Math.random().toString(36).substring(2, 8);
-      const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
+
+      // Crear un link que rota entre los números de WhatsApp
+      const linkOriginal = `https://wa.me/${numerosValidos[0]}?text=${encodeURIComponent(mensaje)}`;
+
+      // Acortar el link usando TinyURL
       const linkAcortado = await acortarLink(linkOriginal);
 
+      // Guardar el link y los datos en Supabase
       const { error } = await supabase
         .from('link')
         .insert([{ id, email, numeros: numerosValidos, mensaje, link: linkAcortado }]);
@@ -72,67 +78,6 @@ export default async function handler(req, res) {
       return res.status(200).json({ id, link: linkAcortado });
     } catch (error) {
       console.error('Error generando el link:', error);
-      return res.status(500).json({ error: 'Error interno del servidor.' });
-    }
-  }
-
-  if (req.method === 'GET') {
-    const { email } = req.query;
-
-    if (!email) {
-      return res.status(400).json({ error: 'Falta el email en la consulta.' });
-    }
-
-    try {
-      const { data: link, error } = await supabase
-        .from('link')
-        .select('id, numeros, mensaje, link')
-        .eq('email', email)
-        .single();
-
-      if (error || !link) {
-        return res.status(404).json({ error: 'No se encontró un link asociado a este usuario.' });
-      }
-
-      return res.status(200).json(link);
-    } catch (error) {
-      console.error('Error al recuperar el link:', error);
-      return res.status(500).json({ error: 'Error interno del servidor.' });
-    }
-  }
-
-  if (req.method === 'PATCH') {
-    const { email, numeros, mensaje, id } = req.body;
-
-    if (!email || !numeros || numeros.length === 0 || !id) {
-      return res.status(400).json({ error: 'Datos inválidos para actualizar el link.' });
-    }
-
-    // Filtrar números válidos en el backend
-    const numerosValidos = numeros.filter(num => num !== '' && num !== '+549');
-
-    if (numerosValidos.length === 0) {
-      return res.status(400).json({ error: 'No se encontraron números válidos.' });
-    }
-
-    try {
-      const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
-      const linkAcortado = await acortarLink(linkOriginal);
-
-      const { error } = await supabase
-        .from('link')
-        .update({ numeros: numerosValidos, mensaje, link: linkAcortado })
-        .eq('id', id)
-        .eq('email', email);
-
-      if (error) {
-        console.error('Error al actualizar en Supabase:', error);
-        return res.status(500).json({ error: 'Error al actualizar el link.' });
-      }
-
-      return res.status(200).json({ link: linkAcortado });
-    } catch (error) {
-      console.error('Error actualizando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
   }
