@@ -305,15 +305,6 @@
         limiteNumeros = data.limiteNumeros;
         localStorage.setItem('limiteNumeros', limiteNumeros);
 
-        // Mostrar el generador y ocultar el login
-        document.getElementById('login-container').style.display = 'none';
-        document.getElementById('login-info').style.display = 'none';
-        document.getElementById('generador-container').style.display = 'block';
-
-        // Configurar información del usuario
-        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
-        document.getElementById('user-email-display').textContent = email;
-
         // Guardar email en localStorage
         localStorage.setItem('usuarioEmail', email);
 
@@ -324,6 +315,39 @@
           localStorage.removeItem('rememberedEmail');
           localStorage.removeItem('rememberMe');
         }
+
+        // Consultar si el usuario ya tiene un link generado
+        const linkResponse = await fetch(`/api/link?email=${email}`);
+        const linkData = await linkResponse.json();
+
+        if (linkResponse.ok) {
+          // Mostrar los detalles del link en el frontend
+          mostrarDetallesLink(linkData);
+
+          // Mostrar el apartado de "Editar Link"
+          mostrarEditarLink(linkData.numeros, linkData.mensaje);
+
+          // Mostrar el link generado en la caja de salida
+          document.getElementById('output').innerHTML = `
+            <p>Tu link generado:</p>
+            <a href="${linkData.link}" target="_blank">${linkData.link}</a>
+          `;
+          document.getElementById('output').style.display = 'block';
+
+          // Guardar los datos en localStorage
+          localStorage.setItem(`linkGenerado_${email}`, linkData.link);
+          localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
+          localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
+          localStorage.setItem(`linkID_${email}`, linkData.id);
+        }
+
+        // Mostrar el generador y ocultar el login
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('generador-container').style.display = 'block';
+
+        // Configurar información del usuario
+        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+        document.getElementById('user-email-display').textContent = email;
 
         // Mostrar notificación de éxito
         showNotification('Sesión iniciada correctamente');
@@ -621,7 +645,7 @@
   if (email) {
     try {
       // Recuperar los datos del link desde Supabase
-      const response = await fetch(`/api/soporte?email=${email}`);
+      const response = await fetch(`/api/link?email=${email}`);
       const linkData = await response.json();
 
       if (response.ok) {
