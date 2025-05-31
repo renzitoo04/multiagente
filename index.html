@@ -164,10 +164,9 @@
           
           <!-- Details card with consistent styling -->
           <div class="detalles-link card" id="detalles-link" style="display: none;">
-            <h3>Detalles del Link Generado:</h3>
+            <h3>Detalles del Link Generado</h3>
             <p><strong>Números:</strong> <span id="numeros-generados"></span></p>
             <p><strong>Mensaje Automático:</strong> <span id="mensaje-generado"></span></p>
-            <div id="output"></div>
           </div>
         </div>
         
@@ -175,13 +174,22 @@
         <div class="side-column">
           <!-- Edit link container -->
           <div id="editar-link-container" class="card" style="display: none;">
-            <h3>Actualizar Link</h3>
-            <div id="editar-numeros-container">
-              <!-- Campos para editar números -->
+            <h3 class="edit-title">Editar Link</h3>
+            <div id="editar-numeros-container" class="numbers-grid">
+              <!-- Dynamic phone number fields will be added here -->
+              <div class="numero-container">
+                <span class="bandera-container">
+                  <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
+                </span>
+                <input type="text" id="editar-numero-1" class="numero" value="+549" placeholder="Ejemplo: +5492944585356" aria-label="Editar número 1">
+              </div>
             </div>
-            <label for="editar-mensaje">Mensaje Automático:</label>
-            <input type="text" id="editar-mensaje" placeholder="Ejemplo: Hola, necesito ayuda">
-            <button onclick="actualizarLink()">Actualizar Link</button>
+            <label for="editar-mensaje" class="message-label">Mensaje Automático:</label>
+            <textarea id="editar-mensaje" class="message-input" rows="3" placeholder="Escribe tu mensaje aquí"></textarea>
+            <div class="buttons-container">
+              <button onclick="actualizarLink()" class="btn btn-primary" aria-label="Actualizar Link">Actualizar Link</button>
+              <button onclick="resetEditarLink()" class="btn btn-secondary" aria-label="Cancelar Edición">Cancelar</button>
+            </div>
           </div>
           
           <!-- Shortened link stats could go here -->
@@ -245,7 +253,7 @@
       <span class="bandera-container">
         <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
       </span>
-      <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356" aria-label="Número de WhatsApp">
+      <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
     `;
     container.appendChild(nuevoCampo);
 
@@ -278,8 +286,10 @@
   async function login() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
+    const rememberMe = document.getElementById('remember-me').checked;
+    const loginButton = document.querySelector('#login-container button');
     const loginError = document.getElementById('login-error');
-
+    
     loginError.style.display = 'none';
     loginError.textContent = '';
 
@@ -288,6 +298,10 @@
       loginError.style.display = 'block';
       return;
     }
+
+    // Mostrar estado de carga
+    loginButton.innerHTML = '<span class="loading"></span> Iniciando sesión...';
+    loginButton.disabled = true;
 
     try {
       const response = await fetch('/api/login', {
@@ -299,27 +313,32 @@
       const data = await response.json();
 
       if (response.ok) {
-        // Guardar el email del usuario en localStorage
-        localStorage.setItem('usuarioEmail', email);
+        // Guardar el límite de números
+        limiteNumeros = data.limiteNumeros;
+        localStorage.setItem('limiteNumeros', limiteNumeros);
 
         // Mostrar el generador y ocultar el login
         document.getElementById('login-container').style.display = 'none';
+        document.getElementById('login-info').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
 
-        // Actualizar el correo electrónico en la interfaz
+        // Configurar información del usuario
+        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
         document.getElementById('user-email-display').textContent = email;
 
-        // Recuperar datos del link asociado al usuario
-        const linkResponse = await fetch(`/api/soporte?email=${email}`);
-        const linkData = await linkResponse.json();
+        // Guardar email en localStorage
+        localStorage.setItem('usuarioEmail', email);
 
-        if (linkResponse.ok) {
-          mostrarDetallesLink(linkData);
+        if (rememberMe) {
+          localStorage.setItem('rememberedEmail', email);
+          localStorage.setItem('rememberMe', 'true');
         } else {
-          console.log('No se encontró un link asociado a este usuario.');
+          localStorage.removeItem('rememberedEmail');
+          localStorage.removeItem('rememberMe');
         }
 
-        showNotification('Inicio de sesión exitoso.');
+        // Mostrar notificación de éxito
+        showNotification('Sesión iniciada correctamente');
       } else {
         loginError.textContent = data.error;
         loginError.style.display = 'block';
@@ -328,6 +347,9 @@
       console.error('Error al iniciar sesión:', error);
       loginError.textContent = 'Error al iniciar sesión. Por favor, inténtalo de nuevo.';
       loginError.style.display = 'block';
+    } finally {
+      loginButton.innerHTML = 'Iniciar sesión';
+      loginButton.disabled = false;
     }
   }
 
@@ -351,9 +373,6 @@
     // Limpiar el formulario de inicio de sesión
     document.getElementById('email').value = '';
     document.getElementById('password').value = '';
-
-    // Restablecer el correo electrónico mostrado
-    document.getElementById('user-email-display').textContent = '';
 
     // Mostrar notificación
     showNotification('Sesión cerrada correctamente. Por favor, inicia sesión nuevamente.');
@@ -499,12 +518,14 @@
 
   // Function to update a link
   async function actualizarLink() {
-    const email = localStorage.getItem('usuarioEmail');
-    const id = localStorage.getItem(`linkID_${email}`);
     const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
       .map(input => input.value.trim())
-      .filter(num => num !== '' && num !== '+549');
+      .filter(num => num !== '' && num !== '+549'); // Filtra números vacíos y el valor predeterminado
+
     const mensaje = document.getElementById('editar-mensaje').value.trim();
+    const email = localStorage.getItem('usuarioEmail');
+    const id = localStorage.getItem(`linkID_${email}`);
+    const actualizarButton = document.querySelector('button[onclick="actualizarLink()"]');
 
     if (!email || !id) {
       showNotification('No se encontró un usuario o ID guardado. Por favor, inicia sesión y genera un link primero.', 'error');
@@ -516,6 +537,10 @@
       return;
     }
 
+    // Mostrar estado de carga
+    actualizarButton.innerHTML = '<span class="loading"></span> Actualizando...';
+    actualizarButton.disabled = true;
+
     try {
       const response = await fetch('/api/soporte', {
         method: 'PATCH',
@@ -526,7 +551,18 @@
       const data = await response.json();
 
       if (response.ok) {
-        mostrarDetallesLink(data);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
+
+        document.getElementById('numeros-generados').textContent = numeros.join(', ');
+        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+
+        document.getElementById('output').innerHTML = `
+          <p>Tu link actualizado:</p>
+          <a href="${data.link}" target="_blank">${data.link}</a>
+        `;
+        document.getElementById('output').style.display = 'block';
+
         showNotification('¡Link actualizado con éxito!');
       } else {
         showNotification('Error al actualizar el link: ' + data.error, 'error');
@@ -534,25 +570,42 @@
     } catch (error) {
       console.error('Error actualizando el link:', error);
       showNotification('Error al actualizar el link. Inténtalo de nuevo.', 'error');
+    } finally {
+      actualizarButton.innerHTML = 'Actualizar Link';
+      actualizarButton.disabled = false;
     }
   }
 
   // Function to display existing link details
-  async function mostrarDetallesLink(linkData) {
-    const { link, numeros, mensaje } = linkData;
-
-    // Mostrar detalles del link
-    document.getElementById('detalles-link').style.display = 'block';
-    document.getElementById('output').innerHTML = `
-      <p>Tu link generado:</p>
-      <a href="${link}" target="_blank">${link}</a>
-    `;
-    document.getElementById('output').style.display = 'block';
-    document.getElementById('numeros-generados').textContent = numeros.join(', ');
-    document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
-    // Habilitar la sección de "Actualizar Link"
-    document.getElementById('editar-link-container').style.display = 'block';
+  async function mostrarDetallesLink() {
+    const email = localStorage.getItem('usuarioEmail');
+    
+    if (!email) {
+      console.log('No hay usuario logueado');
+      return;
+    }
+    
+    // Obtener datos del link desde localStorage
+    const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
+    const numerosGuardados = localStorage.getItem(`numerosGenerados_${email}`);
+    const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`);
+    
+    if (linkGuardado && numerosGuardados) {
+      // Mostrar detalles del link
+      const numeros = JSON.parse(numerosGuardados);
+      
+      document.getElementById('detalles-link').style.display = 'block';
+      document.getElementById('output').innerHTML = `
+        <p>Tu link generado:</p>
+        <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
+      `;
+      document.getElementById('output').style.display = 'block';
+      document.getElementById('numeros-generados').textContent = numeros.join(', ');
+      document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
+      
+      // Deshabilitar el botón "Generar Link"
+      document.querySelector('button[onclick="generarLink()"]').disabled = true;
+    }
   }
 
   // Function to manually shorten a link
