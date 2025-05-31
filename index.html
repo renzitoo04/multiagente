@@ -465,6 +465,9 @@
         // Mostrar los detalles del link
         mostrarDetallesLink(data);
 
+        // Mostrar el apartado de "Editar Link"
+        mostrarEditarLink(numeros, mensaje);
+
         showNotification('¡Link generado con éxito!');
       } else {
         showNotification(data.error, 'error');
@@ -629,6 +632,9 @@
       if (response.ok) {
         // Mostrar los detalles del link en el contenedor #detalles-link
         mostrarDetallesLink(linkData);
+
+        // Mostrar el apartado de "Editar Link"
+        mostrarEditarLink(linkData.numeros, linkData.mensaje);
 
         // Mostrar el link generado en la caja de salida
         document.getElementById('output').innerHTML = `
