@@ -530,17 +530,24 @@
       const response = await fetch('/api/soporte', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, numeros, mensaje, id }),
+        body: JSON.stringify({ email, id, numeros, mensaje }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
+        // Actualizar los datos en la interfaz
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
 
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+
+        document.getElementById('output').innerHTML = `
+          <p>Tu link actualizado:</p>
+          <a href="${data.link}" target="_blank">${data.link}</a>
+        `;
+        document.getElementById('output').style.display = 'block';
 
         showNotification('¡Link actualizado con éxito!');
       } else {

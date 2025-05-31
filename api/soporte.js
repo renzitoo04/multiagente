@@ -103,6 +103,41 @@ export default async function handler(req, res) {
       console.error('Error al recuperar el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
+  } else if (req.method === 'PATCH') {
+    const { email, id, numeros, mensaje } = req.body;
+
+    if (!email || !id || !numeros || numeros.length === 0) {
+      return res.status(400).json({ error: 'Datos inválidos. Asegúrate de enviar el email, ID, números y mensaje.' });
+    }
+
+    // Filtrar números válidos
+    const numerosValidos = numeros.filter(num => num !== '' && num !== '+549');
+
+    if (numerosValidos.length === 0) {
+      return res.status(400).json({ error: 'No se encontraron números válidos.' });
+    }
+
+    try {
+      // Crear un nuevo link con los datos actualizados
+      const linkActualizado = `https://wa.me/${numerosValidos[0]}?text=${encodeURIComponent(mensaje)}`;
+
+      // Actualizar los datos en Supabase
+      const { error } = await supabase
+        .from('link')
+        .update({ numeros: numerosValidos, mensaje, link: linkActualizado })
+        .eq('id', id)
+        .eq('email', email);
+
+      if (error) {
+        console.error('Error al actualizar el link en Supabase:', error);
+        return res.status(500).json({ error: 'Error al actualizar el link.' });
+      }
+
+      return res.status(200).json({ link: linkActualizado });
+    } catch (error) {
+      console.error('Error al actualizar el link:', error);
+      return res.status(500).json({ error: 'Error interno del servidor.' });
+    }
   }
 
   return res.status(405).json({ error: 'Método no permitido.' });
