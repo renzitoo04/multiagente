@@ -573,21 +573,14 @@
   async function mostrarDetallesLink(linkData) {
     const { link, numeros, mensaje } = linkData;
 
-    // Mostrar detalles del link
+    // Mostrar los detalles del link en el contenedor
     document.getElementById('detalles-link').style.display = 'block';
-    document.getElementById('output').innerHTML = `
-      <p>Tu link generado:</p>
-      <a href="${link}" target="_blank">${link}</a>
+    document.getElementById('detalles-link').innerHTML = `
+      <h3>Detalles del Link Generado</h3>
+      <p><strong>Números:</strong> ${numeros.join(', ')}</p>
+      <p><strong>Mensaje Automático:</strong> ${mensaje || 'Sin mensaje'}</p>
+      <p><strong>Link:</strong> <a href="${link}" target="_blank">${link}</a></p>
     `;
-    document.getElementById('output').style.display = 'block';
-    document.getElementById('numeros-generados').textContent = numeros.join(', ');
-    document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
-    // Habilitar la sección de "Actualizar Link"
-    document.getElementById('editar-link-container').style.display = 'block';
-
-    // Cargar datos en el formulario de edición
-    mostrarEditarLink(numeros, mensaje);
   }
 
   // Function to manually shorten a link
@@ -637,12 +630,12 @@
 
   if (email) {
     try {
-      // Recuperar datos del link asociado al usuario
+      // Hacer la consulta a Supabase para recuperar los datos del link
       const response = await fetch(`/api/soporte?email=${email}`);
       const linkData = await response.json();
 
       if (response.ok) {
-        // Mostrar los detalles del link
+        // Mostrar los detalles del link en el contenedor #detalles-link
         mostrarDetallesLink(linkData);
 
         // Mostrar el generador y ocultar el login
@@ -654,15 +647,10 @@
         document.getElementById('user-email-display').textContent = email;
       } else {
         console.log('No se encontró un link asociado a este usuario.');
-        cerrarSesion(); // Forzar cierre de sesión si no hay datos
       }
     } catch (error) {
       console.error('Error al recuperar los detalles del link:', error);
-      cerrarSesion(); // Forzar cierre de sesión si ocurre un error
     }
-  } else {
-    // Forzar cierre de sesión si no hay usuario logueado
-    cerrarSesion();
   }
 });
   </script>
