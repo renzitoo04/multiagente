@@ -241,7 +241,7 @@
       <span class="bandera-container">
         <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
       </span>
-      <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
+      <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356" aria-label="Número de WhatsApp">
     `;
     container.appendChild(nuevoCampo);
 
@@ -623,6 +623,9 @@
       if (response.ok) {
         // Mostrar los detalles del link en el contenedor #detalles-link
         mostrarDetallesLink(linkData);
+
+        // Mostrar el apartado de "Editar Link"
+        mostrarEditarLink(linkData.numeros, linkData.mensaje);
 
         // Mostrar el generador y ocultar el login
         document.getElementById('login-container').style.display = 'none';
