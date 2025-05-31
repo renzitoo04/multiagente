@@ -236,4 +236,28 @@ function mostrarEditarLink(numeros, mensaje) {
   document.getElementById('editar-mensaje').value = mensaje || '';
 }
 
+function cerrarSesion() {
+  const email = localStorage.getItem('usuarioEmail');
+
+  // Limpiar datos del usuario en localStorage
+  localStorage.removeItem('usuarioEmail');
+  localStorage.removeItem(`linkGenerado_${email}`);
+  localStorage.removeItem(`numerosGenerados_${email}`);
+  localStorage.removeItem(`mensajeGenerado_${email}`);
+  localStorage.removeItem(`linkID_${email}`);
+  localStorage.removeItem('limiteNumeros');
+
+  // Mostrar el contenedor de inicio de sesión
+  document.getElementById('login-container').style.display = 'block';
+  document.getElementById('login-info').style.display = 'block';
+  document.getElementById('generador-container').style.display = 'none';
+
+  // Limpiar el formulario de inicio de sesión
+  document.getElementById('email').value = '';
+  document.getElementById('password').value = '';
+
+  // Mostrar notificación
+  showNotification('Sesión cerrada correctamente. Por favor, inicia sesión nuevamente.');
+}
+
 
