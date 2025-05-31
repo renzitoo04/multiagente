@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     const { email, numeros, mensaje } = req.body;
 
     if (!email || !numeros || numeros.length === 0) {
-      return res.status(400).json({ error: 'Datos inválidos' });
+      return res.status(400).json({ error: 'Datos inválidos. Asegúrate de enviar el email, números y mensaje.' });
     }
 
     // Filtrar números válidos
@@ -78,61 +78,6 @@ export default async function handler(req, res) {
       return res.status(200).json({ id, link: linkAcortado });
     } catch (error) {
       console.error('Error generando el link:', error);
-      return res.status(500).json({ error: 'Error interno del servidor.' });
-    }
-  } else if (req.method === 'GET') {
-    const { email } = req.query;
-
-    if (!email) {
-      return res.status(400).json({ error: 'Falta el email en la consulta.' });
-    }
-
-    try {
-      const { data: link, error } = await supabase
-        .from('link')
-        .select('id, numeros, mensaje, link')
-        .eq('email', email)
-        .single();
-
-      if (error || !link) {
-        return res.status(404).json({ error: 'No se encontró un link asociado a este usuario.' });
-      }
-
-      return res.status(200).json(link);
-    } catch (error) {
-      console.error('Error al recuperar el link:', error);
-      return res.status(500).json({ error: 'Error interno del servidor.' });
-    }
-  } else if (req.method === 'PATCH') {
-    const { email, id, numeros, mensaje } = req.body;
-
-    if (!email || !id || !numeros || numeros.length === 0) {
-      return res.status(400).json({ error: 'Datos inválidos. Asegúrate de enviar el email, ID, números y mensaje.' });
-    }
-
-    // Filtrar números válidos
-    const numerosValidos = numeros.filter(num => num !== '' && num !== '+549');
-
-    if (numerosValidos.length === 0) {
-      return res.status(400).json({ error: 'No se encontraron números válidos.' });
-    }
-
-    try {
-      // Actualizar los datos en Supabase sin cambiar el link
-      const { error } = await supabase
-        .from('link')
-        .update({ numeros: numerosValidos, mensaje })
-        .eq('id', id)
-        .eq('email', email);
-
-      if (error) {
-        console.error('Error al actualizar el link en Supabase:', error);
-        return res.status(500).json({ error: 'Error al actualizar el link.' });
-      }
-
-      return res.status(200).json({ message: 'Link actualizado con éxito.' });
-    } catch (error) {
-      console.error('Error al actualizar el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
   }
