@@ -173,23 +173,11 @@
         <!-- Side column for editing -->
         <div class="side-column">
           <!-- Edit link container -->
-          <div id="editar-link-container" class="card" style="display: none;">
-            <h3 class="edit-title">Editar Link</h3>
-            <div id="editar-numeros-container" class="numbers-grid">
-              <!-- Dynamic phone number fields will be added here -->
-              <div class="numero-container">
-                <span class="bandera-container">
-                  <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
-                </span>
-                <input type="text" id="editar-numero-1" class="numero" value="+549" placeholder="Ejemplo: +5492944585356" aria-label="Editar número 1">
-              </div>
-            </div>
-            <label for="editar-mensaje" class="message-label">Mensaje Automático:</label>
-            <textarea id="editar-mensaje" class="message-input" rows="3" placeholder="Escribe tu mensaje aquí"></textarea>
-            <div class="buttons-container">
-              <button onclick="actualizarLink()" class="btn btn-primary" aria-label="Actualizar Link">Actualizar Link</button>
-              <button onclick="resetEditarLink()" class="btn btn-secondary" aria-label="Cancelar Edición">Cancelar</button>
-            </div>
+          <div id="editar-link-container" style="display: none;">
+            <h3>Editar Link</h3>
+            <div id="editar-numeros-container"></div>
+            <textarea id="editar-mensaje" placeholder="Editar mensaje automático"></textarea>
+            <button onclick="actualizarLink()">Actualizar Link</button>
           </div>
           
           <!-- Shortened link stats could go here -->
@@ -476,6 +464,9 @@
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
+        // Mostrar el apartado de "Editar Link"
+        mostrarEditarLink(numeros, mensaje);
+
         showNotification('¡Link generado con éxito!');
       } else {
         showNotification(data.error, 'error');
@@ -499,7 +490,7 @@
       numeroItem.classList.add('numero-container');
       numeroItem.innerHTML = `
         <span class="bandera-container">
-          <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
+          <img src="https://flagcdn.com/w40/ar.png" alt="Bandera" class="bandera">
         </span>
         <input type="text" id="editar-numero-${index}" class="numero" value="${numero}" placeholder="Ejemplo: +5492944585356" aria-label="Editar número ${index + 1}">
       `;
@@ -507,6 +498,7 @@
     });
 
     document.getElementById('editar-mensaje').value = mensaje || '';
+    document.getElementById('editar-link-container').style.display = 'block';
   }
 
   // Function to update a link
@@ -549,12 +541,6 @@
 
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
-        document.getElementById('output').innerHTML = `
-          <p>Tu link actualizado:</p>
-          <a href="${data.link}" target="_blank">${data.link}</a>
-        `;
-        document.getElementById('output').style.display = 'block';
 
         showNotification('¡Link actualizado con éxito!');
       } else {
