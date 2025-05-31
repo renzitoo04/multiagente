@@ -555,9 +555,8 @@
     const { link, numeros, mensaje } = linkData;
 
     // Mostrar los detalles del link en el contenedor
-    const detallesLink = document.getElementById('detalles-link');
-    detallesLink.style.display = 'block';
-    detallesLink.innerHTML = `
+    document.getElementById('detalles-link').style.display = 'block';
+    document.getElementById('detalles-link').innerHTML = `
       <h3>Detalles del Link Generado</h3>
       <p><strong>Números:</strong> ${numeros.join(', ')}</p>
       <p><strong>Mensaje Automático:</strong> ${mensaje || 'Sin mensaje'}</p>
@@ -565,12 +564,11 @@
     `;
 
     // Mostrar el link generado en la caja de salida
-    const output = document.getElementById('output');
-    output.innerHTML = `
+    document.getElementById('output').innerHTML = `
       <p>Tu link generado:</p>
       <a href="${link}" target="_blank">${link}</a>
     `;
-    output.style.display = 'block';
+    document.getElementById('output').style.display = 'block';
   }
 
   // Function to manually shorten a link
