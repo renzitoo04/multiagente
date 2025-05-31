@@ -357,27 +357,25 @@
   function cerrarSesion() {
     const email = localStorage.getItem('usuarioEmail');
     
-    // Clear user data from localStorage
+    // Limpiar datos del usuario en localStorage
     localStorage.removeItem('usuarioEmail');
     localStorage.removeItem(`linkGenerado_${email}`);
     localStorage.removeItem(`numerosGenerados_${email}`);
     localStorage.removeItem(`mensajeGenerado_${email}`);
     localStorage.removeItem(`linkID_${email}`);
-    
-    // Show login container and info section, hide generator container
+    localStorage.removeItem('limiteNumeros');
+
+    // Mostrar el contenedor de inicio de sesión
     document.getElementById('login-container').style.display = 'block';
     document.getElementById('login-info').style.display = 'block';
     document.getElementById('generador-container').style.display = 'none';
-    
-    // Clear login form
+
+    // Limpiar el formulario de inicio de sesión
     document.getElementById('email').value = '';
     document.getElementById('password').value = '';
-    
-    // Reset the form state
-    resetFormState();
-    
-    // Show notification with improved message
-    showNotification('Sesión cerrada correctamente. ¡Hasta pronto!');
+
+    // Mostrar notificación
+    showNotification('Sesión cerrada correctamente. Por favor, inicia sesión nuevamente.');
   }
 
   // Function to reset form state
@@ -481,7 +479,7 @@
 
         showNotification('¡Link generado con éxito!');
       } else {
-        showNotification('Error al generar el link: ' + data.error, 'error');
+        showNotification(data.error, 'error');
       }
     } catch (error) {
       console.error('Error generando link:', error);
@@ -650,39 +648,13 @@
 
   // Check login status on page load
   document.addEventListener('DOMContentLoaded', () => {
-    const email = localStorage.getItem('usuarioEmail');
-    const rememberedEmail = localStorage.getItem('rememberedEmail');
-    const rememberMe = localStorage.getItem('rememberMe');
-    
-    // Si hay credenciales guardadas, rellenar el campo de email
-    if (rememberedEmail && rememberMe === 'true') {
-      document.getElementById('email').value = rememberedEmail;
-      document.getElementById('remember-me').checked = true;
-    }
-    
-    if (email) {
-      // User is logged in, show generator container and hide info
-      document.getElementById('login-container').style.display = 'none';
-      document.getElementById('login-info').style.display = 'none';
-      document.getElementById('generador-container').style.display = 'block';
-      
-      // Update user info
-      document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
-      document.getElementById('user-email-display').textContent = email;
-      
-      // Show link details if available
-      mostrarDetallesLink();
-      
-      // Update stats on load
-      updateStats();
-    } else {
-      // Check if password is saved and autofill the form
-      const savedPassword = localStorage.getItem('usuarioPassword');
-      if (savedPassword) {
-        document.getElementById('password').value = savedPassword;
-        document.getElementById('remember-me').checked = true;
-      }
-    }
+    // Forzar cierre de sesión al cargar la página
+    cerrarSesion();
+
+    // Mostrar el contenedor de inicio de sesión
+    document.getElementById('login-container').style.display = 'block';
+    document.getElementById('login-info').style.display = 'block';
+    document.getElementById('generador-container').style.display = 'none';
   });
 
   // Additional function for copy to clipboard

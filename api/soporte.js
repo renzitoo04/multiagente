@@ -45,6 +45,17 @@ export default async function handler(req, res) {
     }
 
     try {
+      // Verificar si el usuario ya tiene un link
+      const { data: linkExistente, error: errorExistente } = await supabase
+        .from('link')
+        .select('id')
+        .eq('email', email)
+        .single();
+
+      if (linkExistente) {
+        return res.status(400).json({ error: 'Ya tienes un link generado. No puedes crear más de uno.' });
+      }
+
       const id = Math.random().toString(36).substring(2, 8);
       const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
       const linkAcortado = await acortarLink(linkOriginal);
