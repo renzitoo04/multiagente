@@ -59,48 +59,52 @@ export default async function handler(req, res) {
       // Generar un ID único para el link
       const id = Math.random().toString(36).substring(2, 8);
 
-      // Crear un link que rota entre los números de WhatsApp
-      const linkOriginal = `https://wa.me/${numerosValidos[0]}?text=${encodeURIComponent(mensaje)}`;
-
-      // Acortar el link usando TinyURL
-      const linkAcortado = await acortarLink(linkOriginal);
+      // Crear un link dinámico que apunte al backend
+      const linkDinamico = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
 
       // Guardar el link y los datos en Supabase
       const { error } = await supabase
         .from('link')
-        .insert([{ id, email, numeros: numerosValidos, mensaje, link: linkAcortado }]);
+        .insert([{ id, email, numeros: numerosValidos, mensaje, link: linkDinamico }]);
 
       if (error) {
         console.error('Error al guardar en Supabase:', error);
         return res.status(500).json({ error: 'Error al guardar la configuración.' });
       }
 
-      return res.status(200).json({ id, link: linkAcortado });
+      return res.status(200).json({ id, link: linkDinamico });
     } catch (error) {
       console.error('Error generando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
   } else if (req.method === 'GET') {
-    const { email } = req.query;
+    const { id } = req.query;
 
-    if (!email) {
-      return res.status(400).json({ error: 'Falta el email en la consulta.' });
+    if (!id) {
+      return res.status(400).json({ error: 'Falta el ID del link.' });
     }
 
     try {
-      const { data: link, error } = await supabase
+      // Recuperar los datos del link desde Supabase
+      const { data: linkData, error } = await supabase
         .from('link')
-        .select('id, numeros, mensaje, link')
-        .eq('email', email)
+        .select('numeros, mensaje')
+        .eq('id', id)
         .single();
 
-      if (error || !link) {
-        return res.status(404).json({ error: 'No se encontró un link asociado a este usuario.' });
+      if (error || !linkData) {
+        return res.status(404).json({ error: 'No se encontró el link.' });
       }
 
-      return res.status(200).json(link);
+      // Rotar entre los números
+      const numeros = linkData.numeros;
+      const numeroSeleccionado = numeros[Math.floor(Math.random() * numeros.length)];
+
+      // Redirigir al número seleccionado en WhatsApp con el mensaje actualizado
+      const whatsappLink = `https://wa.me/${numeroSeleccionado}?text=${encodeURIComponent(linkData.mensaje)}`;
+      return res.redirect(302, whatsappLink);
     } catch (error) {
-      console.error('Error al recuperar el link:', error);
+      console.error('Error al redirigir:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
   } else if (req.method === 'PATCH') {
