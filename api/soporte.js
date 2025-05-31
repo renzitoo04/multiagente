@@ -82,6 +82,41 @@ export default async function handler(req, res) {
     }
   }
 
+  if (req.method === 'GET') {
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(400).json({ error: 'Falta el ID del link.' });
+    }
+
+    try {
+      // Recuperar los datos del link desde Supabase
+      const { data: linkData, error } = await supabase
+        .from('link')
+        .select('numeros, mensaje')
+        .eq('id', id)
+        .single();
+
+      if (error || !linkData) {
+        return res.status(404).json({ error: 'No se encontró el link.' });
+      }
+
+      // Rotar entre los números
+      if (!indicesRotacion[id]) {
+        indicesRotacion[id] = 0; // Inicializar el índice de rotación si no existe
+      }
+      const numeroSeleccionado = linkData.numeros[indicesRotacion[id]];
+      indicesRotacion[id] = (indicesRotacion[id] + 1) % linkData.numeros.length; // Actualizar el índice de rotación
+
+      // Redirigir al número seleccionado en WhatsApp con el mensaje automático
+      const whatsappLink = `https://wa.me/${numeroSeleccionado}?text=${encodeURIComponent(linkData.mensaje)}`;
+      return res.redirect(302, whatsappLink);
+    } catch (error) {
+      console.error('Error al redirigir:', error);
+      return res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+  }
+
   return res.status(405).json({ error: 'Método no permitido.' });
 }
 
