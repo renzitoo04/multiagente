@@ -57,19 +57,18 @@ export default async function handler(req, res) {
       }
 
       const id = Math.random().toString(36).substring(2, 8);
-      const linkOriginal = `${req.headers.origin || 'http://localhost:3000'}/api/redirect?id=${id}`;
-      const linkAcortado = await acortarLink(linkOriginal);
+      const link = `${req.headers.origin || 'http://localhost:3000'}/api/redirect?id=${id}`;
 
       const { error } = await supabase
         .from('link')
-        .insert([{ id, email, numeros: numerosValidos, mensaje, link: linkAcortado }]);
+        .insert([{ id, email, numeros: numerosValidos, mensaje, link }]);
 
       if (error) {
         console.error('Error al guardar en Supabase:', error);
         return res.status(500).json({ error: 'Error al guardar la configuración.' });
       }
 
-      return res.status(200).json({ id, link: linkAcortado });
+      return res.status(200).json({ id, link });
     } catch (error) {
       console.error('Error generando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
