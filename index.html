@@ -422,7 +422,7 @@
       .filter(num => num !== '' && num !== '+549'); // Filtra números vacíos y el valor predeterminado
 
     const mensaje = document.getElementById('mensaje').value.trim();
-    const email = localStorage.getItem('usuarioEmail');
+    const email = localStorage.getItem('usuarioEmail'); // Obtener el email desde localStorage
     const generarButton = document.querySelector('button[onclick="generarLink()"]');
 
     if (!email) {
@@ -443,7 +443,7 @@
       const response = await fetch('/api/soporte', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, numeros, mensaje }),
+        body: JSON.stringify({ email, numeros, mensaje }), // Enviar el email en el cuerpo de la solicitud
       });
 
       const data = await response.json();
