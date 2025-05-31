@@ -478,15 +478,19 @@
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
         showNotification('¡Link generado con éxito!');
+
+        // Deshabilitar el botón después de generar el link
+        generarButton.disabled = true;
       } else {
         showNotification(data.error, 'error');
+        generarButton.disabled = false; // Rehabilitar el botón si hay un error
       }
     } catch (error) {
       console.error('Error generando link:', error);
       showNotification('Error al generar el link. Inténtalo de nuevo.', 'error');
+      generarButton.disabled = false; // Rehabilitar el botón si hay un error
     } finally {
       generarButton.innerHTML = 'Generar Link';
-      generarButton.disabled = false;
     }
   }
 
@@ -581,13 +585,13 @@
       return;
     }
     
-    // Get data from localStorage
+    // Obtener datos del link desde localStorage
     const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
     const numerosGuardados = localStorage.getItem(`numerosGenerados_${email}`);
     const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`);
     
     if (linkGuardado && numerosGuardados) {
-      // Parse and display saved data
+      // Mostrar detalles del link
       const numeros = JSON.parse(numerosGuardados);
       
       document.getElementById('detalles-link').style.display = 'block';
@@ -599,9 +603,8 @@
       document.getElementById('numeros-generados').textContent = numeros.join(', ');
       document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
       
-      // Show edit link container
-      document.getElementById('editar-link-container').style.display = 'block';
-      mostrarEditarLink(numeros);
+      // Deshabilitar el botón "Generar Link"
+      document.querySelector('button[onclick="generarLink()"]').disabled = true;
     }
   }
 

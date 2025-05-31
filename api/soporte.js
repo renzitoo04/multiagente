@@ -37,7 +37,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Datos inválidos' });
     }
 
-    // Filtrar números válidos en el backend
+    // Filtrar números válidos
     const numerosValidos = numeros.filter(num => num !== '' && num !== '+549');
 
     if (numerosValidos.length === 0) {
