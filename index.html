@@ -463,12 +463,7 @@
         localStorage.setItem(`linkID_${email}`, data.id);
 
         // Mostrar los detalles del link
-        document.getElementById('detalles-link').style.display = 'block';
-        document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
-        // Mostrar el apartado de "Editar Link"
-        mostrarEditarLink(numeros, mensaje);
+        mostrarDetallesLink(data);
 
         showNotification('¡Link generado con éxito!');
       } else {
@@ -634,9 +629,6 @@
       if (response.ok) {
         // Mostrar los detalles del link en el contenedor #detalles-link
         mostrarDetallesLink(linkData);
-
-        // Mostrar el apartado de "Editar Link"
-        mostrarEditarLink(linkData.numeros, linkData.mensaje);
 
         // Mostrar el link generado en la caja de salida
         document.getElementById('output').innerHTML = `
