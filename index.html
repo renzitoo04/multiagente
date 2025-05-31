@@ -245,7 +245,7 @@
       <span class="bandera-container">
         <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
       </span>
-      <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356">
+      <input type="text" id="numero-${contadorNumeros}" class="numero" value="+549" placeholder="Ejemplo: 2944585356" aria-label="Número de WhatsApp">
     `;
     container.appendChild(nuevoCampo);
 
@@ -299,12 +299,15 @@
       const data = await response.json();
 
       if (response.ok) {
-        // Guardar datos del usuario
+        // Guardar el email del usuario en localStorage
         localStorage.setItem('usuarioEmail', email);
 
         // Mostrar el generador y ocultar el login
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
+
+        // Actualizar el correo electrónico en la interfaz
+        document.getElementById('user-email-display').textContent = email;
 
         // Recuperar datos del link asociado al usuario
         const linkResponse = await fetch(`/api/soporte?email=${email}`);
@@ -348,6 +351,9 @@
     // Limpiar el formulario de inicio de sesión
     document.getElementById('email').value = '';
     document.getElementById('password').value = '';
+
+    // Restablecer el correo electrónico mostrado
+    document.getElementById('user-email-display').textContent = '';
 
     // Mostrar notificación
     showNotification('Sesión cerrada correctamente. Por favor, inicia sesión nuevamente.');
