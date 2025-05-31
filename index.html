@@ -158,7 +158,7 @@
 
           <!-- Enhanced output with copy button -->
           <div class="output-container">
-            <div class="output card" id="output"></div>
+            <div class="output card" id="output" style="display: none;"></div>
             <button class="copy-btn" id="copy-link-btn" onclick="copyToClipboard()" style="display: none;" aria-label="Copiar al portapapeles"></button>
           </div>
           
@@ -555,8 +555,9 @@
     const { link, numeros, mensaje } = linkData;
 
     // Mostrar los detalles del link en el contenedor
-    document.getElementById('detalles-link').style.display = 'block';
-    document.getElementById('detalles-link').innerHTML = `
+    const detallesLink = document.getElementById('detalles-link');
+    detallesLink.style.display = 'block';
+    detallesLink.innerHTML = `
       <h3>Detalles del Link Generado</h3>
       <p><strong>Números:</strong> ${numeros.join(', ')}</p>
       <p><strong>Mensaje Automático:</strong> ${mensaje || 'Sin mensaje'}</p>
@@ -564,11 +565,12 @@
     `;
 
     // Mostrar el link generado en la caja de salida
-    document.getElementById('output').innerHTML = `
+    const output = document.getElementById('output');
+    output.innerHTML = `
       <p>Tu link generado:</p>
       <a href="${link}" target="_blank">${link}</a>
     `;
-    document.getElementById('output').style.display = 'block';
+    output.style.display = 'block';
   }
 
   // Function to manually shorten a link
