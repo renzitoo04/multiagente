@@ -449,14 +449,7 @@
       const data = await response.json();
 
       if (response.ok) {
-        // Mostrar el link generado en la interfaz
-        document.getElementById('output').innerHTML = `
-          <p>Tu link generado:</p>
-          <a href="${data.link}" target="_blank">${data.link}</a>
-        `;
-        document.getElementById('output').style.display = 'block';
-
-        // Guardar el link y los detalles en localStorage
+        // Guardar los datos en localStorage
         localStorage.setItem(`linkGenerado_${email}`, data.link);
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
