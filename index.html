@@ -356,7 +356,7 @@
   // Function to handle logout
   function cerrarSesion() {
     const email = localStorage.getItem('usuarioEmail');
-
+    
     // Limpiar datos del usuario en localStorage
     localStorage.removeItem('usuarioEmail');
     localStorage.removeItem(`linkGenerado_${email}`);
@@ -495,10 +495,10 @@
   }
 
   // Function to show the edit link form
-  function mostrarEditarLink(numeros, mensaje) {
+  function mostrarEditarLink(numeros) {
     const editarNumerosContainer = document.getElementById('editar-numeros-container');
     editarNumerosContainer.innerHTML = '';
-
+    
     numeros.forEach((numero, index) => {
       const numeroItem = document.createElement('div');
       numeroItem.classList.add('numero-container');
@@ -510,8 +510,10 @@
       `;
       editarNumerosContainer.appendChild(numeroItem);
     });
-
-    document.getElementById('editar-mensaje').value = mensaje || '';
+    
+    const email = localStorage.getItem('usuarioEmail');
+    const mensaje = localStorage.getItem(`mensajeGenerado_${email}`) || '';
+    document.getElementById('editar-mensaje').value = mensaje;
   }
 
   // Function to update a link
@@ -586,7 +588,7 @@
     // Obtener datos del link desde localStorage
     const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
     const numerosGuardados = localStorage.getItem(`numerosGenerados_${email}`);
-    const mensajeGuardado = localStorage.getItem(`mensajeGuardado_${email}`);
+    const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`);
     
     if (linkGuardado && numerosGuardados) {
       // Mostrar detalles del link
@@ -648,39 +650,15 @@
   }
 
   // Check login status on page load
-  document.addEventListener('DOMContentLoaded', async () => {
-  const email = localStorage.getItem('usuarioEmail');
-
-  if (email) {
-    try {
-      // Recuperar datos del link asociado al usuario
-      const response = await fetch(`/api/soporte?email=${email}`);
-      const linkData = await response.json();
-
-      if (response.ok) {
-        // Mostrar los detalles del link
-        mostrarDetallesLink(linkData);
-
-        // Mostrar el generador y ocultar el login
-        document.getElementById('login-container').style.display = 'none';
-        document.getElementById('generador-container').style.display = 'block';
-
-        // Configurar información del usuario
-        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
-        document.getElementById('user-email-display').textContent = email;
-      } else {
-        console.log('No se encontró un link asociado a este usuario.');
-        cerrarSesion(); // Forzar cierre de sesión si no hay datos
-      }
-    } catch (error) {
-      console.error('Error al recuperar los detalles del link:', error);
-      cerrarSesion(); // Forzar cierre de sesión si ocurre un error
-    }
-  } else {
-    // Forzar cierre de sesión si no hay usuario logueado
+  document.addEventListener('DOMContentLoaded', () => {
+    // Forzar cierre de sesión al cargar la página
     cerrarSesion();
-  }
-});
+
+    // Mostrar el contenedor de inicio de sesión
+    document.getElementById('login-container').style.display = 'block';
+    document.getElementById('login-info').style.display = 'block';
+    document.getElementById('generador-container').style.display = 'none';
+  });
 
   // Additional function for copy to clipboard
   function copyToClipboard() {

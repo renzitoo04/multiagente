@@ -77,26 +77,35 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'GET') {
-    const { email } = req.query;
+    const { id } = req.query;
 
-    if (!email) {
-      return res.status(400).json({ error: 'Falta el email en la consulta.' });
+    if (!id) {
+      return res.status(400).json({ error: 'Falta el ID en la consulta.' });
     }
 
     try {
-      const { data: link, error } = await supabase
+      const { data: configuracion, error } = await supabase
         .from('link')
-        .select('id, numeros, mensaje, link')
-        .eq('email', email)
+        .select('numeros, mensaje')
+        .eq('id', id)
         .single();
 
-      if (error || !link) {
-        return res.status(404).json({ error: 'No se encontró un link asociado a este usuario.' });
+      if (error || !configuracion) {
+        return res.status(404).json({ error: 'No se encontró la configuración para este ID.' });
       }
 
-      return res.status(200).json(link);
+      if (!indicesRotacion[id]) {
+        indicesRotacion[id] = 0;
+      }
+
+      const indiceActual = indicesRotacion[id];
+      const numeroActual = configuracion.numeros[indiceActual];
+      indicesRotacion[id] = (indiceActual + 1) % configuracion.numeros.length;
+
+      const whatsappLink = `https://wa.me/${numeroActual}?text=${encodeURIComponent(configuracion.mensaje)}`;
+      return res.redirect(302, whatsappLink);
     } catch (error) {
-      console.error('Error al recuperar el link:', error);
+      console.error('Error al redirigir al número de WhatsApp:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
   }
@@ -138,126 +147,6 @@ export default async function handler(req, res) {
   }
 
   return res.status(405).json({ error: 'Método no permitido.' });
-}
-
-async function login() {
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const loginError = document.getElementById('login-error');
-
-  loginError.style.display = 'none';
-  loginError.textContent = '';
-
-  if (!email || !password) {
-    loginError.textContent = 'Por favor, ingresa tu correo y contraseña.';
-    loginError.style.display = 'block';
-    return;
-  }
-
-  try {
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      // Guardar datos del usuario
-      localStorage.setItem('usuarioEmail', email);
-
-      // Mostrar el generador y ocultar el login
-      document.getElementById('login-container').style.display = 'none';
-      document.getElementById('generador-container').style.display = 'block';
-
-      // Configurar información del usuario
-      document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
-      document.getElementById('user-email-display').textContent = email;
-
-      // Recuperar datos del link asociado al usuario
-      const linkResponse = await fetch(`/api/soporte?email=${email}`);
-      const linkData = await linkResponse.json();
-
-      if (linkResponse.ok) {
-        mostrarDetallesLink(linkData);
-      } else {
-        console.log('No se encontró un link asociado a este usuario.');
-      }
-
-      showNotification('Inicio de sesión exitoso.');
-    } else {
-      loginError.textContent = data.error;
-      loginError.style.display = 'block';
-    }
-  } catch (error) {
-    console.error('Error al iniciar sesión:', error);
-    loginError.textContent = 'Error al iniciar sesión. Por favor, inténtalo de nuevo.';
-    loginError.style.display = 'block';
-  }
-}
-
-function mostrarDetallesLink(linkData) {
-  const { link, numeros, mensaje } = linkData;
-
-  // Mostrar detalles del link
-  document.getElementById('detalles-link').style.display = 'block';
-  document.getElementById('output').innerHTML = `
-    <p>Tu link generado:</p>
-    <a href="${link}" target="_blank">${link}</a>
-  `;
-  document.getElementById('output').style.display = 'block';
-  document.getElementById('numeros-generados').textContent = numeros.join(', ');
-  document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
-
-  // Habilitar la sección de "Actualizar Link"
-  document.getElementById('editar-link-container').style.display = 'block';
-
-  // Cargar datos en el formulario de edición
-  mostrarEditarLink(numeros, mensaje);
-}
-
-function mostrarEditarLink(numeros, mensaje) {
-  const editarNumerosContainer = document.getElementById('editar-numeros-container');
-  editarNumerosContainer.innerHTML = '';
-
-  numeros.forEach((numero, index) => {
-    const numeroItem = document.createElement('div');
-    numeroItem.classList.add('numero-container');
-    numeroItem.innerHTML = `
-      <span class="bandera-container">
-        <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
-      </span>
-      <input type="text" id="editar-numero-${index}" class="numero" value="${numero}" placeholder="Ejemplo: +5492944585356" aria-label="Editar número ${index + 1}">
-    `;
-    editarNumerosContainer.appendChild(numeroItem);
-  });
-
-  document.getElementById('editar-mensaje').value = mensaje || '';
-}
-
-function cerrarSesion() {
-  const email = localStorage.getItem('usuarioEmail');
-
-  // Limpiar datos del usuario en localStorage
-  localStorage.removeItem('usuarioEmail');
-  localStorage.removeItem(`linkGenerado_${email}`);
-  localStorage.removeItem(`numerosGenerados_${email}`);
-  localStorage.removeItem(`mensajeGenerado_${email}`);
-  localStorage.removeItem(`linkID_${email}`);
-  localStorage.removeItem('limiteNumeros');
-
-  // Mostrar el contenedor de inicio de sesión
-  document.getElementById('login-container').style.display = 'block';
-  document.getElementById('login-info').style.display = 'block';
-  document.getElementById('generador-container').style.display = 'none';
-
-  // Limpiar el formulario de inicio de sesión
-  document.getElementById('email').value = '';
-  document.getElementById('password').value = '';
-
-  // Mostrar notificación
-  showNotification('Sesión cerrada correctamente. Por favor, inicia sesión nuevamente.');
 }
 
 
