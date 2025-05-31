@@ -158,7 +158,7 @@
 
           <!-- Enhanced output with copy button -->
           <div class="output-container">
-            <div class="output card" id="output" style="display: none;"></div>
+            <div class="output card" id="output"></div>
             <button class="copy-btn" id="copy-link-btn" onclick="copyToClipboard()" style="display: none;" aria-label="Copiar al portapapeles"></button>
           </div>
           
@@ -220,12 +220,6 @@
 
   <!-- Notification element with improved styling -->
   <div class="notification" id="notification"></div>
-
-  <!-- Caja para mostrar el link generado -->
-  <div class="link-generado card" id="link-generado" style="display: none;">
-    <h3>Tu Link Generado</h3>
-    <p><a href="#" id="link-generado-url" target="_blank">Aquí aparecerá tu link</a></p>
-  </div>
 
   <script>
   let contadorNumeros = 1;
@@ -560,22 +554,21 @@
   async function mostrarDetallesLink(linkData) {
     const { link, numeros, mensaje } = linkData;
 
-    // Mostrar el link generado en la caja superior
-    const linkGenerado = document.getElementById('link-generado');
-    const linkGeneradoUrl = document.getElementById('link-generado-url');
-    linkGenerado.style.display = 'block';
-    linkGeneradoUrl.href = link;
-    linkGeneradoUrl.textContent = link;
-
     // Mostrar los detalles del link en el contenedor
-    const detallesLink = document.getElementById('detalles-link');
-    detallesLink.style.display = 'block';
-    detallesLink.innerHTML = `
+    document.getElementById('detalles-link').style.display = 'block';
+    document.getElementById('detalles-link').innerHTML = `
       <h3>Detalles del Link Generado</h3>
       <p><strong>Números:</strong> ${numeros.join(', ')}</p>
       <p><strong>Mensaje Automático:</strong> ${mensaje || 'Sin mensaje'}</p>
       <p><strong>Link:</strong> <a href="${link}" target="_blank">${link}</a></p>
     `;
+
+    // Mostrar el link generado en la caja de salida
+    document.getElementById('output').innerHTML = `
+      <p>Tu link generado:</p>
+      <a href="${link}" target="_blank">${link}</a>
+    `;
+    document.getElementById('output').style.display = 'block';
   }
 
   // Function to manually shorten a link
@@ -635,6 +628,13 @@
 
         // Mostrar el apartado de "Editar Link"
         mostrarEditarLink(linkData.numeros, linkData.mensaje);
+
+        // Mostrar el link generado en la caja de salida
+        document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${linkData.link}" target="_blank">${linkData.link}</a>
+        `;
+        document.getElementById('output').style.display = 'block';
 
         // Mostrar el generador y ocultar el login
         document.getElementById('login-container').style.display = 'none';
