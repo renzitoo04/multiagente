@@ -356,7 +356,7 @@
   // Function to handle logout
   function cerrarSesion() {
     const email = localStorage.getItem('usuarioEmail');
-    
+
     // Limpiar datos del usuario en localStorage
     localStorage.removeItem('usuarioEmail');
     localStorage.removeItem(`linkGenerado_${email}`);
@@ -495,10 +495,10 @@
   }
 
   // Function to show the edit link form
-  function mostrarEditarLink(numeros) {
+  function mostrarEditarLink(numeros, mensaje) {
     const editarNumerosContainer = document.getElementById('editar-numeros-container');
     editarNumerosContainer.innerHTML = '';
-    
+
     numeros.forEach((numero, index) => {
       const numeroItem = document.createElement('div');
       numeroItem.classList.add('numero-container');
@@ -510,10 +510,8 @@
       `;
       editarNumerosContainer.appendChild(numeroItem);
     });
-    
-    const email = localStorage.getItem('usuarioEmail');
-    const mensaje = localStorage.getItem(`mensajeGenerado_${email}`) || '';
-    document.getElementById('editar-mensaje').value = mensaje;
+
+    document.getElementById('editar-mensaje').value = mensaje || '';
   }
 
   // Function to update a link
@@ -665,7 +663,6 @@
 
         // Mostrar el generador y ocultar el login
         document.getElementById('login-container').style.display = 'none';
-        document.getElementById('login-info').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
 
         // Configurar información del usuario
