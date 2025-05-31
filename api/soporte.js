@@ -62,17 +62,20 @@ export default async function handler(req, res) {
       // Crear un link dinámico que apunte al backend
       const linkDinamico = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
 
+      // Acortar el link usando TinyURL
+      const linkAcortado = await acortarLink(linkDinamico);
+
       // Guardar el link y los datos en Supabase
       const { error } = await supabase
         .from('link')
-        .insert([{ id, email, numeros: numerosValidos, mensaje, link: linkDinamico }]);
+        .insert([{ id, email, numeros: numerosValidos, mensaje, link: linkAcortado }]);
 
       if (error) {
         console.error('Error al guardar en Supabase:', error);
         return res.status(500).json({ error: 'Error al guardar la configuración.' });
       }
 
-      return res.status(200).json({ id, link: linkDinamico });
+      return res.status(200).json({ id, link: linkAcortado });
     } catch (error) {
       console.error('Error generando el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
