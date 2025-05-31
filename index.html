@@ -574,35 +574,24 @@
   }
 
   // Function to display existing link details
-  async function mostrarDetallesLink() {
-    const email = localStorage.getItem('usuarioEmail');
-    
-    if (!email) {
-      console.log('No hay usuario logueado');
-      return;
-    }
-    
-    // Obtener datos del link desde localStorage
-    const linkGuardado = localStorage.getItem(`linkGenerado_${email}`);
-    const numerosGuardados = localStorage.getItem(`numerosGenerados_${email}`);
-    const mensajeGuardado = localStorage.getItem(`mensajeGenerado_${email}`);
-    
-    if (linkGuardado && numerosGuardados) {
-      // Mostrar detalles del link
-      const numeros = JSON.parse(numerosGuardados);
-      
-      document.getElementById('detalles-link').style.display = 'block';
-      document.getElementById('output').innerHTML = `
-        <p>Tu link generado:</p>
-        <a href="${linkGuardado}" target="_blank">${linkGuardado}</a>
-      `;
-      document.getElementById('output').style.display = 'block';
-      document.getElementById('numeros-generados').textContent = numeros.join(', ');
-      document.getElementById('mensaje-generado').textContent = mensajeGuardado || 'Sin mensaje';
-      
-      // Deshabilitar el botón "Generar Link"
-      document.querySelector('button[onclick="generarLink()"]').disabled = true;
-    }
+  async function mostrarDetallesLink(linkData) {
+    const { link, numeros, mensaje } = linkData;
+
+    // Mostrar detalles del link
+    document.getElementById('detalles-link').style.display = 'block';
+    document.getElementById('output').innerHTML = `
+      <p>Tu link generado:</p>
+      <a href="${link}" target="_blank">${link}</a>
+    `;
+    document.getElementById('output').style.display = 'block';
+    document.getElementById('numeros-generados').textContent = numeros.join(', ');
+    document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+
+    // Habilitar la sección de "Actualizar Link"
+    document.getElementById('editar-link-container').style.display = 'block';
+
+    // Cargar datos en el formulario de edición
+    mostrarEditarLink(numeros, mensaje);
   }
 
   // Function to manually shorten a link
@@ -647,13 +636,38 @@
   }
 
   // Check login status on page load
-  document.addEventListener('DOMContentLoaded', () => {
-  // Forzar cierre de sesión al cargar la página
-  cerrarSesion();
+  document.addEventListener('DOMContentLoaded', async () => {
+  const email = localStorage.getItem('usuarioEmail');
 
-  // Mostrar el contenedor de inicio de sesión
-  document.getElementById('login-container').style.display = 'block';
-  document.getElementById('generador-container').style.display = 'none';
+  if (email) {
+    try {
+      // Recuperar datos del link asociado al usuario
+      const response = await fetch(`/api/soporte?email=${email}`);
+      const linkData = await response.json();
+
+      if (response.ok) {
+        // Mostrar los detalles del link
+        mostrarDetallesLink(linkData);
+
+        // Mostrar el generador y ocultar el login
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('generador-container').style.display = 'block';
+
+        // Configurar información del usuario
+        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+        document.getElementById('user-email-display').textContent = email;
+      } else {
+        console.log('No se encontró un link asociado a este usuario.');
+        cerrarSesion(); // Forzar cierre de sesión si no hay datos
+      }
+    } catch (error) {
+      console.error('Error al recuperar los detalles del link:', error);
+      cerrarSesion(); // Forzar cierre de sesión si ocurre un error
+    }
+  } else {
+    // Forzar cierre de sesión si no hay usuario logueado
+    cerrarSesion();
+  }
 });
   </script>
   
