@@ -356,7 +356,7 @@
   // Function to handle logout
   function cerrarSesion() {
     const email = localStorage.getItem('usuarioEmail');
-    
+
     // Limpiar datos del usuario en localStorage
     localStorage.removeItem('usuarioEmail');
     localStorage.removeItem(`linkGenerado_${email}`);
@@ -495,10 +495,10 @@
   }
 
   // Function to show the edit link form
-  function mostrarEditarLink(numeros) {
+  function mostrarEditarLink(numeros, mensaje) {
     const editarNumerosContainer = document.getElementById('editar-numeros-container');
     editarNumerosContainer.innerHTML = '';
-    
+
     numeros.forEach((numero, index) => {
       const numeroItem = document.createElement('div');
       numeroItem.classList.add('numero-container');
@@ -510,10 +510,8 @@
       `;
       editarNumerosContainer.appendChild(numeroItem);
     });
-    
-    const email = localStorage.getItem('usuarioEmail');
-    const mensaje = localStorage.getItem(`mensajeGenerado_${email}`) || '';
-    document.getElementById('editar-mensaje').value = mensaje;
+
+    document.getElementById('editar-mensaje').value = mensaje || '';
   }
 
   // Function to update a link
@@ -650,87 +648,39 @@
   }
 
   // Check login status on page load
-  document.addEventListener('DOMContentLoaded', () => {
-    // Forzar cierre de sesión al cargar la página
+  document.addEventListener('DOMContentLoaded', async () => {
+  const email = localStorage.getItem('usuarioEmail');
+
+  if (email) {
+    try {
+      // Recuperar datos del link asociado al usuario
+      const response = await fetch(`/api/soporte?email=${email}`);
+      const linkData = await response.json();
+
+      if (response.ok) {
+        // Mostrar los detalles del link
+        mostrarDetallesLink(linkData);
+
+        // Mostrar el generador y ocultar el login
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('generador-container').style.display = 'block';
+
+        // Configurar información del usuario
+        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+        document.getElementById('user-email-display').textContent = email;
+      } else {
+        console.log('No se encontró un link asociado a este usuario.');
+        cerrarSesion(); // Forzar cierre de sesión si no hay datos
+      }
+    } catch (error) {
+      console.error('Error al recuperar los detalles del link:', error);
+      cerrarSesion(); // Forzar cierre de sesión si ocurre un error
+    }
+  } else {
+    // Forzar cierre de sesión si no hay usuario logueado
     cerrarSesion();
-
-    // Mostrar el contenedor de inicio de sesión
-    document.getElementById('login-container').style.display = 'block';
-    document.getElementById('login-info').style.display = 'block';
-    document.getElementById('generador-container').style.display = 'none';
-  });
-
-  // Additional function for copy to clipboard
-  function copyToClipboard() {
-    const outputElement = document.querySelector('#output a');
-    if (outputElement) {
-      const textToCopy = outputElement.href;
-      navigator.clipboard.writeText(textToCopy)
-        .then(() => {
-          const copyBtn = document.getElementById('copy-link-btn');
-          copyBtn.classList.add('copied');
-          showNotification('Link copiado al portapapeles');
-          setTimeout(() => copyBtn.classList.remove('copied'), 2000);
-        })
-        .catch(err => {
-          showNotification('Error al copiar el link', 'error');
-        });
-    }
   }
-
-  // Function to update stats
-  function updateStats() {
-    const email = localStorage.getItem('usuarioEmail');
-    if (!email) return;
-    
-    // Demo stats
-    document.getElementById('stats-links-count').textContent = "1";
-    
-    const numerosGuardados = localStorage.getItem(`numerosGenerados_${email}`);
-    if (numerosGuardados) {
-      const numeros = JSON.parse(numerosGuardados);
-      document.getElementById('stats-numbers-count').textContent = numeros.length.toString();
-    } else {
-      document.getElementById('stats-numbers-count').textContent = "0";
-    }
-  }
-
-  // Shrink header on scroll for better UX
-  window.addEventListener('scroll', function() {
-    const header = document.getElementById('main-header');
-    if (window.scrollY > 50) {
-      header.classList.add('scrolled');
-    } else {
-      header.classList.remove('scrolled');
-    }
-  });
-
-  // Funciones para el modal de planes
-  function openPlansModal() {
-    const modal = document.getElementById('plans-modal');
-    modal.style.display = 'block';
-    document.body.style.overflow = 'hidden'; // Prevenir scroll en el body
-  }
-  
-  function closePlansModal() {
-    document.getElementById('plans-modal').style.display = 'none';
-    document.body.style.overflow = 'auto'; // Restaurar scroll
-  }
-  
-  // Close plans modal when clicking outside of it
-  window.addEventListener('click', function(event) {
-    const modal = document.getElementById('plans-modal');
-    if (event.target === modal) {
-      closePlansModal();
-    }
-  });
-  
-  // Cerrar modal con tecla ESC
-  window.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-      closePlansModal();
-    }
-  });
+});
   </script>
   
   <!--Start of Tawk.to Script-->

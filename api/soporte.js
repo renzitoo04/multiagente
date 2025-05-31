@@ -77,35 +77,26 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'GET') {
-    const { id } = req.query;
+    const { email } = req.query;
 
-    if (!id) {
-      return res.status(400).json({ error: 'Falta el ID en la consulta.' });
+    if (!email) {
+      return res.status(400).json({ error: 'Falta el email en la consulta.' });
     }
 
     try {
-      const { data: configuracion, error } = await supabase
+      const { data: link, error } = await supabase
         .from('link')
-        .select('numeros, mensaje')
-        .eq('id', id)
+        .select('id, numeros, mensaje, link')
+        .eq('email', email)
         .single();
 
-      if (error || !configuracion) {
-        return res.status(404).json({ error: 'No se encontró la configuración para este ID.' });
+      if (error || !link) {
+        return res.status(404).json({ error: 'No se encontró un link asociado a este usuario.' });
       }
 
-      if (!indicesRotacion[id]) {
-        indicesRotacion[id] = 0;
-      }
-
-      const indiceActual = indicesRotacion[id];
-      const numeroActual = configuracion.numeros[indiceActual];
-      indicesRotacion[id] = (indiceActual + 1) % configuracion.numeros.length;
-
-      const whatsappLink = `https://wa.me/${numeroActual}?text=${encodeURIComponent(configuracion.mensaje)}`;
-      return res.redirect(302, whatsappLink);
+      return res.status(200).json(link);
     } catch (error) {
-      console.error('Error al redirigir al número de WhatsApp:', error);
+      console.error('Error al recuperar el link:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
   }
