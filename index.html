@@ -334,23 +334,23 @@
           `;
           document.getElementById('output').style.display = 'block';
 
-          // Guardar el ID del link en localStorage
+          // Guardar los datos en localStorage
+          localStorage.setItem(`linkGenerado_${email}`, linkData.link);
+          localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
+          localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
           localStorage.setItem(`linkID_${email}`, linkData.id);
-
-          // Mostrar el generador y ocultar el login
-          document.getElementById('login-container').style.display = 'none';
-          document.getElementById('generador-container').style.display = 'block';
-
-          // Configurar información del usuario
-          document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
-          document.getElementById('user-email-display').textContent = email;
-
-          // Mostrar notificación de éxito
-          showNotification('Sesión iniciada correctamente');
-        } else {
-          loginError.textContent = data.error;
-          loginError.style.display = 'block';
         }
+
+        // Mostrar el generador y ocultar el login
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('generador-container').style.display = 'block';
+
+        // Configurar información del usuario
+        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+        document.getElementById('user-email-display').textContent = email;
+
+        // Mostrar notificación de éxito
+        showNotification('Sesión iniciada correctamente');
       } else {
         loginError.textContent = data.error;
         loginError.style.display = 'block';
@@ -477,7 +477,7 @@
         localStorage.setItem(`linkGenerado_${email}`, data.link);
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-        localStorage.setItem(`linkID_${email}`, data.id); // Guardar el ID del link
+        localStorage.setItem(`linkID_${email}`, data.id);
 
         // Mostrar el link generado en la caja de salida
         const output = document.getElementById('output');
@@ -535,7 +535,7 @@
 
     const mensaje = document.getElementById('editar-mensaje').value.trim();
     const email = localStorage.getItem('usuarioEmail');
-    const id = localStorage.getItem(`linkID_${email}`); // Recuperar el ID del link desde localStorage
+    const id = localStorage.getItem(`linkID_${email}`);
     const actualizarButton = document.querySelector('button[onclick="actualizarLink()"]');
 
     if (!email || !id) {
@@ -661,9 +661,6 @@
           <a href="${linkData.link}" target="_blank">${linkData.link}</a>
         `;
         document.getElementById('output').style.display = 'block';
-
-        // Guardar el ID del link en localStorage
-        localStorage.setItem(`linkID_${email}`, linkData.id);
 
         // Mostrar el generador y ocultar el login
         document.getElementById('login-container').style.display = 'none';
