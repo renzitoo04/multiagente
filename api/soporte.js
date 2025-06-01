@@ -132,7 +132,7 @@ export default async function handler(req, res) {
     }
 
     try {
-      // Actualizar los datos en Supabase sin cambiar el link
+      // Actualizar los datos en Supabase
       const { error } = await supabase
         .from('link')
         .update({ numeros: numerosValidos, mensaje })
