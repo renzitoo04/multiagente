@@ -477,7 +477,7 @@
         localStorage.setItem(`linkGenerado_${email}`, data.link);
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-        localStorage.setItem(`linkID_${email}`, data.id);
+        localStorage.setItem(`linkID_${email}`, data.id); // Guardar el ID del link
 
         // Mostrar el link generado en la caja de salida
         const output = document.getElementById('output');
