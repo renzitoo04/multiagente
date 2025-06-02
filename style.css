@@ -763,12 +763,13 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Fondo oscuro */
+    background-color: rgba(0, 0, 0, 0.9); /* Fondo más oscuro */
     z-index: 1000;
+    overflow-y: auto; /* Habilitar barra de desplazamiento */
   }
 
   .modal-container {
-    background: linear-gradient(145deg, #1c2541, #202f54); /* Fondo degradado */
+    background: linear-gradient(145deg, #0f172a, #1e293b); /* Fondo más oscuro */
     border-radius: 16px;
     padding: 30px;
     width: 90%;
@@ -820,12 +821,12 @@
   }
 
   .plan-price .price-amount {
-    font-size: 3rem;
+    font-size: 3.5rem; /* Tamaño más grande */
     font-weight: bold;
     color: #25d366;
-    background: rgba(37, 211, 102, 0.1);
-    padding: 10px 20px;
-    border-radius: 8px;
+    background: rgba(37, 211, 102, 0.2); /* Fondo verde claro */
+    padding: 20px 30px; /* Más espacio alrededor */
+    border-radius: 12px; /* Bordes redondeados */
     display: inline-block;
   }
 
@@ -1213,7 +1214,7 @@
     border-radius: 10px;
     font-size: 16px;
     background-color: rgba(42, 47, 74, 0.8); /* Consistente con los inputs de números */
-    color: #ffffff;
+    color: #ffffff; /* Texto blanco */
     transition: all 0.3s ease;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 0;
