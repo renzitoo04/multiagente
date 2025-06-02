@@ -341,6 +341,9 @@
           localStorage.setItem(`linkID_${email}`, linkData.id);
         }
 
+        // Ocultar el apartado "¿Para qué sirve Linkify?"
+        document.getElementById('login-info').style.display = 'none';
+
         // Mostrar el generador y ocultar el login
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
