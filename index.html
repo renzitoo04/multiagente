@@ -17,7 +17,7 @@
   </header>
 
   <!-- Modal de Planes -->
-  <div class="modal-overlay" id="plans-modal">
+  <div class="modal-overlay" id="plans-modal" style="display: none;">
     <div class="modal-container">
       <button class="modal-close" onclick="closePlansModal()">×</button>
       <div class="modal-header">
@@ -43,16 +43,9 @@
           </div>
           <div class="plan-actions">
             <a href="https://wa.me/+5491123456789?text=Hola%2C%20quiero%20información%20sobre%20los%20planes%20de%20Linkify" class="whatsapp-button" target="_blank">
-              <svg viewBox="0 0 24 24" width="20" height="20">
-                <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path>
-                <path fill="currentColor" d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.486 22 2 17.514 2 12S6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"></path>
-              </svg>
               <span>Contratar por WhatsApp</span>
             </a>
             <a href="https://www.mercadopago.com.ar" class="mercadopago-button" target="_blank">
-              <svg viewBox="0 0 24 24" width="20" height="20">
-                <path fill="currentColor" d="M19.07,7.32H4.93c-1.74,0-3.15,1.41-3.15,3.15v3.06c0,1.74,1.41,3.15,3.15,3.15h14.14c1.74,0,3.15-1.41,3.15-3.15v-3.06c0-1.74-1.41-3.15-3.15-3.15Zm-14.14,1.5h14.14c0.91,0,1.65,0.74,1.65,1.65v0.19h-17.44v-0.19c0-0.91,0.74-1.65,1.65-1.65Zm14.14,6.36H4.93c-0.91,0-1.65-0.74-1.65-1.65v-1.37h17.44v1.37c0,0.91-0.74,1.65-1.65,1.65Z"></path>
-              </svg>
               <span>Pagar con Mercado Pago</span>
             </a>
           </div>
@@ -703,5 +696,27 @@
   })();
   </script>
   <!--End of Tawk.to Script-->
+
+  <script>
+  // Función para abrir el modal de planes
+  function openPlansModal() {
+    const modal = document.getElementById('plans-modal');
+    modal.style.display = 'block';
+  }
+
+  // Función para cerrar el modal de planes
+  function closePlansModal() {
+    const modal = document.getElementById('plans-modal');
+    modal.style.display = 'none';
+  }
+
+  // Cerrar el modal si se hace clic fuera de él
+  window.onclick = function(event) {
+    const modal = document.getElementById('plans-modal');
+    if (event.target === modal) {
+      modal.style.display = 'none';
+    }
+  };
+  </script>
 </body>
 </html>
