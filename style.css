@@ -52,28 +52,24 @@
     background: linear-gradient(to right, #25d366, #4fc3f7);
   }
 
-  /* Estilo para el contenedor del logo */
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 10px; /* Espacio entre el logo y el texto */
-}
+  .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Cambiado a space-between para separar logo y botón */
+    width: 100%; /* Asegurar que ocupe todo el ancho */
+  }
 
-/* Estilo para el logo */
-.logo {
-  width: 50px; /* Tamaño del logo */
-  height: auto;
-  border-radius: 8px; /* Bordes redondeados */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra */
-}
+  .logo {
+    height: 70px; /* Increased from 50px to make the logo bigger */
+    width: auto;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  }
 
-/* Estilo para el texto "Linkify" */
-.logo-text {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #ffffff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Sombra en el texto */
-}
+  .logo:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3)) brightness(1.05);
+  }
 
   /* Improved desktop layout with content spacing */
   .desktop-wrapper {
