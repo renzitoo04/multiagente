@@ -870,6 +870,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 10px; /* Espacio entre el logo y el texto */
     padding: 12px 20px;
     background: #25d366;
     color: #ffffff;
@@ -878,7 +879,7 @@
     border-radius: 8px;
     text-decoration: none;
     transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   }
 
   .whatsapp-button:hover {
@@ -891,6 +892,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 10px; /* Espacio entre el logo y el texto */
     padding: 12px 20px;
     background: #009ee3;
     color: #ffffff;
@@ -906,6 +908,12 @@
     background: #007bbd;
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(0, 158, 227, 0.5);
+  }
+
+  /* Estilo para los íconos dentro de los botones */
+  .button-icon {
+    width: 20px; /* Tamaño del ícono */
+    height: 20px;
   }
 
   /* User section with improved styling */
