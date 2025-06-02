@@ -763,83 +763,143 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.8); /* Fondo más oscuro */
     z-index: 1000;
   }
 
   .modal-container {
-    background: #1c2541;
-    border-radius: 12px;
-    padding: 20px;
+    background: linear-gradient(145deg, #1c2541, #202f54);
+    border-radius: 16px;
+    padding: 30px;
     width: 90%;
-    max-width: 600px;
+    max-width: 700px;
     margin: 50px auto;
     color: #ffffff;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
     position: relative;
+    text-align: center;
   }
 
   .modal-close {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 15px;
+    right: 15px;
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: #ffffff;
     cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .modal-close:hover {
+    transform: scale(1.2);
   }
 
   .modal-header h2 {
-    margin-top: 0;
+    font-size: 2rem;
+    margin-bottom: 10px;
     color: #25d366;
+  }
+
+  .modal-header p {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
   }
 
   .plan-card {
-    background: #202f54;
-    border-radius: 8px;
-    padding: 20px;
+    background: linear-gradient(145deg, #202f54, #1c2541);
+    border-radius: 12px;
+    padding: 25px;
     margin-bottom: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
-  .plan-card .plan-name {
-    font-size: 1.5rem;
+  .plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .plan-name {
+    font-size: 1.8rem;
     font-weight: bold;
     color: #25d366;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
   }
 
-  .plan-card .plan-price {
-    font-size: 1.2rem;
+  .plan-price {
+    font-size: 1.4rem;
     color: #ffffff;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
   }
 
-  .plan-card .plan-features ul {
+  .plan-price .price-amount {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #4fc3f7;
+  }
+
+  .plan-features ul {
     list-style: none;
     padding: 0;
     margin: 0;
+    text-align: left;
   }
 
-  .plan-card .plan-features li {
-    margin-bottom: 5px;
-    color: #ffffff;
+  .plan-features li {
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
   }
 
-  .plan-card .plan-actions a {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 10px 15px;
-    border-radius: 5px;
-    text-decoration: none;
-    color: #ffffff;
+  .plan-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  .whatsapp-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
     background: #25d366;
-    transition: background 0.3s ease;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
   }
 
-  .plan-card .plan-actions a:hover {
+  .whatsapp-button:hover {
     background: #1da851;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.5);
+  }
+
+  .mercadopago-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    background: #009ee3;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 158, 227, 0.4);
+  }
+
+  .mercadopago-button:hover {
+    background: #007bbd;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 158, 227, 0.5);
   }
 
   /* User section with improved styling */
