@@ -529,13 +529,13 @@
 
   // Function to update a link
   async function actualizarLink() {
+    const email = localStorage.getItem('usuarioEmail'); // Obtener el email del usuario
+    const id = localStorage.getItem(`linkID_${email}`); // Obtener el ID del link
+    const mensaje = document.getElementById('editar-mensaje').value.trim(); // Obtener el mensaje actualizado
     const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
       .map(input => input.value.trim())
-      .filter(num => num !== '' && num !== '+549'); // Filtra números vacíos y el valor predeterminado
+      .filter(num => num !== '' && num !== '+549'); // Obtener los números actualizados y filtrar valores inválidos
 
-    const mensaje = document.getElementById('editar-mensaje').value.trim();
-    const email = localStorage.getItem('usuarioEmail');
-    const id = localStorage.getItem(`linkID_${email}`);
     const actualizarButton = document.querySelector('button[onclick="actualizarLink()"]');
 
     if (!email || !id) {
@@ -556,7 +556,7 @@
       const response = await fetch('/api/soporte', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, id, numeros, mensaje }),
+        body: JSON.stringify({ email, id, numeros, mensaje }), // Enviar los datos al backend
       });
 
       const data = await response.json();
@@ -569,9 +569,9 @@
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
-        showNotification('¡Link actualizado con éxito!');
+        showNotification('¡Link actualizado correctamente!');
       } else {
-        showNotification('Error al actualizar el link: ' + data.error, 'error');
+        showNotification(data.error || 'Error al actualizar el link. Inténtalo de nuevo.', 'error');
       }
     } catch (error) {
       console.error('Error actualizando el link:', error);
