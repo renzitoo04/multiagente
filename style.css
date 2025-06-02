@@ -1264,3 +1264,31 @@
 #login-info {
   display: none; /* Asegúrate de que este estilo no se aplique después de iniciar sesión */
 }
+
+/* Estilo para centrar y destacar el número "3" */
+.centered-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px; /* Tamaño del contenedor */
+  height: 100px; /* Tamaño del contenedor */
+  margin: 0 auto; /* Centrar horizontalmente */
+  background: linear-gradient(145deg, #25d366, #1da851); /* Fondo degradado */
+  color: #ffffff; /* Color del texto */
+  font-size: 3rem; /* Tamaño del número */
+  font-weight: bold; /* Negrita */
+  border-radius: 50%; /* Forma circular */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 0 0 0 4px rgba(255, 255, 255, 0.1); /* Sombra */
+  text-align: center; /* Centrar el texto */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transiciones */
+}
+
+.centered-number:hover {
+  transform: translateY(-5px); /* Efecto de elevación */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), 0 0 0 6px rgba(255, 255, 255, 0.2); /* Sombra más pronunciada */
+}
+
+.centered-number:active {
+  transform: translateY(2px); /* Efecto de clic */
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(255, 255, 255, 0.1); /* Sombra reducida */
+}
