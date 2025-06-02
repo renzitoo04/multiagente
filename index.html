@@ -342,7 +342,10 @@
         }
 
         // Ocultar el apartado "¿Para qué sirve Linkify?"
-        document.getElementById('login-info').style.display = 'none';
+        const loginInfo = document.getElementById('login-info');
+        if (loginInfo) {
+          loginInfo.style.display = 'none';
+        }
 
         // Mostrar el generador y ocultar el login
         document.getElementById('login-container').style.display = 'none';

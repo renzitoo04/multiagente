@@ -1252,3 +1252,7 @@
   transform: translateY(1px);
   box-shadow: 0 4px 8px rgba(37, 211, 102, 0.25);
 }
+
+#login-info {
+  display: none; /* Asegúrate de que este estilo no se aplique después de iniciar sesión */
+}
