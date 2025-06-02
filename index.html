@@ -562,14 +562,19 @@
       const data = await response.json();
 
       if (response.ok) {
-        // Actualizar los datos en la interfaz
+        // Actualizar los datos en localStorage
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
 
+        // Actualizar los detalles del link en la interfaz
         document.getElementById('numeros-generados').textContent = numeros.join(', ');
         document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
 
+        // Mostrar notificación de éxito
         showNotification('¡Link actualizado correctamente!');
+
+        // Actualizar los detalles del link en el contenedor
+        mostrarDetallesLink({ link: localStorage.getItem(`linkGenerado_${email}`), numeros, mensaje });
       } else {
         showNotification(data.error || 'Error al actualizar el link. Inténtalo de nuevo.', 'error');
       }
