@@ -535,7 +535,7 @@
 
     const mensaje = document.getElementById('editar-mensaje').value.trim();
     const email = localStorage.getItem('usuarioEmail');
-    const id = localStorage.getItem(`linkID_${email}`);
+    const id = localStorage.getItem(`linkID_${email}`); // Recuperar el ID del link desde localStorage
     const actualizarButton = document.querySelector('button[onclick="actualizarLink()"]');
 
     if (!email || !id) {
@@ -662,6 +662,12 @@
         `;
         document.getElementById('output').style.display = 'block';
 
+        // Guardar los datos en localStorage
+        localStorage.setItem(`linkGenerado_${email}`, linkData.link);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
+        localStorage.setItem(`linkID_${email}`, linkData.id);
+
         // Mostrar el generador y ocultar el login
         document.getElementById('login-container').style.display = 'none';
         document.getElementById('generador-container').style.display = 'block';
@@ -670,7 +676,10 @@
         document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
         document.getElementById('user-email-display').textContent = email;
       } else {
+        // Si no hay un link asociado, permitir generar uno nuevo
         console.log('No se encontró un link asociado a este usuario.');
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('generador-container').style.display = 'block';
       }
     } catch (error) {
       console.error('Error al recuperar los detalles del link:', error);
