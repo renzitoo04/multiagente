@@ -576,20 +576,17 @@
 
         // Mostrar notificación de éxito
         showNotification('¡Link actualizado correctamente!');
-
-        // Actualizar los detalles del link en el contenedor
-        mostrarDetallesLink({ link: localStorage.getItem(`linkGenerado_${email}`), numeros, mensaje });
-      } else {
-        showNotification(data.error || 'Error al actualizar el link. Inténtalo de nuevo.', 'error');
-      }
-    } catch (error) {
-      console.error('Error actualizando el link:', error);
-      showNotification('Error al actualizar el link. Inténtalo de nuevo.', 'error');
-    } finally {
-      actualizarButton.innerHTML = 'Actualizar Link';
-      actualizarButton.disabled = false;
+    } else {
+      showNotification(data.error || 'Error al actualizar el link. Inténtalo de nuevo.', 'error');
     }
+  } catch (error) {
+    console.error('Error actualizando el link:', error);
+    showNotification('Error al actualizar el link. Inténtalo de nuevo.', 'error');
+  } finally {
+    actualizarButton.innerHTML = 'Actualizar Link';
+    actualizarButton.disabled = false;
   }
+}
 
   // Function to display existing link details
   async function mostrarDetallesLink(linkData) {
