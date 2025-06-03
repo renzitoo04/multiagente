@@ -749,6 +749,32 @@
     width: 100%; /* Usar todo el ancho */
   }
 
+  /* Centrar el apartado de "Editar Link" */
+  #editar-link-container {
+    display: block; /* Asegurar que sea visible */
+    margin: 20px auto; /* Centrar el contenedor */
+    padding: 20px; /* Reducir el padding */
+    width: 95%; /* Usar casi todo el ancho del dispositivo */
+    max-width: 400px; /* Limitar el ancho máximo */
+    box-sizing: border-box; /* Incluir padding en el cálculo del ancho */
+    text-align: center; /* Centrar el contenido */
+  }
+
+  #editar-link-container h3 {
+    font-size: 1.5rem; /* Reducir el tamaño del texto */
+    margin-bottom: 15px; /* Reducir el margen inferior */
+  }
+
+  #editar-numeros-container {
+    gap: 10px; /* Reducir el espacio entre los inputs */
+  }
+
+  .btn {
+    font-size: 0.9rem; /* Reducir el tamaño del texto */
+    padding: 10px 15px; /* Reducir el padding */
+    width: 100%; /* Asegurar que los botones ocupen todo el ancho */
+  }
+
   /* Ajustar el contenedor de usuario */
   .user-section {
     flex-direction: column; /* Cambiar a diseño vertical */
@@ -816,22 +842,6 @@
   .button-icon {
     width: 20px; /* Reducir el tamaño del logo */
     height: 20px;
-  }
-
-  /* Ajustar el contenedor de edición de links */
-  #editar-link-container {
-    padding: 20px; /* Reducir el padding */
-    margin: 20px auto; /* Reducir el margen */
-    width: 95%; /* Usar casi todo el ancho */
-  }
-
-  #editar-link-container h3 {
-    font-size: 1.5rem; /* Reducir el tamaño del texto */
-  }
-
-  .btn {
-    font-size: 0.9rem; /* Reducir el tamaño del texto */
-    padding: 10px 15px; /* Reducir el padding */
   }
 
   /* Ajustar el footer */
