@@ -744,6 +744,8 @@
     /* Ajustar el contenedor principal */
     .container {
       padding: 0 15px; /* Reducir el padding */
+      flex-direction: column; /* Cambiar a diseño vertical */
+      align-items: center; /* Centrar los elementos */
     }
 
     /* Ajustar el header */
@@ -842,6 +844,29 @@
     footer .footer-links {
       flex-direction: column; /* Cambiar a diseño vertical */
       gap: 8px; /* Reducir el espacio entre enlaces */
+    }
+
+    /* Ajustar el contenedor de usuario */
+    .user-section {
+      flex-direction: column; /* Cambiar a diseño vertical */
+      gap: 15px; /* Espacio entre elementos */
+      padding: 15px; /* Reducir el padding */
+      width: 100%; /* Usar todo el ancho */
+    }
+
+    .user-avatar {
+      width: 40px; /* Reducir el tamaño del avatar */
+      height: 40px;
+      font-size: 1.2rem; /* Reducir el tamaño del texto */
+    }
+
+    .user-details {
+      text-align: center; /* Centrar los detalles del usuario */
+    }
+
+    .logout-button {
+      font-size: 0.9rem; /* Reducir el tamaño del texto */
+      padding: 8px 12px; /* Reducir el padding */
     }
   }
 
