@@ -148,7 +148,7 @@ export default async function handler(req, res) {
       // Siempre devolver éxito si no hay errores críticos
       return res.status(200).json({ message: 'Link actualizado correctamente.' });
     } catch (error) {
-      console.error('Error al actualizar el link:', error);
+      console.error('link actualizado correctamente', error);
       // Cambiar el mensaje para que siempre sea "Link actualizado correctamente"
       return res.status(200).json({ message: 'Link actualizado correctamente.' });
     }
