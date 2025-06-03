@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   try {
     const { data: link, error } = await supabase
       .from('link')
-      .select('link, numeros, mensaje')
+      .select('id, link, numeros, mensaje') // Incluye el campo `id` en la selección
       .eq('email', email)
       .single();
 
@@ -26,7 +26,7 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'No se encontró un link para este usuario' });
     }
 
-    return res.status(200).json(link);
+    return res.status(200).json(link); // Devuelve el JSON con id, link, numeros y mensaje
   } catch (err) {
     console.error('Error al consultar el link:', err);
     return res.status(500).json({ error: 'Error interno del servidor' });
