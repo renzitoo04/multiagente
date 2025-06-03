@@ -741,134 +741,117 @@
   }
   
   @media (max-width: 768px) {
-    /* Ajustar el contenedor principal */
-    .container {
-      padding: 0 15px; /* Reducir el padding */
-      flex-direction: column; /* Cambiar a diseño vertical */
-      align-items: center; /* Centrar los elementos */
-    }
-
-    /* Ajustar el header */
-    header {
-      padding: 12px 20px; /* Reducir el padding */
-      flex-direction: column; /* Cambiar a diseño vertical */
-      text-align: center;
-    }
-
-    .logo-container {
-      flex-direction: column; /* Cambiar a diseño vertical */
-      gap: 10px; /* Espacio entre elementos */
-    }
-
-    .logo {
-      height: 50px; /* Reducir el tamaño del logo */
-    }
-
-    .plans-button {
-      font-size: 0.9rem; /* Reducir el tamaño del texto */
-      padding: 8px 12px; /* Reducir el padding */
-    }
-
-    /* Ajustar el modal */
-    .modal-container {
-      width: 95%; /* Usar casi todo el ancho */
-      padding: 20px; /* Reducir el padding */
-    }
-
-    .plan-card {
-      padding: 15px; /* Reducir el padding */
-      margin-bottom: 15px; /* Reducir el margen */
-    }
-
-    .plan-name {
-      font-size: 1.5rem; /* Reducir el tamaño del texto */
-    }
-
-    .plan-price .price-amount {
-      font-size: 2.5rem; /* Reducir el tamaño del precio */
-      padding: 15px 20px; /* Reducir el padding */
-    }
-
-    .plan-price .price-period {
-      font-size: 0.9rem; /* Reducir el tamaño del texto */
-    }
-
-    .plan-features li {
-      font-size: 0.9rem; /* Reducir el tamaño del texto */
-    }
-
-    .plan-actions {
-      flex-direction: column; /* Cambiar a diseño vertical */
-      gap: 10px; /* Reducir el espacio entre botones */
-    }
-
-    .whatsapp-button,
-    .mercadopago-button {
-      font-size: 0.9rem; /* Reducir el tamaño del texto */
-      padding: 10px 15px; /* Reducir el padding */
-    }
-
-    .button-icon {
-      width: 20px; /* Reducir el tamaño del logo */
-      height: 20px;
-    }
-
-    /* Ajustar el contenedor de edición de links */
-    #editar-link-container {
-      padding: 20px; /* Reducir el padding */
-      margin: 20px auto; /* Reducir el margen */
-    }
-
-    #editar-link-container h3 {
-      font-size: 1.5rem; /* Reducir el tamaño del texto */
-    }
-
-    .btn {
-      font-size: 0.9rem; /* Reducir el tamaño del texto */
-      padding: 10px 15px; /* Reducir el padding */
-    }
-
-    /* Ajustar el footer */
-    footer {
-      padding: 20px 0; /* Reducir el padding */
-    }
-
-    footer .footer-content {
-      gap: 10px; /* Reducir el espacio entre elementos */
-    }
-
-    footer .copyright {
-      font-size: 0.9rem; /* Reducir el tamaño del texto */
-    }
-
-    footer .footer-links {
-      flex-direction: column; /* Cambiar a diseño vertical */
-      gap: 8px; /* Reducir el espacio entre enlaces */
-    }
-
-    /* Ajustar el contenedor de usuario */
-    .user-section {
-      flex-direction: column; /* Cambiar a diseño vertical */
-      gap: 15px; /* Espacio entre elementos */
-      padding: 15px; /* Reducir el padding */
-      width: 100%; /* Usar todo el ancho */
-    }
-
-    .user-avatar {
-      width: 40px; /* Reducir el tamaño del avatar */
-      height: 40px;
-      font-size: 1.2rem; /* Reducir el tamaño del texto */
-    }
-
-    .user-details {
-      text-align: center; /* Centrar los detalles del usuario */
-    }
-
-    .logout-button {
-      font-size: 0.9rem; /* Reducir el tamaño del texto */
-      padding: 8px 12px; /* Reducir el padding */
-    }
+  /* Ajustar el contenedor principal */
+  .container {
+    padding: 0 15px; /* Reducir el padding */
+    flex-direction: column; /* Cambiar a diseño vertical */
+    align-items: center; /* Centrar los elementos */
+    width: 100%; /* Usar todo el ancho */
   }
+
+  /* Ajustar el contenedor de usuario */
+  .user-section {
+    flex-direction: column; /* Cambiar a diseño vertical */
+    gap: 15px; /* Espacio entre elementos */
+    padding: 15px; /* Reducir el padding */
+    width: 100%; /* Usar todo el ancho */
+    max-width: 100%; /* Asegurar que ocupe todo el ancho disponible */
+  }
+
+  .user-avatar {
+    width: 40px; /* Reducir el tamaño del avatar */
+    height: 40px;
+    font-size: 1.2rem; /* Reducir el tamaño del texto */
+  }
+
+  .user-details {
+    text-align: center; /* Centrar los detalles del usuario */
+  }
+
+  .logout-button {
+    font-size: 0.9rem; /* Reducir el tamaño del texto */
+    padding: 8px 12px; /* Reducir el padding */
+  }
+
+  /* Ajustar el modal */
+  .modal-container {
+    width: 95%; /* Usar casi todo el ancho */
+    padding: 20px; /* Reducir el padding */
+    margin: 20px auto; /* Centrar el modal */
+  }
+
+  .plan-card {
+    padding: 15px; /* Reducir el padding */
+    margin-bottom: 15px; /* Reducir el margen */
+  }
+
+  .plan-name {
+    font-size: 1.5rem; /* Reducir el tamaño del texto */
+  }
+
+  .plan-price .price-amount {
+    font-size: 2.5rem; /* Reducir el tamaño del precio */
+    padding: 15px 20px; /* Reducir el padding */
+  }
+
+  .plan-price .price-period {
+    font-size: 0.9rem; /* Reducir el tamaño del texto */
+  }
+
+  .plan-features li {
+    font-size: 0.9rem; /* Reducir el tamaño del texto */
+  }
+
+  .plan-actions {
+    flex-direction: column; /* Cambiar a diseño vertical */
+    gap: 10px; /* Reducir el espacio entre botones */
+  }
+
+  .whatsapp-button,
+  .mercadopago-button {
+    font-size: 0.9rem; /* Reducir el tamaño del texto */
+    padding: 10px 15px; /* Reducir el padding */
+  }
+
+  .button-icon {
+    width: 20px; /* Reducir el tamaño del logo */
+    height: 20px;
+  }
+
+  /* Ajustar el contenedor de edición de links */
+  #editar-link-container {
+    padding: 20px; /* Reducir el padding */
+    margin: 20px auto; /* Reducir el margen */
+    width: 95%; /* Usar casi todo el ancho */
+  }
+
+  #editar-link-container h3 {
+    font-size: 1.5rem; /* Reducir el tamaño del texto */
+  }
+
+  .btn {
+    font-size: 0.9rem; /* Reducir el tamaño del texto */
+    padding: 10px 15px; /* Reducir el padding */
+  }
+
+  /* Ajustar el footer */
+  footer {
+    padding: 20px 0; /* Reducir el padding */
+  }
+
+  footer .footer-content {
+    gap: 10px; /* Reducir el espacio entre elementos */
+  }
+
+  footer .copyright {
+    font-size: 0.9rem; /* Reducir el tamaño del texto */
+  }
+
+  footer .footer-links {
+    flex-direction: column; /* Cambiar a diseño vertical */
+    gap: 8px; /* Reducir el espacio entre enlaces */
+  }
+}
 
   /* Modal de planes - ajustado según imagen de referencia */
   .modal-overlay {
