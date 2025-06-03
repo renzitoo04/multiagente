@@ -894,6 +894,34 @@
   box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); /* Sombra reducida */
 }
 
+/* Botón de Mercado Pago */
+.mercadopago-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Espacio entre el logo y el texto */
+  padding: 14px 24px; /* Más espacio interno */
+  background: linear-gradient(135deg, #009ee3, #007bbd); /* Colores de Mercado Pago */
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border-radius: 12px; /* Bordes redondeados */
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(0, 158, 227, 0.4); /* Sombra azul */
+}
+
+.mercadopago-button:hover {
+  background: linear-gradient(135deg, #007bbd, #005f99); /* Azul más oscuro al hover */
+  transform: translateY(-3px); /* Efecto de elevación */
+  box-shadow: 0 8px 20px rgba(0, 158, 227, 0.5); /* Sombra más pronunciada */
+}
+
+.mercadopago-button:active {
+  transform: translateY(1px); /* Efecto de clic */
+  box-shadow: 0 4px 10px rgba(0, 158, 227, 0.3); /* Sombra reducida */
+}
+
 /* Estilo para el ícono dentro del botón */
 .button-icon {
   width: 28px; /* Tamaño del logo */
