@@ -506,9 +506,11 @@
     const editarNumerosContainer = document.getElementById('editar-numeros-container');
     editarNumerosContainer.innerHTML = '';
 
-    // Asegurarse de tener un array de la longitud de limiteNumeros
-    for (let i = 0; i < limiteNumeros; i++) {
-      const numero = numeros[i] || '';
+    // Asegurarse de que limiteNumeros sea un número entero
+    const totalInputs = parseInt(limiteNumeros, 10) || 1;
+
+    for (let i = 0; i < totalInputs; i++) {
+      const numero = (numeros && numeros[i]) ? numeros[i] : '';
       const numeroItem = document.createElement('div');
       numeroItem.classList.add('numero-container');
       numeroItem.innerHTML = `
