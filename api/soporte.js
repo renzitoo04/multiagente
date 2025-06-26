@@ -82,46 +82,39 @@ export default async function handler(req, res) {
     }
   }
 
-  // Rotación equitativa y persistente de números (GET con id)
-  if (req.method === 'GET' && req.query.id) {
+  if (req.method === 'GET') {
     const { id } = req.query;
 
-    // 1. Obtener la fila del link, incluyendo numeros[] e indiceActual
-    const { data: link, error } = await supabase
-      .from('link')
-      .select('numeros, indiceActual')
-      .eq('id', id)
-      .single();
-
-    if (error || !link) {
-      return res.status(404).json({ error: 'Link no encontrado' });
+    if (!id) {
+      return res.status(400).json({ error: 'Falta el ID del link.' });
     }
 
-    let { numeros, indiceActual } = link;
+    try {
+      // Recuperar los datos del link desde Supabase
+      const { data: linkData, error } = await supabase
+        .from('link')
+        .select('numeros, mensaje')
+        .eq('id', id)
+        .single();
 
-    // 2. Inicializar indiceActual si no existe
-    if (typeof indiceActual !== 'number' || isNaN(indiceActual)) {
-      indiceActual = 0;
+      if (error || !linkData) {
+        return res.status(404).json({ error: 'No se encontró el link.' });
+      }
+
+      // Rotar entre los números
+      if (!indicesRotacion[id]) {
+        indicesRotacion[id] = 0; // Inicializar el índice de rotación si no existe
+      }
+      const numeroSeleccionado = linkData.numeros[indicesRotacion[id]];
+      indicesRotacion[id] = (indicesRotacion[id] + 1) % linkData.numeros.length; // Actualizar el índice de rotación
+
+      // Redirigir al número seleccionado en WhatsApp con el mensaje automático
+      const whatsappLink = `https://wa.me/${numeroSeleccionado}?text=${encodeURIComponent(linkData.mensaje)}`;
+      return res.redirect(302, whatsappLink);
+    } catch (error) {
+      console.error('Error al redirigir:', error);
+      return res.status(500).json({ error: 'Error interno del servidor.' });
     }
-
-    // 3. Seleccionar el número usando el índice actual
-    const totalNumeros = Array.isArray(numeros) ? numeros.length : 0;
-    if (totalNumeros === 0) {
-      return res.status(400).json({ error: 'No hay números disponibles para este link.' });
-    }
-    const numeroSeleccionado = numeros[indiceActual % totalNumeros];
-
-    // 4. Calcular el nuevo índice (rotación circular)
-    const nuevoIndice = (indiceActual + 1) % totalNumeros;
-
-    // 5. Actualizar el indiceActual en Supabase
-    await supabase
-      .from('link')
-      .update({ indiceActual: nuevoIndice })
-      .eq('id', id);
-
-    // 6. Devolver el número seleccionado
-    return res.status(200).json({ numero: numeroSeleccionado });
   }
 
   if (req.method === 'PATCH') {
