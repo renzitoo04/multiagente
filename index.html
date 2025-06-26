@@ -643,6 +643,12 @@
   document.addEventListener('DOMContentLoaded', async () => {
   const email = localStorage.getItem('usuarioEmail');
 
+  // Recuperar el limiteNumeros real desde localStorage si existe
+  const limiteGuardado = localStorage.getItem('limiteNumeros');
+  if (limiteGuardado) {
+    limiteNumeros = parseInt(limiteGuardado, 10);
+  }
+
   if (email) {
     try {
       // Recuperar los datos del link desde Supabase
