@@ -506,17 +506,19 @@
     const editarNumerosContainer = document.getElementById('editar-numeros-container');
     editarNumerosContainer.innerHTML = '';
 
-    numeros.forEach((numero, index) => {
+    // Asegurarse de tener un array de la longitud de limiteNumeros
+    for (let i = 0; i < limiteNumeros; i++) {
+      const numero = numeros[i] || '';
       const numeroItem = document.createElement('div');
       numeroItem.classList.add('numero-container');
       numeroItem.innerHTML = `
         <span class="bandera-container">
           <img src="https://flagcdn.com/w40/ar.png" alt="Bandera" class="bandera">
         </span>
-        <input type="text" id="editar-numero-${index}" class="numero" value="${numero}" placeholder="Ejemplo: +5492944585356" aria-label="Editar número ${index + 1}">
+        <input type="text" id="editar-numero-${i}" class="numero" value="${numero}" placeholder="Ejemplo: +5492944585356" aria-label="Editar número ${i + 1}">
       `;
       editarNumerosContainer.appendChild(numeroItem);
-    });
+    }
 
     document.getElementById('editar-mensaje').value = mensaje || '';
     document.getElementById('editar-link-container').style.display = 'block';
