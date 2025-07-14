@@ -1436,5 +1436,15 @@
   left: 0;
   right: 0;
   display: block;
-  /* El resto de estilos ya presentes */
+  margin: 40px auto;         /* Centrado vertical y horizontal */
+  max-width: 600px;          /* Ancho máximo */
+  width: 90%;                /* Ancho relativo para responsividad */
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
 }
