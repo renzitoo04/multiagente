@@ -1201,6 +1201,7 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     position: relative;
     overflow: hidden;
+    transform: translateX(10%);
   }
   
   #editar-link-container h3 {
@@ -1447,4 +1448,5 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
+  transform: translateX(10%);
 }
