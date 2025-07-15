@@ -23,14 +23,17 @@ export default async function handler(req, res) {
   if (existe) return res.status(400).json({ error: 'El usuario ya existe' });
 
   // Crear usuario con limiteNumeros en 1
-  const { error: errorInsert } = await supabase
+  const { data, error: errorInsert } = await supabase
     .from('usuarios')
-    .insert([{ email, password, limiteNumeros: 1 }]);
+    .insert([{ email, password, limiteNumeros: 1 }])
+    .select();
 
   if (errorInsert) {
     console.error('Error al crear usuario:', errorInsert);
     return res.status(400).json({ error: errorInsert.message });
   }
 
-  return res.status(200).json({ message: 'Usuario creado correctamente' });
+  return res.status(200).json({
+    message: 'Usuario creado correctamente',
+  });
 }
