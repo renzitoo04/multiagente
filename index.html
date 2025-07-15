@@ -77,8 +77,10 @@
         </label>
       </div>
       
+      <!-- Botón de iniciar sesión -->
       <button onclick="login()" aria-label="Iniciar sesión">Iniciar sesión</button>
       <p id="login-error"></p>
+      <p>¿No tienes una cuenta? <a href="#" id="crear-cuenta-link">Crear cuenta</a></p>
     </div>
 
     <!-- Info container moved to appear only in login screen -->
@@ -732,6 +734,12 @@
       modal.style.display = 'none';
     }
   };
+
+  document.getElementById('crear-cuenta-link').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.getElementById('login-container').style.display = 'none';
+  document.getElementById('registro-container').style.display = 'block';
+});
   </script>
 
   <style>
