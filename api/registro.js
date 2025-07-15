@@ -8,7 +8,16 @@ export default async function handler(req, res) {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email y contraseña requeridos' });
 
-  // Crear usuario en la tabla de usuarios (ajusta el nombre de la tabla si es necesario)
+  // Verificar si el usuario ya existe
+  const { data: existe, error: errorExiste } = await supabase
+    .from('usuarios')
+    .select('email')
+    .eq('email', email)
+    .single();
+
+  if (existe) return res.status(400).json({ error: 'El usuario ya existe' });
+
+  // Crear usuario con limiteNumeros en 0
   const { error } = await supabase
     .from('usuarios')
     .insert([{ email, password, limiteNumeros: 0 }]);
