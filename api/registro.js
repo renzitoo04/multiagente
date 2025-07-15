@@ -17,10 +17,10 @@ export default async function handler(req, res) {
 
   if (existe) return res.status(400).json({ error: 'El usuario ya existe' });
 
-  // Crear usuario con limiteNumeros en 0
+  // Crear usuario con limiteNumeros en 1
   const { error } = await supabase
     .from('usuarios')
-    .insert([{ email, password, limiteNumeros: 0 }]);
+    .insert([{ email, password, limiteNumeros: 1 }]);
 
   if (error) return res.status(400).json({ error: error.message });
 
