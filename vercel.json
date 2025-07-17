@@ -6,3 +6,4 @@
     { "source": "/api/registro", "destination": "/api/registro.js" }
   ]
 }
+

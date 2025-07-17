@@ -749,7 +749,7 @@ document.getElementById('registro-form').addEventListener('submit', async functi
 
   try {
     // Enviar POST para crear la cuenta
-    const registroResponse = await fetch('/api/registro', {
+    const registroResponse = await fetch('http://localhost:3001/api/registro', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })

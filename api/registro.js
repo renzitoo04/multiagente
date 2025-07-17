@@ -32,5 +32,18 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: errorInsert.message });
   }
 
+  const response = await fetch('http://localhost:3001/api/registro', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    return res.status(response.status).json({ error: errorData.error || 'Error desconocido' });
+  }
+
   return res.status(200).json({ message: 'Usuario creado correctamente' });
 }
