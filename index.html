@@ -748,24 +748,36 @@ document.getElementById('registro-form').addEventListener('submit', async functi
   }
 
   try {
-    const response = await fetch('/api/registro', {
+    // Enviar POST para crear la cuenta
+    const registroResponse = await fetch('/api/registro', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
 
-    const data = await response.json();
+    const registroData = await registroResponse.json();
 
-    if (response.ok) {
-      alert('Cuenta creada con éxito. Ahora podés iniciar sesión.');
-      // Ocultar el registro y volver al login
-      document.getElementById('registro-container').style.display = 'none';
-      document.getElementById('login-container').style.display = 'block';
+    if (registroResponse.ok) {
+      // Intentar iniciar sesión automáticamente
+      const loginResponse = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const loginData = await loginResponse.json();
+
+      if (loginResponse.ok) {
+        alert('Registrado e iniciado sesión correctamente.');
+        window.location.href = '/panel'; // Redirigir al panel
+      } else {
+        alert('Cuenta creada, pero no se pudo iniciar sesión automáticamente.');
+      }
     } else {
-      alert(data.error || 'No se pudo crear la cuenta.');
+      alert(registroData.error || 'No se pudo crear la cuenta.');
     }
   } catch (error) {
-    console.error('Error al registrar:', error);
+    console.error('Error:', error);
     alert('Error de conexión al crear la cuenta.');
   }
 });
