@@ -452,76 +452,70 @@
 
   // Function to generate a new link
   async function generarLink() {
-  const numeros = Array.from(document.querySelectorAll('.numero'))
-    .map(input => input.value.trim())
-    .filter(num => num !== '' && num !== '+549'); // Filtra números vacíos y el valor predeterminado
+    const numeros = Array.from(document.querySelectorAll('.numero'))
+      .map(input => input.value.trim())
+      .filter(num => num !== '' && num !== '+549'); // Filtra números vacíos y el valor predeterminado
 
-  const mensaje = document.getElementById('mensaje').value.trim();
-  const email = localStorage.getItem('usuarioEmail'); // Obtener el email desde localStorage
-  const generarButton = document.querySelector('button[onclick="generarLink()"]');
+    const mensaje = document.getElementById('mensaje').value.trim();
+    const email = localStorage.getItem('usuarioEmail'); // Obtener el email desde localStorage
+    const generarButton = document.querySelector('button[onclick="generarLink()"]');
 
-  if (!email) {
-    showNotification('Por favor, inicia sesión antes de generar un link.', 'error');
-    return;
-  }
-
-  // Verificar si el límite de números es igual a 1
-  if (limiteNumeros === 1) {
-    showNotification('Comprar plan pro para generar un link.', 'error');
-    return;
-  }
-
-  if (numeros.length === 0) {
-    showNotification('Por favor, ingresa al menos un número válido.', 'error');
-    return;
-  }
-
-  // Mostrar estado de carga
-  generarButton.innerHTML = '<span class="loading"></span> Generando...';
-  generarButton.disabled = true;
-
-  try {
-    const response = await fetch('/api/soporte', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, numeros, mensaje }), // Enviar el email en el cuerpo de la solicitud
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      // Guardar los datos en localStorage
-      localStorage.setItem(`linkGenerado_${email}`, data.link);
-      localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
-      localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-      localStorage.setItem(`linkID_${email}`, data.id);
-
-      // Mostrar el link generado en la caja de salida
-      const output = document.getElementById('output');
-      output.innerHTML = `
-        <p>Tu link generado:</p>
-        <a href="${data.link}" target="_blank">${data.link}</a>
-      `;
-      output.style.display = 'block';
-
-      // Mostrar los detalles del link
-      mostrarDetallesLink(data);
-
-      // Mostrar el apartado de "Editar Link"
-      mostrarEditarLink(numeros, mensaje);
-
-      showNotification('¡Link generado con éxito!');
-    } else {
-      showNotification(data.error, 'error');
+    if (!email) {
+      showNotification('Por favor, inicia sesión antes de generar un link.', 'error');
+      return;
     }
-  } catch (error) {
-    console.error('Error generando link:', error);
-    showNotification('Error al generar el link. Inténtalo de nuevo.', 'error');
-  } finally {
-    generarButton.innerHTML = 'Generar Link';
-    generarButton.disabled = false;
+
+    if (numeros.length === 0) {
+      showNotification('Por favor, ingresa al menos un número válido.', 'error');
+      return;
+    }
+
+    // Mostrar estado de carga
+    generarButton.innerHTML = '<span class="loading"></span> Generando...';
+    generarButton.disabled = true;
+
+    try {
+      const response = await fetch('/api/soporte', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, numeros, mensaje }), // Enviar el email en el cuerpo de la solicitud
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Guardar los datos en localStorage
+        localStorage.setItem(`linkGenerado_${email}`, data.link);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
+        localStorage.setItem(`linkID_${email}`, data.id);
+
+        // Mostrar el link generado en la caja de salida
+        const output = document.getElementById('output');
+        output.innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="${data.link}" target="_blank">${data.link}</a>
+        `;
+        output.style.display = 'block';
+
+        // Mostrar los detalles del link
+        mostrarDetallesLink(data);
+
+        // Mostrar el apartado de "Editar Link"
+        mostrarEditarLink(numeros, mensaje);
+
+        showNotification('¡Link generado con éxito!');
+      } else {
+        showNotification(data.error, 'error');
+      }
+    } catch (error) {
+      console.error('Error generando link:', error);
+      showNotification('Error al generar el link. Inténtalo de nuevo.', 'error');
+    } finally {
+      generarButton.innerHTML = 'Generar Link';
+      generarButton.disabled = false;
+    }
   }
-}
 
   // Function to show the edit link form
   function mostrarEditarLink(numeros, mensaje) {
