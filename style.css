@@ -902,143 +902,90 @@
   }
 
   .plan-card {
-    background: linear-gradient(145deg, #1c2541, #202f54); /* Fondo degradado */
-    border-radius: 12px;
-    padding: 25px;
-    margin-bottom: 20px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 250px; /* Ajustar el ancho */
+    padding: 20px; /* Reducir el padding */
+    margin: 15px; /* Espaciado entre las cajas */
+    background: linear-gradient(145deg, #1a1f3a, #1c2541); /* Fondo oscuro con gradiente */
+    border-radius: 15px; /* Bordes redondeados */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Sombra más suave */
+    text-align: center; /* Centrar contenido */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Animación al pasar el mouse */
   }
 
   .plan-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+    transform: translateY(-5px); /* Efecto de elevación */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4); /* Sombra más intensa */
   }
 
   .plan-name {
-    font-size: 1.8rem;
+    font-size: 1.2rem; /* Tamaño de fuente más pequeño */
     font-weight: bold;
-    color: #25d366;
-    margin-bottom: 15px;
+    color: #ffffff;
+    margin-bottom: 10px;
   }
 
   .plan-price {
-    font-size: 1.4rem;
-    color: #ffffff;
+    font-size: 1rem;
+    color: #25d366; /* Color verde para destacar */
     margin-bottom: 15px;
   }
 
-  .plan-price .price-amount {
-    font-size: 3.5rem; /* Tamaño más grande */
-    font-weight: bold;
-    color: #25d366;
-    background: rgba(37, 211, 102, 0.2); /* Fondo verde claro */
-    padding: 20px 30px; /* Más espacio alrededor */
-    border-radius: 12px; /* Bordes redondeados */
-    display: inline-block;
-  }
-
-  .plan-price .price-period {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.8);
-    margin-top: 5px;
-    display: block;
+  .plan-features {
+    font-size: 0.9rem; /* Reducir tamaño de texto */
+    color: #ffffff;
+    margin-bottom: 15px;
   }
 
   .plan-features ul {
     list-style: none;
     padding: 0;
-    margin: 0;
-    text-align: left;
   }
 
   .plan-features li {
-    margin-bottom: 10px;
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-  }
-
-  .plan-features li::before {
-    content: '✔';
-    color: #25d366;
-    margin-right: 10px;
-    font-size: 1.2rem;
+    margin-bottom: 5px;
   }
 
   .plan-actions {
     display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
+    justify-content: space-between;
+    align-items: center;
   }
 
-  /* Botón de WhatsApp */
-.whatsapp-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px; /* Espacio entre el logo y el texto */
-  padding: 14px 24px; /* Más espacio interno */
-  background: linear-gradient(135deg, #25d366, #128C7E); /* Colores de WhatsApp */
-  color: #ffffff;
-  font-weight: bold;
-  font-size: 1.1rem;
-  border-radius: 12px; /* Bordes redondeados */
-  text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 6px 15px rgba(37, 211, 102, 0.4); /* Sombra verde */
-}
+  .plan-actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+  }
 
-.whatsapp-button:hover {
-  background: linear-gradient(135deg, #1da851, #0d6f5a); /* Verde más oscuro al hover */
-  transform: translateY(-3px); /* Efecto de elevación */
-  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.5); /* Sombra más pronunciada */
-}
+  .whatsapp-button {
+    background: #25d366; /* Color verde de WhatsApp */
+  }
 
-.whatsapp-button:active {
-  transform: translateY(1px); /* Efecto de clic */
-  box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); /* Sombra reducida */
-}
+  .whatsapp-button:hover {
+    background: #1da851; /* Color más oscuro al pasar el mouse */
+  }
 
-/* Botón de Mercado Pago */
-.mercadopago-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px; /* Espacio entre el logo y el texto */
-  padding: 14px 24px; /* Más espacio interno */
-  background: linear-gradient(135deg, #009ee3, #007bbd); /* Colores de Mercado Pago */
-  color: #ffffff;
-  font-weight: bold;
-  font-size: 1.1rem;
-  border-radius: 12px; /* Bordes redondeados */
-  text-decoration: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 6px 15px rgba(0, 158, 227, 0.4); /* Sombra azul */
-}
+  .mercadopago-button {
+    background: #0077ff; /* Color azul de Mercado Pago */
+  }
 
-.mercadopago-button:hover {
-  background: linear-gradient(135deg, #007bbd, #005f99); /* Azul más oscuro al hover */
-  transform: translateY(-3px); /* Efecto de elevación */
-  box-shadow: 0 8px 20px rgba(0, 158, 227, 0.5); /* Sombra más pronunciada */
-}
+  .mercadopago-button:hover {
+    background: #005bb5; /* Color más oscuro al pasar el mouse */
+  }
 
-.mercadopago-button:active {
-  transform: translateY(1px); /* Efecto de clic */
-  box-shadow: 0 4px 10px rgba(0, 158, 227, 0.3); /* Sombra reducida */
-}
+  .button-icon {
+    width: 20px; /* Tamaño más pequeño para los íconos */
+    margin-right: 5px;
+  }
 
-/* Estilo para el ícono dentro del botón */
-.button-icon {
-  width: 28px; /* Tamaño del logo */
-  height: 28px;
-  border-radius: 50%; /* Hacer el logo circular */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para el logo */
-}
-
-/* User section with improved styling */
+  /* User section with improved styling */
 .user-section {
     display: flex;
     align-items: center;
