@@ -201,10 +201,12 @@
       <h2>Crear cuenta</h2>
       <form id="registro-form">
         <label for="registro-email">Email:</label>
-        <input type="email" id="registro-email" required>
+        <input type="email" id="registro-email" placeholder="Ingresa tu email" required>
+        
         <label for="registro-password">Contraseña:</label>
-        <input type="password" id="registro-password" required>
-        <button type="submit">Registrarse</button>
+        <input type="password" id="registro-password" placeholder="Ingresa tu contraseña" required>
+        
+        <button type="submit" class="btn btn-primary">Registrarse</button>
       </form>
     </div>
   </div>
@@ -450,70 +452,76 @@
 
   // Function to generate a new link
   async function generarLink() {
-    const numeros = Array.from(document.querySelectorAll('.numero'))
-      .map(input => input.value.trim())
-      .filter(num => num !== '' && num !== '+549'); // Filtra números vacíos y el valor predeterminado
+  const numeros = Array.from(document.querySelectorAll('.numero'))
+    .map(input => input.value.trim())
+    .filter(num => num !== '' && num !== '+549'); // Filtra números vacíos y el valor predeterminado
 
-    const mensaje = document.getElementById('mensaje').value.trim();
-    const email = localStorage.getItem('usuarioEmail'); // Obtener el email desde localStorage
-    const generarButton = document.querySelector('button[onclick="generarLink()"]');
+  const mensaje = document.getElementById('mensaje').value.trim();
+  const email = localStorage.getItem('usuarioEmail'); // Obtener el email desde localStorage
+  const generarButton = document.querySelector('button[onclick="generarLink()"]');
 
-    if (!email) {
-      showNotification('Por favor, inicia sesión antes de generar un link.', 'error');
-      return;
-    }
-
-    if (numeros.length === 0) {
-      showNotification('Por favor, ingresa al menos un número válido.', 'error');
-      return;
-    }
-
-    // Mostrar estado de carga
-    generarButton.innerHTML = '<span class="loading"></span> Generando...';
-    generarButton.disabled = true;
-
-    try {
-      const response = await fetch('/api/soporte', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, numeros, mensaje }), // Enviar el email en el cuerpo de la solicitud
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Guardar los datos en localStorage
-        localStorage.setItem(`linkGenerado_${email}`, data.link);
-        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
-        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-        localStorage.setItem(`linkID_${email}`, data.id);
-
-        // Mostrar el link generado en la caja de salida
-        const output = document.getElementById('output');
-        output.innerHTML = `
-          <p>Tu link generado:</p>
-          <a href="${data.link}" target="_blank">${data.link}</a>
-        `;
-        output.style.display = 'block';
-
-        // Mostrar los detalles del link
-        mostrarDetallesLink(data);
-
-        // Mostrar el apartado de "Editar Link"
-        mostrarEditarLink(numeros, mensaje);
-
-        showNotification('¡Link generado con éxito!');
-      } else {
-        showNotification(data.error, 'error');
-      }
-    } catch (error) {
-      console.error('Error generando link:', error);
-      showNotification('Error al generar el link. Inténtalo de nuevo.', 'error');
-    } finally {
-      generarButton.innerHTML = 'Generar Link';
-      generarButton.disabled = false;
-    }
+  if (!email) {
+    showNotification('Por favor, inicia sesión antes de generar un link.', 'error');
+    return;
   }
+
+  // Verificar si el límite de números es igual a 1
+  if (limiteNumeros === 1) {
+    showNotification('Comprar plan pro para generar un link.', 'error');
+    return;
+  }
+
+  if (numeros.length === 0) {
+    showNotification('Por favor, ingresa al menos un número válido.', 'error');
+    return;
+  }
+
+  // Mostrar estado de carga
+  generarButton.innerHTML = '<span class="loading"></span> Generando...';
+  generarButton.disabled = true;
+
+  try {
+    const response = await fetch('/api/soporte', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, numeros, mensaje }), // Enviar el email en el cuerpo de la solicitud
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Guardar los datos en localStorage
+      localStorage.setItem(`linkGenerado_${email}`, data.link);
+      localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+      localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
+      localStorage.setItem(`linkID_${email}`, data.id);
+
+      // Mostrar el link generado en la caja de salida
+      const output = document.getElementById('output');
+      output.innerHTML = `
+        <p>Tu link generado:</p>
+        <a href="${data.link}" target="_blank">${data.link}</a>
+      `;
+      output.style.display = 'block';
+
+      // Mostrar los detalles del link
+      mostrarDetallesLink(data);
+
+      // Mostrar el apartado de "Editar Link"
+      mostrarEditarLink(numeros, mensaje);
+
+      showNotification('¡Link generado con éxito!');
+    } else {
+      showNotification(data.error, 'error');
+    }
+  } catch (error) {
+    console.error('Error generando link:', error);
+    showNotification('Error al generar el link. Inténtalo de nuevo.', 'error');
+  } finally {
+    generarButton.innerHTML = 'Generar Link';
+    generarButton.disabled = false;
+  }
+}
 
   // Function to show the edit link form
   function mostrarEditarLink(numeros, mensaje) {
@@ -735,7 +743,54 @@
     }
   };
 
-  document.getElementById('crear-cuenta-link').addEventListener('click', function(e) {
+  // Escuchar el submit del formulario de registro
+document.getElementById('registro-form').addEventListener('submit', async function (e) {
+  e.preventDefault(); // Evita el refresh
+
+  const email = document.getElementById('registro-email').value.trim();
+  const password = document.getElementById('registro-password').value.trim();
+
+  if (!email || !password) {
+    alert('Por favor, completá todos los campos.');
+    return;
+  }
+
+  try {
+    // Enviar POST para crear la cuenta
+    const registroResponse = await fetch(`${window.location.origin}/api/registro`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const registroData = await registroResponse.json();
+
+    if (registroResponse.ok) {
+      // Intentar iniciar sesión automáticamente
+      const loginResponse = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const loginData = await loginResponse.json();
+
+      if (loginResponse.ok) {
+        alert('Registrado e iniciado sesión correctamente.');
+        window.location.href = '/'; // Redirigir al panel
+      } else {
+        alert('Cuenta creada, pero no se pudo iniciar sesión automáticamente.');
+      }
+    } else {
+      alert(registroData.error || 'No se pudo crear la cuenta.');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error de conexión al crear la cuenta.');
+  }
+});
+
+  document.getElementById('crear-cuenta-link').addEventListener('click', function (e) {
   e.preventDefault();
   document.getElementById('login-container').style.display = 'none';
   document.getElementById('registro-container').style.display = 'block';
