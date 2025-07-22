@@ -753,6 +753,12 @@ function generarPlanesPro() {
     const planCard = document.createElement('div');
     planCard.classList.add('plan-card');
 
+    // Link específico para el plan de $6 USD
+    const mercadoPagoLink =
+      i === 2
+        ? 'https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=2c938084981e9efe01981ed46e770002'
+        : 'https://www.mercadopago.com.ar'; // Link genérico para otros planes
+
     planCard.innerHTML = `
       <div class="plan-name">Plan PRO</div>
       <div class="plan-price">
@@ -777,7 +783,7 @@ function generarPlanesPro() {
         </a>
 
         <!-- Botón de Mercado Pago -->
-        <a href="https://www.mercadopago.com.ar" class="mercadopago-button" target="_blank">
+        <a href="${mercadoPagoLink}" class="mercadopago-button" target="_blank">
           <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="Mercado Pago Logo" class="button-icon">
           Pagar con Mercado Pago
         </a>
