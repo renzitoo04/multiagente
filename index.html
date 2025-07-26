@@ -743,7 +743,61 @@
     }
   };
 
-  // Escuchar el submit del formulario de registro
+  // Generar dinámicamente las cajas de planes PRO
+function generarPlanesPro() {
+  const plansContainer = document.querySelector('.plans-container');
+  plansContainer.innerHTML = ''; // Limpiar contenido previo
+
+  for (let i = 2; i <= 20; i++) {
+    const precio = i * 3; // $3 USD por cada número
+    const planCard = document.createElement('div');
+    planCard.classList.add('plan-card');
+
+    // Link específico para el plan de $6 USD
+    const mercadoPagoLink =
+      i === 2
+        ? 'https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=2c938084981e9efe01981ed46e770002'
+        : 'https://www.mercadopago.com.ar'; // Link genérico para otros planes
+
+    planCard.innerHTML = `
+      <div class="plan-name">Plan PRO</div>
+      <div class="plan-price">
+        <span class="price-amount">$${precio} USD</span>
+        <span class="price-period">POR ${i} NÚMEROS / MES</span>
+      </div>
+      <div class="plan-features">
+        <ul>
+          <li>Acceso a links multiagente</li>
+          <li>Soporte técnico por WhatsApp</li>
+          <li>Estadísticas de uso</li>
+          <li>Panel de administración</li>
+          <li>Distribución equitativa de mensajes</li>
+          <li>Personalización de links</li>
+        </ul>
+      </div>
+      <div class="plan-actions">
+        <!-- Botón de WhatsApp -->
+        <a href="https://wa.me/+5491123456789?text=Hola%2C%20quiero%20contratar%20el%20plan%20de%20${i}%20números" class="whatsapp-button" target="_blank">
+          <img src="https://thumbs.dreamstime.com/b/logotipo-de-icono-whatsapp-verde-medios-sociales-puedes-usar-donde-quieras-234325955.jpg" alt="WhatsApp Logo" class="button-icon">
+          Contratar por WhatsApp
+        </a>
+
+        <!-- Botón de Mercado Pago -->
+        <a href="${mercadoPagoLink}" class="mercadopago-button" target="_blank">
+          <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="Mercado Pago Logo" class="button-icon">
+          Pagar con Mercado Pago
+        </a>
+      </div>
+    `;
+
+    plansContainer.appendChild(planCard);
+  }
+}
+
+// Llamar a la función para generar los planes al cargar la página
+document.addEventListener('DOMContentLoaded', generarPlanesPro);
+
+// Escuchar el submit del formulario de registro
 document.getElementById('registro-form').addEventListener('submit', async function (e) {
   e.preventDefault(); // Evita el refresh
 
