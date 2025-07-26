@@ -17,34 +17,60 @@ export default async function handler(req, res) {
     const eventType = body.type;
     const paymentStatus = body.data?.status;
     const payerEmail = body.data?.payer?.email;
+    const externalReference = body.data?.external_reference;
 
     // Validar los datos clave
-    if (eventType === 'payment.updated' && paymentStatus === 'approved' && payerEmail) {
+    if (eventType === 'payment.updated' && paymentStatus === 'approved' && payerEmail && externalReference) {
+      // Mapeo de planes
+      const planMap = {
+        plan_2_numeros: 2,
+        plan_3_numeros: 3,
+        plan_4_numeros: 4,
+        plan_5_numeros: 5,
+        plan_20_numeros: 20,
+      };
+
+      const limiteNumeros = planMap[externalReference];
+      if (!limiteNumeros) {
+        return res.status(400).json({ error: 'Referencia externa inválida.' });
+      }
+
       // Calcular nueva fecha (30 días desde hoy)
       const hoy = new Date();
       const nuevaFecha = new Date(hoy.setMonth(hoy.getMonth() + 1));
       const fechaFormateada = nuevaFecha.toISOString().split('T')[0];
 
       // Actualizar Supabase
-      const { error } = await supabase
+      const { data: usuario, error: errorUsuario } = await supabase
         .from('usuarios')
-        .update({ suscripcion_valida_hasta: fechaFormateada })
-        .eq('email', payerEmail);
+        .select('email')
+        .eq('email', payerEmail)
+        .single();
 
-      if (error) {
-        console.error('❌ Error actualizando Supabase:', error);
-        return res.status(500).json({ error: 'No se pudo actualizar Supabase' });
+      if (errorUsuario || !usuario) {
+        console.error('❌ Usuario no encontrado:', errorUsuario);
+        return res.status(404).json({ error: 'Usuario no encontrado.' });
       }
 
-      console.log(`✅ Suscripción actualizada para ${payerEmail} hasta ${fechaFormateada}`);
-      return res.status(200).json({ message: 'Suscripción actualizada correctamente' });
+      const { error: errorUpdate } = await supabase
+        .from('usuarios')
+        .update({ limiteNumeros, suscripcion_valida_hasta: fechaFormateada })
+        .eq('email', payerEmail);
+
+      if (errorUpdate) {
+        console.error('❌ Error actualizando Supabase:', errorUpdate);
+        return res.status(500).json({ error: 'No se pudo actualizar Supabase.' });
+      }
+
+      console.log(`✅ Usuario actualizado: ${payerEmail}, limiteNumeros: ${limiteNumeros}, suscripcion_valida_hasta: ${fechaFormateada}`);
+      return res.status(200).json({ success: true });
     }
 
     // Si no es un pago aprobado o faltan datos, ignorar
-    return res.status(200).json({ message: 'Evento ignorado o datos incompletos' });
+    return res.status(200).json({ message: 'Evento ignorado o datos incompletos.' });
 
   } catch (err) {
     console.error('❌ Error en webhook:', err);
-    return res.status(500).json({ error: 'Error interno en el webhook' });
+    return res.status(500).json({ error: 'Error interno en el webhook.' });
   }
 }
