@@ -352,9 +352,9 @@
           loginInfo.style.display = 'none';
         }
 
-        // Mostrar el generador y ocultar el login
-        document.getElementById('login-container').style.display = 'none';
-        document.getElementById('generador-container').style.display = 'block';
+        // Redirigir al panel después de iniciar sesión
+        window.location.href = '/panel';
+
 
         // Configurar información del usuario
         document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
@@ -705,6 +705,22 @@
       }
     } catch (error) {
       console.error('Error al recuperar los detalles del link:', error);
+    }
+  }
+
+  const currentPath = window.location.pathname;
+
+  if (currentPath === '/panel') {
+    const email = localStorage.getItem('usuarioEmail');
+    if (email) {
+      // Mostrar el panel directamente si ya está logueado
+      document.getElementById('login-container').style.display = 'none';
+      document.getElementById('generador-container').style.display = 'block';
+      document.getElementById('user-email-display').textContent = email;
+      document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+    } else {
+      // Si no está logueado, redirigir al inicio
+      window.location.href = '/';
     }
   }
 });
