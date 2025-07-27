@@ -362,6 +362,10 @@
 
         // Mostrar notificación de éxito
         showNotification('Sesión iniciada correctamente');
+        if (loginExitoso) {
+          window.location.href = "/panel";
+        }
+
       } else {
         loginError.textContent = data.error;
         loginError.style.display = 'block';
