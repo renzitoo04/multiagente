@@ -1,4 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
+import mercadopago from 'mercadopago';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+mercadopago.configure({
+  access_token: process.env.MERCADOPAGO_ACCESS_TOKEN,
+});
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
