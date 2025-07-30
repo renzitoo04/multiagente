@@ -49,10 +49,11 @@
             </a>
 
             <!-- Botón de Mercado Pago con el logo correcto -->
-            <a href="https://www.mercadopago.com.ar" class="mercadopago-button" target="_blank">
-              <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="Mercado Pago Logo" class="button-icon">
-              Pagar con Mercado Pago
-            </a>
+           <button onclick="pagar('plan_2_numeros')" class="mercadopago-button">
+             <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="Mercado Pago Logo" class="button-icon">
+             Pagar con Mercado Pago
+           </button>
+
           </div>
         </div>
       </div>
@@ -208,14 +209,6 @@
         
         <button type="submit" class="btn btn-primary">Registrarse</button>
       </form>
-    </div>
-
-    <!-- Payment buttons for Pro plans -->
-    <div class="payment-buttons" style="display:none;">
-      <h2>Elige tu Plan Pro</h2>
-      <button onclick="pagar('plan_2_numeros')">Pagar $6 USD</button>
-      <button onclick="pagar('plan_3_numeros')">Pagar $9 USD</button>
-      <button onclick="pagar('plan_4_numeros')">Pagar $12 USD</button>
     </div>
   </div>
 
@@ -779,12 +772,7 @@ function generarPlanesPro() {
     const planCard = document.createElement('div');
     planCard.classList.add('plan-card');
 
-    // Link específico para el plan de $6 USD
-    const mercadoPagoLink =
-      i === 2
-        ? 'https://mpago.la/2vHAzEk'
-        : 'https://www.mercadopago.com.ar'; // Link genérico para otros planes
-
+    
     planCard.innerHTML = `
       <div class="plan-name">Plan PRO</div>
       <div class="plan-price">
@@ -896,6 +884,30 @@ document.getElementById('registro-form').addEventListener('submit', async functi
   }
 }
   </style>
+<script>
+  async function pagar(plan) {
+    try {
+      const res = await fetch('/api/generar-link', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ plan })
+      });
+
+      const data = await res.json();
+
+      if (data.init_point) {
+        window.location.href = data.init_point; // redirige al link real de Mercado Pago
+      } else {
+        alert('Error al generar el link de pago');
+      }
+    } catch (err) {
+      console.error('Error en el pago:', err);
+      alert('Hubo un problema al generar el link de pago.');
+    }
+  }
+</script>
   
 </body>
 </html>
