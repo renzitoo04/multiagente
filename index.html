@@ -769,10 +769,11 @@ function generarPlanesPro() {
 
   for (let i = 2; i <= 20; i++) {
     const precio = i * 3; // $3 USD por cada número
+    const mercadoPagoLink = `https://linkify-backend.vercel.app/api/generar-link-auto?plan=plan_${i}_numeros`;
+
     const planCard = document.createElement('div');
     planCard.classList.add('plan-card');
 
-    
     planCard.innerHTML = `
       <div class="plan-name">Plan PRO</div>
       <div class="plan-price">
@@ -807,6 +808,7 @@ function generarPlanesPro() {
     plansContainer.appendChild(planCard);
   }
 }
+
 
 // Llamar a la función para generar los planes al cargar la página
 document.addEventListener('DOMContentLoaded', generarPlanesPro);
