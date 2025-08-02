@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import mercadopago from 'mercadopago';
+import dotenv from 'dotenv';
+dotenv.config();
 
 mercadopago.configure({
   access_token: process.env.MERCADO_PAGO_TOKEN
