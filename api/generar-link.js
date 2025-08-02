@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import mercadopago from 'mercadopago';
 
 mercadopago.configure({
