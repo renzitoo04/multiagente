@@ -889,25 +889,19 @@ document.getElementById('registro-form').addEventListener('submit', async functi
   </style>
 <script>
   async function pagar(plan) {
-    try {
-      const res = await fetch('/api/generar-link', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ plan })
-      });
+    const res = await fetch('/api/generar-link', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ plan })
+    });
 
-      const data = await res.json();
-
-      if (data.init_point) {
-        window.location.href = data.init_point; // redirige al link real de Mercado Pago
-      } else {
-        alert('Error al generar el link de pago');
-      }
-    } catch (err) {
-      console.error('Error en el pago:', err);
-      alert('Hubo un problema al generar el link de pago.');
+    const data = await res.json();
+    if (data.init_point) {
+      window.location.href = data.init_point; // Redirige al link de pago
+    } else {
+      alert('Error generando el link de pago');
     }
   }
 </script>
