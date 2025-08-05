@@ -889,21 +889,21 @@ document.getElementById('registro-form').addEventListener('submit', async functi
   </style>
 <script>
   async function pagar(plan) {
-    const res = await fetch('/api/generar-link', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ plan })
-    });
+    try {
+      const res = await fetch(`/api/generar-link?plan=${plan}`);
+      const data = await res.json();
 
-    const data = await res.json();
-    if (data.init_point) {
-      window.location.href = data.init_point; // Redirige al link de pago
-    } else {
-      alert('Error generando el link de pago');
+      if (res.ok && data.init_point) {
+        window.open(data.init_point, '_blank');
+      } else {
+        alert(data.error || 'Error al generar el link de pago');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      alert('Error de red al intentar generar el link de pago.');
     }
-  }
+}
+
 </script>
   
 </body>
