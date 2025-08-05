@@ -1,11 +1,9 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import mercadopago from 'mercadopago';
+import { Preference } from 'mercadopago';
 
-const mp = mercadopago.configure({
-  access_token: process.env.MERCADO_PAGO_TOKEN
-});
+const preference = new Preference({ accessToken: process.env.MERCADO_PAGO_TOKEN });
 
 export default async function handler(req, res) {
   const plan = req.method === 'POST' ? req.body.plan : req.query.plan;
@@ -23,26 +21,26 @@ export default async function handler(req, res) {
   }
 
   try {
-    const preference = {
-      items: [
-        {
-          title: planInfo.title,
-          quantity: 1,
-          unit_price: planInfo.price
-        }
-      ],
-      external_reference: plan,
-      back_urls: {
-        success: 'https://www.linkify.com.ar/panel',
-        failure: 'https://www.linkify.com.ar/fallo',
-        pending: 'https://www.linkify.com.ar/pendiente'
-      },
-      auto_return: 'approved'
-    };
+    const response = await preference.create({
+      body: {
+        items: [
+          {
+            title: planInfo.title,
+            quantity: 1,
+            unit_price: planInfo.price
+          }
+        ],
+        external_reference: plan,
+        back_urls: {
+          success: 'https://www.linkify.com.ar/panel',
+          failure: 'https://www.linkify.com.ar/fallo',
+          pending: 'https://www.linkify.com.ar/pendiente'
+        },
+        auto_return: 'approved'
+      }
+    });
 
-    const response = await mp.preferences.create(preference);
-
-    return res.status(200).json({ init_point: response.body.init_point });
+    return res.status(200).json({ init_point: response.init_point });
   } catch (err) {
     console.error('Error al crear preferencia de Mercado Pago:', err);
     return res.status(500).json({ error: 'Error al generar el link de pago', detalles: err.message });
