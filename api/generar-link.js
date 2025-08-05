@@ -3,8 +3,7 @@ dotenv.config();
 
 import mercadopago from 'mercadopago';
 
-
-mercadopago.configure({
+const mp = mercadopago.configure({
   access_token: process.env.MERCADO_PAGO_TOKEN
 });
 
@@ -15,7 +14,6 @@ export default async function handler(req, res) {
     plan_2_numeros: { title: 'Plan PRO - 2 números', price: 6 },
     plan_3_numeros: { title: 'Plan PRO - 3 números', price: 9 },
     plan_4_numeros: { title: 'Plan PRO - 4 números', price: 12 },
-    // Agregá más planes si querés
   };
 
   const planInfo = planes[plan];
@@ -42,8 +40,7 @@ export default async function handler(req, res) {
       auto_return: 'approved'
     };
 
-    const response = await mercadopago.preferences.create(preference);
-    console.log('Link generado correctamente:', response.body.init_point);
+    const response = await mp.preferences.create(preference);
 
     return res.status(200).json({ init_point: response.body.init_point });
   } catch (err) {
@@ -51,4 +48,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Error al generar el link de pago', detalles: err.message });
   }
 }
-
