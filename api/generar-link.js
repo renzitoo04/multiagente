@@ -7,7 +7,10 @@ const preference = new Preference({ accessToken: process.env.MERCADO_PAGO_TOKEN 
 
 export default async function handler(req, res) {
   const plan = req.method === 'POST' ? req.body.plan : req.query.plan;
-
+  if (!plan) {
+    console.warn("❌ Plan no especificado.");
+    return res.status(400).json({ error: 'Falta el parámetro "plan".' });
+  }
   const planes = {
     plan_2_numeros: { title: 'Plan PRO - 2 números', price: 6 },
     plan_3_numeros: { title: 'Plan PRO - 3 números', price: 9 },
