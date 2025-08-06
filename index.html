@@ -48,11 +48,33 @@
               Contratar por WhatsApp
             </a>
 
-            <!-- Botón de Mercado Pago con el logo correcto -->
-           <button onclick="pagar('plan_2_numeros')" class="mercadopago-button">
-             <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="Mercado Pago Logo" class="button-icon">
-             Pagar con Mercado Pago
-           </button>
+            <!-- Botón de Mercado Pago -->
+            <button id="mp-button" class="mercadopago-button">
+              <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="Mercado Pago Logo" class="button-icon">
+              Pagar con Mercado Pago
+            </button>
+
+            <script>
+              document.getElementById("mp-button").addEventListener("click", async () => {
+                try {
+                  // Abrimos la ventana inmediatamente
+                  const nuevaVentana = window.open('', '_blank');
+
+                  const res = await fetch("/api/generar-link?plan=plan_2_numeros");
+                  const data = await res.json();
+
+                  if (res.ok && data.init_point) {
+                    nuevaVentana.location.href = data.init_point;
+                  } else {
+                    nuevaVentana.close();
+                    alert(data.error || "Error al generar el link de pago");
+                  }
+                } catch (err) {
+                  alert("Error al intentar generar el link de pago.");
+                }
+              });
+            </script>
+
 
           </div>
         </div>
