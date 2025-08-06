@@ -890,24 +890,24 @@ document.getElementById('registro-form').addEventListener('submit', async functi
 <script>
   async function pagar(plan) {
     try {
-      // Abrí una pestaña vacía de inmediato para evitar que el navegador la bloquee
+      // Abrí la pestaña inmediatamente para que el navegador no la bloquee
       const nuevaVentana = window.open('', '_blank');
 
       const res = await fetch(`/api/generar-link?plan=${plan}`);
       const data = await res.json();
 
       if (res.ok && data.init_point) {
-        window.open(data.init_point, '_blank');
+        nuevaVentana.location.href = data.init_point;
       } else {
+        nuevaVentana.close(); // Cierra si hubo error
         alert(data.error || 'Error al generar el link de pago');
       }
     } catch (err) {
-      console.error('Error:', err);
       alert('Error de red al intentar generar el link de pago.');
     }
-}
-
+  }
 </script>
+
   
 </body>
 </html>
