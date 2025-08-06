@@ -890,6 +890,9 @@ document.getElementById('registro-form').addEventListener('submit', async functi
 <script>
   async function pagar(plan) {
     try {
+      // Abrí una pestaña vacía de inmediato para evitar que el navegador la bloquee
+      const nuevaVentana = window.open('', '_blank');
+
       const res = await fetch(`/api/generar-link?plan=${plan}`);
       const data = await res.json();
 
