@@ -66,6 +66,7 @@
                   });
 
                   const data = await response.json();
+                  console.log('Respuesta del backend:', data);
 
                   if (data.init_point) {
                     // Redirige al usuario al link de pago
