@@ -913,26 +913,6 @@ document.getElementById('registro-form').addEventListener('submit', async functi
   }
 }
   </style>
-<script>
-  async function pagar(plan) {
-    try {
-      // Abrí la pestaña inmediatamente para que el navegador no la bloquee
-      const nuevaVentana = window.open('', '_blank');
-
-      const res = await fetch(`/api/generar-link?plan=${plan}`);
-      const data = await res.json();
-
-      if (res.ok && data.init_point) {
-        nuevaVentana.location.href = data.init_point;
-      } else {
-        nuevaVentana.close(); // Cierra si hubo error
-        alert(data.error || 'Error al generar el link de pago');
-      }
-    } catch (err) {
-      alert('Error de red al intentar generar el link de pago.');
-    }
-  }
-</script>
 
   
 </body>
