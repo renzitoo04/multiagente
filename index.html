@@ -57,20 +57,25 @@
             <script>
               document.getElementById("mp-button").addEventListener("click", async () => {
                 try {
-                  // Abrimos la ventana inmediatamente
-                  const nuevaVentana = window.open('', '_blank');
+                  const response = await fetch('/api/generar-link', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ plan: 'plan_2_numeros' }) // Cambia el plan según sea necesario
+                  });
 
-                  const res = await fetch("/api/generar-link?plan=plan_2_numeros");
-                  const data = await res.json();
+                  const data = await response.json();
 
-                  if (res.ok && data.init_point) {
-                    nuevaVentana.location.href = data.init_point;
+                  if (data.init_point) {
+                    // Redirige al usuario al link de pago
+                    window.location.href = data.init_point;
                   } else {
-                    nuevaVentana.close();
-                    alert(data.error || "Error al generar el link de pago");
+                    alert('Error al generar el link de pago. Intenta de nuevo.');
                   }
                 } catch (err) {
-                  alert("Error al intentar generar el link de pago.");
+                  console.error('Error al pagar:', err);
+                  alert('Hubo un error al intentar pagar el plan.');
                 }
               });
             </script>
