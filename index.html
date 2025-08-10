@@ -887,29 +887,26 @@ document.getElementById('registro-form').addEventListener('submit', async functi
 }
   </style>
 <script>
-                  async function pagar(plan) {
-                    console.log('Botón de Mercado Pago presionado, plan:', plan); // Confirmar ejecución
-                    try {
-                      const res = await fetch('/api/generar-link', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ plan })
-                      });
+  async function pagar(plan) {
+    try {
+      const res = await fetch('/api/generar-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan })
+      });
 
-                      const data = await res.json();
-                      console.log('Respuesta del backend:', data);
+      const data = await res.json();
 
-                      if (data.init_point) {
-                        // Redirige al link real de Mercado Pago
-                        window.location.href = data.init_point;
-                      } else {
-                        alert('Error generando el link de pago');
-                      }
-                    } catch (error) {
-                      console.error('Error en el pago:', error);
-                      alert('Hubo un problema al generar el link de pago.');
-                    }
-                  }
+      if (data.init_point) {
+        window.location.href = data.init_point; // redirige al checkout real
+      } else {
+        alert('Error generando el link de pago');
+      }
+    } catch (err) {
+      console.error('Error en el pago:', err);
+      alert('Hubo un problema al generar el link de pago.');
+    }
+  }
 
   // Vincular el evento al botón de Mercado Pago
   document.getElementById('mp-button').addEventListener('click', (event) => {
