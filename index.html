@@ -896,6 +896,7 @@ document.getElementById('registro-form').addEventListener('submit', async functi
                       });
 
                       const data = await res.json();
+                      console.log('Respuesta del backend:', data);
 
                       if (data.init_point) {
                         // Redirige al link real de Mercado Pago
