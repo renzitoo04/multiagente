@@ -49,36 +49,14 @@
             </a>
 
             <!-- Botón de Mercado Pago -->
-              <button onclick="pagar('plan_2_numeros')" class="mercadopago-button">
+            <a href="#" onclick="event.preventDefault(); pagar('plan_2_numeros')" class="mercadopago-button">
                 <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="Mercado Pago Logo" class="button-icon">
                 Pagar con Mercado Pago
-              </button>
+            </a>   
 
 
-              <script>
-                async function pagar(plan) {
-                  try {
-                    const res = await fetch('/api/generar-link', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ plan })
-                    });
 
-                    const data = await res.json();
-
-                    if (data.init_point) {
-                      // Redirige al link real de Mercado Pago
-                      window.location.href = data.init_point;
-                    } else {
-                      alert('Error generando el link de pago');
-                    }
-                  } catch (error) {
-                    console.error('Error en el pago:', error);
-                    alert('Hubo un problema al generar el link de pago.');
-                  }
-                }
-              </script>
-
+              
 
 
           </div>
@@ -914,6 +892,29 @@ document.getElementById('registro-form').addEventListener('submit', async functi
   }
 }
   </style>
+<script>
+                  async function pagar(plan) {
+                    try {
+                      const res = await fetch('/api/generar-link', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ plan })
+                      });
+
+                      const data = await res.json();
+
+                      if (data.init_point) {
+                        // Redirige al link real de Mercado Pago
+                        window.location.href = data.init_point;
+                      } else {
+                        alert('Error generando el link de pago');
+                      }
+                    } catch (error) {
+                      console.error('Error en el pago:', error);
+                      alert('Hubo un problema al generar el link de pago.');
+                    }
+                  }
+</script>
 
   
 </body>
