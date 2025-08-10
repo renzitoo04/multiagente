@@ -888,6 +888,7 @@ document.getElementById('registro-form').addEventListener('submit', async functi
   </style>
 <script>
                   async function pagar(plan) {
+                    console.log('Botón de Mercado Pago presionado, plan:', plan); // Confirmar ejecución
                     try {
                       const res = await fetch('/api/generar-link', {
                         method: 'POST',
@@ -909,6 +910,12 @@ document.getElementById('registro-form').addEventListener('submit', async functi
                       alert('Hubo un problema al generar el link de pago.');
                     }
                   }
+
+  // Vincular el evento al botón de Mercado Pago
+  document.getElementById('mp-button').addEventListener('click', (event) => {
+    event.preventDefault();
+    pagar('plan_2_numeros'); // Cambia el plan según sea necesario
+  });
 </script>
 
   
