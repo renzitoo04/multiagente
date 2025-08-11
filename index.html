@@ -49,10 +49,11 @@
             </a>
 
          
-            <button type="button" onclick="pagar('plan_2_numeros')" class="mercadopago-button">
+            <a href="#" onclick="pagar('plan_2_numeros')" class="mercadopago-button">
               <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="Mercado Pago Logo" class="button-icon">
               Pagar con Mercado Pago
-            </button>
+            </a>
+
 
           </div>
         </div>
@@ -889,7 +890,6 @@ document.getElementById('registro-form').addEventListener('submit', async functi
   </style>
 <script>
   async function pagar(plan) {
-    console.log('Botón de Mercado Pago presionado, plan:', plan); // Confirmar ejecución
     try {
       const res = await fetch('/api/generar-link', {
         method: 'POST',
@@ -898,11 +898,9 @@ document.getElementById('registro-form').addEventListener('submit', async functi
       });
 
       const data = await res.json();
-      console.log('Respuesta del backend:', data);
 
       if (data.init_point) {
-        console.log('Redirigiendo a:', data.init_point);
-        window.location.href = data.init_point;
+        window.location.href = data.init_point; // Esto redirige a Mercado Pago
       } else {
         alert('Error generando el link de pago');
       }
@@ -912,7 +910,6 @@ document.getElementById('registro-form').addEventListener('submit', async functi
     }
   }
 </script>
-
   
 </body>
 </html>
