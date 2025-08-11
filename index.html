@@ -760,13 +760,14 @@
   };
 
   // Generar dinámicamente las cajas de planes PRO
+// Función para generar dinámicamente las cajas de planes PRO
 function generarPlanesPro() {
   const plansContainer = document.querySelector('.plans-container');
   plansContainer.innerHTML = ''; // Limpiar contenido previo
 
   for (let i = 2; i <= 20; i++) {
     const precio = i * 3; // $3 USD por cada número
-    const mercadoPagoLink = `https://www.linkify.com.ar/api/generar-link?plan=plan_${i}_numeros`;
+    const planId = `plan_${i}_numeros`;
 
     const planCard = document.createElement('div');
     planCard.classList.add('plan-card');
@@ -795,18 +796,55 @@ function generarPlanesPro() {
         </a>
 
         <!-- Botón de Mercado Pago -->
-        <a href="${mercadoPagoLink}" class="mercadopago-button" target="_blank">
+        <button class="mercadopago-button" data-plan="${planId}">
           <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="Mercado Pago Logo" class="button-icon">
           Pagar con Mercado Pago
-        </a>
+        </button>
       </div>
-
     `;
 
     plansContainer.appendChild(planCard);
   }
-}
 
+  // Agrega event listeners a los botones de Mercado Pago
+  document.querySelectorAll('.mercadopago-button').forEach(button => {
+    button.addEventListener('click', async function(e) {
+      e.preventDefault();
+      const plan = this.getAttribute('data-plan');
+      
+      try {
+        // Mostrar estado de carga
+        this.innerHTML = '<span class="loading"></span> Procesando...';
+        this.disabled = true;
+
+        const res = await fetch('/api/generar-link', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan })
+        });
+
+        const data = await res.json();
+
+        if (data.init_point) {
+          window.location.href = data.init_point; // Redirige a Mercado Pago
+        } else {
+          showNotification('Error generando el link de pago', 'error');
+          console.error('Error en la respuesta:', data);
+        }
+      } catch (error) {
+        console.error('Error en el pago:', error);
+        showNotification('Hubo un problema al generar el link de pago.', 'error');
+      } finally {
+        // Restaurar el botón
+        this.innerHTML = `
+          <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="Mercado Pago Logo" class="button-icon">
+          Pagar con Mercado Pago
+        `;
+        this.disabled = false;
+      }
+    });
+  });
+}
 
 // Llamar a la función para generar los planes al cargar la página
 document.addEventListener('DOMContentLoaded', generarPlanesPro);
@@ -884,36 +922,6 @@ document.getElementById('registro-form').addEventListener('submit', async functi
   }
 }
   </style>
-
-<a href="#" class="mercadopago-button" id="btn-pago-mp"> 
-  <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="Mercado Pago Logo" class="button-icon">
-  Pagar con Mercado Pago
-</a>
-
-<script>
-document.getElementById('btn-pago-mp').addEventListener('click', async function(e) {
-  e.preventDefault(); // Evita que el enlace navegue y muestre el JSON
-
-  try {
-    const res = await fetch('/api/generar-link', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: 'plan_2_numeros' })
-    });
-
-    const data = await res.json();
-
-    if (data.init_point) {
-      window.location.href = data.init_point; // Redirige a Mercado Pago
-    } else {
-      alert('Error generando el link de pago');
-    }
-  } catch (error) {
-    console.error('Error en el pago:', error);
-    alert('Hubo un problema al generar el link de pago.');
-  }
-});
-</script>
 
   
 </body>
