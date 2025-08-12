@@ -1,51 +1,51 @@
-import mercadopago from 'mercadopago';
 import dotenv from 'dotenv';
-
 dotenv.config();
 
-mercadopago.configure({
-  access_token: process.env.MERCADO_PAGO_TOKEN,
-});
+import { Preference } from 'mercadopago';
+
+const preference = new Preference({ accessToken: process.env.MERCADO_PAGO_TOKEN });
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método no permitido' });
+  const plan = req.method === 'POST' ? req.body.plan : req.query.plan;
+  if (!plan) {
+    console.warn("❌ Plan no especificado.");
+    return res.status(400).json({ error: 'Falta el parámetro "plan".' });
+  }
+  const planes = {
+    plan_2_numeros: { title: 'Plan PRO - 2 números', price: 6 },
+    plan_3_numeros: { title: 'Plan PRO - 3 números', price: 9 },
+    plan_4_numeros: { title: 'Plan PRO - 4 números', price: 12 },
+  };
+
+  const planInfo = planes[plan];
+
+  if (!planInfo) {
+    return res.status(400).json({ error: 'Plan no válido o no especificado.' });
   }
 
   try {
-    const { plan, email } = req.body; // ahora recibimos email del cliente
+    const response = await preference.create({
+      body: {
+        items: [
+          {
+            title: planInfo.title,
+            quantity: 1,
+            unit_price: planInfo.price
+          }
+        ],
+        external_reference: plan,
+        back_urls: {
+          success: 'https://www.linkify.com.ar/panel',
+          failure: 'https://www.linkify.com.ar/fallo',
+          pending: 'https://www.linkify.com.ar/pendiente'
+        },
+        auto_return: 'approved'
+      }
+    });
 
-    if (!plan) {
-      return res.status(400).json({ error: 'Plan requerido' });
-    }
-
-    const preference = {
-      items: [
-        {
-          title: `Suscripción ${plan}`,
-          quantity: 1,
-          currency_id: 'USD',
-          unit_price: plan === 'plan_2_numeros' ? 6 : 10 // ejemplo
-        }
-      ],
-      external_reference: plan, // 🔹 MUY IMPORTANTE
-      payer: {
-        email: email || '' // opcional, pero ayuda mucho
-      },
-      back_urls: {
-        success: 'https://www.linkify.com.ar/success',
-        failure: 'https://www.linkify.com.ar/failure',
-        pending: 'https://www.linkify.com.ar/pending'
-      },
-      auto_return: 'approved',
-      notification_url: 'https://www.linkify.com.ar/api/webhook' // tu webhook
-    };
-
-    const response = await mercadopago.preferences.create(preference);
-    return res.status(200).json({ init_point: response.body.init_point });
-
+    return res.status(200).json({ init_point: response.init_point });
   } catch (err) {
-    console.error('❌ Error generando link de pago:', err);
-    return res.status(500).json({ error: 'Error interno' });
+    console.error('Error al crear preferencia de Mercado Pago:', err);
+    return res.status(500).json({ error: 'Error al generar el link de pago', detalles: err.message });
   }
 }
