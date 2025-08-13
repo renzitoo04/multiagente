@@ -43,7 +43,7 @@ export default async function handler(req, res) {
           pending: 'https://www.linkify.com.ar/pendiente'
         },
         auto_return: 'approved',
-        notification_url: 'https://tudominio.com/api/webhook' // Asegúrate de configurar esto
+        notification_url: 'https://www.linkify.com.ar/api/webhook' // Asegúrate de configurar esto
       }
     });
 
