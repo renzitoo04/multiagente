@@ -53,7 +53,7 @@ export default async function handler(req, res) {
         .from('usuarios')
         .update({ 
           plan_activo: plan,
-          limiteNuneros: numeroLimite,
+          limiteNumeros: numeroLimite,
           subscripcion_valida_hasta: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 días
         })
         .eq('email', userEmail)
