@@ -2,8 +2,8 @@ import mercadopago from 'mercadopago';
 import { createClient } from '@supabase/supabase-js';
 
 // Configurar Mercado Pago
-mercadopago.configure({
-  access_token: process.env.MERCADO_PAGO_TOKEN
+const mp = new mercadopago.MercadoPagoConfig({
+  accessToken: process.env.MERCADO_PAGO_TOKEN
 });
 
 // Configurar Supabase
@@ -31,7 +31,9 @@ export default async function handler(req, res) {
     }
 
     // Consultar detalles del pago
-    const payment = await mercadopago.payment.findById(paymentId);
+   const paymentClient = new Payment(mp);
+   const payment = await paymentClient.get({ id: paymentId });
+
     const paymentData = payment.body;
     
     console.log('Detalles del pago:', paymentData);
