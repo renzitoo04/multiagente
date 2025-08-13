@@ -31,14 +31,13 @@ export default async function handler(req, res) {
     }
 
     // Consultar detalles del pago
-   const paymentClient = new Payment(mp);
-   const paymentResponse = await paymentClient.get({ id: paymentId });
-   const payment = paymentResponse.body;
+   const payment = await mercadopago.payment.findById(paymentId);
+   const paymentInfo = payment.body;
 
     console.log('Detalles del pago:', payment);
-    const paymentStatus = paymentData.status;
-    const userEmail = paymentData.external_reference; // Ahora contiene el email
-    const plan = paymentData.additional_info?.items?.[0]?.title || 'plan_desconocido';
+    const paymentStatus = payment.status;
+    const userEmail = payment.external_reference;
+    const plan = payment.additional_info?.items?.[0]?.title || 'plan_desconocido';
 
     if (paymentStatus === 'approved') {
       console.log(`Pago aprobado para: ${userEmail}, Plan: ${plan}`);
