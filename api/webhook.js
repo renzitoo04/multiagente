@@ -32,12 +32,10 @@ export default async function handler(req, res) {
 
     // Consultar detalles del pago
    const paymentClient = new Payment(mp);
-   const payment = await paymentClient.get({ id: paymentId });
+   const paymentResponse = await paymentClient.get({ id: paymentId });
+   const payment = paymentResponse.body;
 
-    const paymentData = payment.body;
-    
-    console.log('Detalles del pago:', paymentData);
-
+    console.log('Detalles del pago:', payment);
     const paymentStatus = paymentData.status;
     const userEmail = paymentData.external_reference; // Ahora contiene el email
     const plan = paymentData.additional_info?.items?.[0]?.title || 'plan_desconocido';
