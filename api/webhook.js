@@ -1,8 +1,7 @@
-import mercadopago from 'mercadopago';
+import mercadopago, { Payment } from 'mercadopago';
 import { createClient } from '@supabase/supabase-js';
 
 // Configurar Mercado Pago
-import mercadopago, { Payment } from 'mercadopago';
 const mp = new mercadopago.MercadoPagoConfig({
   accessToken: process.env.MERCADO_PAGO_TOKEN
 });
