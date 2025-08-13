@@ -7,10 +7,13 @@ const preference = new Preference({ accessToken: process.env.MERCADO_PAGO_TOKEN 
 
 export default async function handler(req, res) {
   const plan = req.method === 'POST' ? req.body.plan : req.query.plan;
-  if (!plan) {
-    console.warn("❌ Plan no especificado.");
-    return res.status(400).json({ error: 'Falta el parámetro "plan".' });
+  const userEmail = req.method === 'POST' ? req.body.email : req.query.email;
+  
+  if (!plan || !userEmail) {
+    console.warn("❌ Faltan parámetros requeridos.");
+    return res.status(400).json({ error: 'Falta el parámetro "plan" o "email".' });
   }
+
   const planes = {
     plan_2_numeros: { title: 'Plan PRO - 2 números', price: 6 },
     plan_3_numeros: { title: 'Plan PRO - 3 números', price: 9 },
@@ -33,13 +36,14 @@ export default async function handler(req, res) {
             unit_price: planInfo.price
           }
         ],
-        external_reference: plan,
+        external_reference: userEmail, // Usamos el email como referencia
         back_urls: {
           success: 'https://www.linkify.com.ar/panel',
           failure: 'https://www.linkify.com.ar/fallo',
           pending: 'https://www.linkify.com.ar/pendiente'
         },
-        auto_return: 'approved'
+        auto_return: 'approved',
+        notification_url: 'https://tudominio.com/api/webhook' // Asegúrate de configurar esto
       }
     });
 

@@ -811,6 +811,7 @@ function generarPlanesPro() {
     button.addEventListener('click', async function(e) {
       e.preventDefault();
       const plan = this.getAttribute('data-plan');
+      const email = localStorage.getItem('usuarioEmail');
       
       try {
         // Mostrar estado de carga
@@ -820,7 +821,7 @@ function generarPlanesPro() {
         const res = await fetch('/api/generar-link', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan })
+          body: JSON.stringify({ plan, email })
         });
 
         const data = await res.json();
