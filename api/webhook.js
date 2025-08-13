@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     }
 
     // Consultar detalles del pago
-   const payment = await mercadopago.payment.findById(paymentId);
+   const payment = await new Payment(mp).get({ id: paymentId });
    const paymentInfo = payment.body;
 
     console.log('Detalles del pago:', payment);
