@@ -9,7 +9,7 @@ const mp = new mercadopago.MercadoPagoConfig({
 // Configurar Supabase
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE
+  process.env.SUPABASE_KEY
 );
 
 export default async function handler(req, res) {
