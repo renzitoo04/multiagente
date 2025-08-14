@@ -81,7 +81,11 @@ export default async function handler(req, res) {
       const id = Math.random().toString(36).substring(2, 8);
       const linkDinamico = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
 
-      const { error: errorInsert } = await supabase
+      // Acortar el link usando TinyURL
+      const linkAcortado = await acortarLink(linkDinamico);
+
+      // Guardar el link y los datos en Supabase
+      const { error } = await supabase
         .from('link')
         .insert({ id, email, numeros: numerosValidos, mensaje, link: linkDinamico });
 
