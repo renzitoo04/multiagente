@@ -37,7 +37,6 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Datos inválidos. Asegúrate de enviar el email, números y mensaje.' });
     }
 
-    // Validar la suscripción del usuario
     try {
       const { data: usuario, error: errorUsuario } = await supabase
         .from('usuarios')
@@ -46,30 +45,20 @@ export default async function handler(req, res) {
         .single();
 
       if (errorUsuario || !usuario) {
-        console.error('Error al verificar la suscripción:', errorUsuario);
-        return res.status(500).json({ error: 'Error al verificar la suscripción.' });
+        return res.status(404).json({ error: 'Usuario no encontrado.' });
       }
 
       const hoy = new Date().toISOString().split('T')[0];
       if (!usuario.suscripcion_valida_hasta || usuario.suscripcion_valida_hasta < hoy) {
-        return res.status(403).json({
-          error: 'Tu suscripción ha vencido. Por favor, renovala para continuar.',
-        });
+        return res.status(403).json({ error: 'La suscripción ha expirado. Por favor, renueva tu plan.' });
       }
-    } catch (error) {
-      console.error('Error al verificar la suscripción:', error);
-      return res.status(500).json({ error: 'Error interno al verificar la suscripción.' });
-    }
 
-    // Filtrar números válidos
-    const numerosValidos = numeros.filter(num => num !== '' && num !== '+549');
+      const numerosValidos = numeros.filter(num => num !== '' && num !== '+549');
 
-    if (numerosValidos.length === 0) {
-      return res.status(400).json({ error: 'No se encontraron números válidos.' });
-    }
+      if (numerosValidos.length === 0) {
+        return res.status(400).json({ error: 'No se encontraron números válidos.' });
+      }
 
-    try {
-      // Verificar si el usuario ya tiene un link
       const { data: linkExistente, error: errorExistente } = await supabase
         .from('link')
         .select('id')
@@ -77,31 +66,32 @@ export default async function handler(req, res) {
         .single();
 
       if (linkExistente) {
-        return res.status(400).json({ error: 'Ya tienes un link generado. No puedes crear más de uno.' });
+        const { error: errorUpdate } = await supabase
+          .from('link')
+          .update({ numeros: numerosValidos, mensaje })
+          .eq('email', email);
+
+        if (errorUpdate) {
+          return res.status(500).json({ error: 'Error al actualizar el link.' });
+        }
+
+        return res.status(200).json({ message: 'Link actualizado correctamente.' });
       }
 
-      // Generar un ID único para el link
       const id = Math.random().toString(36).substring(2, 8);
-
-      // Crear un link dinámico que apunte al backend
       const linkDinamico = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
 
-      // Acortar el link usando TinyURL
-      const linkAcortado = await acortarLink(linkDinamico);
-
-      // Guardar el link y los datos en Supabase
-      const { error } = await supabase
+      const { error: errorInsert } = await supabase
         .from('link')
-        .insert([{ id, email, numeros: numerosValidos, mensaje, link: linkAcortado }]);
+        .insert({ id, email, numeros: numerosValidos, mensaje, link: linkDinamico });
 
-      if (error) {
-        console.error('Error al guardar en Supabase:', error);
-        return res.status(500).json({ error: 'Error al guardar la configuración.' });
+      if (errorInsert) {
+        return res.status(500).json({ error: 'Error al crear el link.' });
       }
 
-      return res.status(200).json({ id, link: linkAcortado });
+      return res.status(201).json({ message: 'Link creado correctamente.', link: linkDinamico });
     } catch (error) {
-      console.error('Error generando el link:', error);
+      console.error('Error interno:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
   }
