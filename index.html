@@ -674,37 +674,38 @@
   if (email) {
     try {
       // Recuperar los datos del link desde Supabase
-      const response = await fetch(`/api/link?email=${email}`);
-      const linkData = await response.json();
+      const linkResponse = await fetch(`/api/link?email=${email}`);
 
-      if (response.ok) {
-        // Mostrar los detalles del link en el contenedor #detalles-link
-        mostrarDetallesLink(linkData);
-
-        // Mostrar el apartado de "Editar Link"
-        mostrarEditarLink(linkData.numeros, linkData.mensaje);
-
-        // Mostrar el link generado en la caja de salida
-        document.getElementById('output').innerHTML = `
-          <p>Tu link generado:</p>
-          <a href="${linkData.link}" target="_blank">${linkData.link}</a>
-        `;
-        document.getElementById('output').style.display = 'block';
-
-        // Mostrar el generador y ocultar el login
-        document.getElementById('login-container').style.display = 'none';
-        document.getElementById('generador-container').style.display = 'block';
-
-        // Configurar información del usuario
-        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
-        document.getElementById('user-email-display').textContent = email;
-      } else {
-        console.log('No se encontró un link asociado a este usuario.');
+      if (linkResponse.status === 403) {
+        // Ocultar todo lo relacionado al link
+        document.getElementById('detalles-link').style.display = 'none';
+        document.getElementById('editar-link-container').style.display = 'none';
+        document.getElementById('output').style.display = 'none';
+        
+        // Mostrar un aviso
+        showNotification('Tu suscripción ha vencido. Renueva tu plan para ver el link.', 'error');
+        return;
       }
+
+      if (!linkResponse.ok) {
+        showNotification('Error al cargar los datos del link.', 'error');
+        return;
+      }
+
+      const linkData = await linkResponse.json();
+
+      // Suscripción activa → mostrar
+      document.getElementById('detalles-link').style.display = 'block';
+      document.getElementById('editar-link-container').style.display = 'block';
+      document.getElementById('output').style.display = 'block';
+
+      mostrarDetallesLink(linkData);
+      mostrarEditarLink(linkData.numeros, linkData.mensaje);
     } catch (error) {
-      console.error('Error al recuperar los detalles del link:', error);
+      console.error('Error al cargar link:', error);
+      showNotification('Hubo un problema al cargar la información del link.', 'error');
     }
-  }
+}
 
   const currentPath = window.location.pathname;
 
