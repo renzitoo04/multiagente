@@ -27,9 +27,13 @@ export default async function handler(req, res) {
     }
 
     const hoy = new Date().toISOString().split('T')[0];
-    if (!usuario.suscripcion_valida_hasta || usuario.suscripcion_valida_hasta < hoy) {
+    if (
+      usuario.suscripcion_valida_hasta && 
+      new Date(usuario.suscripcion_valida_hasta) < hoy
+    ) {
       return res.status(403).json({ error: 'La suscripción ha expirado. Por favor, renueva tu plan.' });
     }
+
 
     const { data: link, error } = await supabase
       .from('link')
