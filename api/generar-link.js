@@ -1,10 +1,9 @@
+import { MercadoPagoConfig, PreApproval } from 'mercadopago';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import mercadopago from "mercadopago";
-
-// Configura el token
-mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);
+// Configura el cliente
+const client = new MercadoPagoConfig({ accessToken: process.env.MERCADO_PAGO_TOKEN });
 
 export default async function handler(req, res) {
   const plan = req.method === 'POST' ? req.body.plan : req.query.plan;
@@ -26,22 +25,26 @@ export default async function handler(req, res) {
   }
 
   try {
-    const preapproval = await mercadopago.preapproval.create({
-      reason: planInfo.title,
-      auto_recurring: {
-        frequency: 1,
-        frequency_type: 'months',
-        transaction_amount: planInfo.price,
-        currency_id: 'ARS',
-        start_date: new Date().toISOString(),
-        end_date: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString()
-      },
-      back_url: 'https://www.linkify.com.ar/panel',
-      external_reference: userEmail,
-      payer_email: userEmail
+    const preapproval = new PreApproval(client);
+
+    const result = await preapproval.create({
+      body: {
+        reason: planInfo.title,
+        auto_recurring: {
+          frequency: 1,
+          frequency_type: 'months',
+          transaction_amount: planInfo.price,
+          currency_id: 'ARS',
+          start_date: new Date().toISOString(),
+          end_date: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString()
+        },
+        back_url: 'https://www.linkify.com.ar/panel',
+        external_reference: userEmail,
+        payer_email: userEmail
+      }
     });
 
-    return res.status(200).json({ init_point: preapproval.body.init_point });
+    return res.status(200).json({ init_point: result.init_point });
   } catch (err) {
     console.error('Error al crear suscripción:', err);
     return res.status(500).json({ error: 'Error al generar la suscripción', detalles: err.message });
