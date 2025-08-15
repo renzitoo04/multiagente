@@ -1,12 +1,10 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import MercadoPago from "mercadopago";
+import mercadopago from "mercadopago";
 
-const client = new MercadoPago({
-  accessToken: process.env.MERCADO_PAGO_TOKEN
-});
-
+// Configura el token
+mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);
 
 export default async function handler(req, res) {
   const plan = req.method === 'POST' ? req.body.plan : req.query.plan;
@@ -43,7 +41,7 @@ export default async function handler(req, res) {
       payer_email: userEmail
     });
 
-    return res.status(200).json({ init_point: preapproval.init_point });
+    return res.status(200).json({ init_point: preapproval.body.init_point });
   } catch (err) {
     console.error('Error al crear suscripción:', err);
     return res.status(500).json({ error: 'Error al generar la suscripción', detalles: err.message });
