@@ -1,8 +1,12 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import mercadopago from 'mercadopago';
-mercadopago.configurations.setAccessToken(process.env.MERCADO_PAGO_TOKEN);
+import MercadoPago from "mercadopago";
+
+const client = new MercadoPago({
+  accessToken: process.env.MERCADO_PAGO_TOKEN
+});
+
 
 export default async function handler(req, res) {
   const plan = req.method === 'POST' ? req.body.plan : req.query.plan;
