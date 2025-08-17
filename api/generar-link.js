@@ -1,59 +1,51 @@
-import dotenv from "dotenv";
-dotenv.config();
+import mercadopago from "mercadopago";
 
-import MercadoPago from "mercadopago";
-
-const client = new MercadoPago.MercadoPagoConfig({
-  accessToken: process.env.MERCADO_PAGO_TOKEN,
+mercadopago.configure({
+  access_token: process.env.MP_ACCESS_TOKEN, // tu access token de producción
 });
 
 export default async function handler(req, res) {
-  const plan = req.method === "POST" ? req.body.plan : req.query.plan;
-  const userEmail = req.method === "POST" ? req.body.email : req.query.email;
-
-  if (!plan || !userEmail) {
-    return res.status(400).json({ error: 'Falta el parámetro "plan" o "email".' });
-  }
-
-  const planes = {
-    plan_2_numeros: { title: "Plan PRO - 2 números", price: 15 },
-    plan_3_numeros: { title: "Plan PRO - 3 números", price: 2000 },
-    plan_4_numeros: { title: "Plan PRO - 4 números", price: 2500 },
-  };
-
-  const planInfo = planes[plan];
-
-  if (!planInfo) {
-    return res.status(400).json({ error: "Plan no válido o no especificado." });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Método no permitido" });
   }
 
   try {
-    const preapproval = await new MercadoPago.PreApproval(client).create({
+    const { email, plan } = req.body;
+
+    // Definimos el monto según el plan elegido
+    let amount = 0;
+    let description = "";
+    if (plan === "pro") {
+      amount = 60; // ejemplo: $6000 ARS
+      description = "Plan PRO - 2 números";
+    } else if (plan === "basic") {
+      amount = 3000;
+      description = "Plan BASIC - 1 número";
+    }
+
+    // Crear la suscripción (preapproval)
+    const subscription = await mercadopago.preapproval.create({
       body: {
-        reason: planInfo.title,
+        reason: description,
         auto_recurring: {
-          frequency: 1,
+          frequency: 1, // cada 1 mes
           frequency_type: "months",
-          transaction_amount: planInfo.price,
+          transaction_amount: amount,
           currency_id: "ARS",
-          start_date: new Date().toISOString(),
+          start_date: new Date().toISOString(), // arranca ahora
           end_date: new Date(
-            new Date().setFullYear(new Date().getFullYear() + 1)
+            new Date().setFullYear(new Date().getFullYear() + 1) // dura 1 año
           ).toISOString(),
         },
-        back_url: "https://www.linkify.com.ar/panel",
-        payer_email: userEmail,
+        back_url: "https://www.linkify.com.ar/gracias", // adonde vuelve el usuario
+        payer_email: email, // email del usuario
       },
     });
 
-    return res.status(200).json({ init_point: preapproval.init_point });
-  } catch (err) {
-    console.error("Error al crear suscripción:", err);
-    return res
-      .status(500)
-      .json({
-        error: "Error al generar el link de suscripción",
-        detalles: err.message,
-      });
+    return res.status(200).json({ url: subscription.body.init_point || subscription.body.sandbox_init_point || subscription.body.back_url, subscription });
+  } catch (error) {
+    console.error("Error al crear suscripción:", error);
+    return res.status(500).json({ error: "Error al crear suscripción", details: error });
   }
 }
+
