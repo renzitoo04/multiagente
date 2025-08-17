@@ -12,6 +12,7 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
+// Webhook Mercado Pago
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Método no permitido' });
@@ -20,54 +21,41 @@ export default async function handler(req, res) {
   try {
     console.log('Webhook recibido:', req.body);
 
-    // Verificar si es un pago
-    if (req.body.type !== 'payment') {
-      return res.status(200).json({ message: 'Notificación no relacionada a pago' });
+    const { type, data } = req.body;
+
+    if (type === 'preapproval') {
+      console.log('Suscripción creada:', data.id);
+      // Podés guardar en Supabase que el usuario tiene una suscripción activa
+      return res.status(200).json({ message: 'Preapproval procesado' });
     }
 
-    const paymentId = req.body.data.id;
-    if (!paymentId) {
-      return res.status(400).json({ error: 'No se envió ID de pago' });
-    }
+    if (type === 'authorized_payment') {
+      console.log('Pago recurrente recibido:', data.id);
 
-    // Consultar detalles del pago
-   const payment = await new Payment(mp).get({ id: paymentId });
-   const paymentInfo = payment.body;
+      // Consultar detalles del pago recurrente
+      const payment = await new Payment(mp).get({ id: data.id });
+      const status = payment.status;
+      const userEmail = payment.external_reference;
 
-    console.log('Detalles del pago:', payment);
-    const paymentStatus = payment.status;
-    const userEmail = payment.external_reference;
-    const plan = payment.additional_info?.items?.[0]?.title || 'plan_desconocido';
+      if (status === 'approved') {
+        // Sumar 30 días a la suscripción
+        const nuevaFecha = new Date();
+        nuevaFecha.setDate(nuevaFecha.getDate() + 30);
 
-    if (paymentStatus === 'approved') {
-      console.log(`Pago aprobado para: ${userEmail}, Plan: ${plan}`);
+        await supabase
+          .from('usuarios')
+          .update({
+            suscripcion_valida_hasta: nuevaFecha.toISOString()
+          })
+          .eq('email', userEmail);
 
-      // Determinar el límite de números según el plan
-      let numeroLimite = 1; // Default
-      if (plan.includes('2 números')) numeroLimite = 2;
-      if (plan.includes('3 números')) numeroLimite = 3;
-      if (plan.includes('4 números')) numeroLimite = 4;
-
-      // Actualizar en Supabase
-      const { data, error } = await supabase
-        .from('usuarios')
-        .update({ 
-          
-          limiteNumeros: numeroLimite,
-          suscripcion_valida_hasta: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 días
-        })
-        .eq('email', userEmail)
-        .select();
-
-      if (error) {
-        console.error('Error actualizando en Supabase:', error);
-        return res.status(500).json({ error: 'Error al actualizar usuario' });
+        console.log(`Suscripción extendida para ${userEmail}`);
       }
 
-      console.log('Usuario actualizado correctamente:', data);
+      return res.status(200).json({ message: 'Pago recurrente procesado' });
     }
 
-    return res.status(200).json({ message: 'Webhook procesado' });
+    return res.status(200).json({ message: 'Evento ignorado' });
   } catch (err) {
     console.error('Error procesando webhook:', err);
     return res.status(500).json({ error: 'Error interno en el webhook' });
