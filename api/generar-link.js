@@ -1,8 +1,4 @@
-import mercadopago from "mercadopago";
-
-mercadopago.configure({
-  access_token: process.env.MERCADO_PAGO_TOKEN, // tu access token de producción
-});
+import MercadoPago from "mercadopago";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -12,40 +8,35 @@ export default async function handler(req, res) {
   try {
     const { email, plan } = req.body;
 
-    // Definimos el monto según el plan elegido
-    let amount = 0;
-    let description = "";
-    if (plan === "pro") {
-      amount = 60; // ejemplo: $6000 ARS
-      description = "Plan PRO - 2 números";
-    } else if (plan === "basic") {
-      amount = 3000;
-      description = "Plan BASIC - 1 número";
-    }
+    // 🔑 Inicializar con tu access token de producción
+    const client = new MercadoPago({
+      accessToken: process.env.MERCADO_PAGO_TOKEN,
+    });
 
-    // Crear la suscripción (preapproval)
-    const subscription = await mercadopago.preapproval.create({
+    // Calcular fecha de finalización (ejemplo: 1 año)
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 1);
+
+    // Crear suscripción (preapproval)
+    const preapproval = await client.preapproval.create({
       body: {
-        reason: description,
+        reason: plan,
         auto_recurring: {
-          frequency: 1, // cada 1 mes
+          frequency: 1,
           frequency_type: "months",
-          transaction_amount: amount,
+          transaction_amount: 20, // 💲 importe mensual en ARS
           currency_id: "ARS",
-          start_date: new Date().toISOString(), // arranca ahora
-          end_date: new Date(
-            new Date().setFullYear(new Date().getFullYear() + 1) // dura 1 año
-          ).toISOString(),
+          start_date: new Date().toISOString(),
+          end_date: date.toISOString(),
         },
-        back_url: "https://www.linkify.com.ar/gracias", // adonde vuelve el usuario
-        payer_email: email, // email del usuario
+        back_url: "https://www.linkify.com.ar/panel", // redirección al volver
+        payer_email: email,
       },
     });
 
-    return res.status(200).json({ url: subscription.body.init_point || subscription.body.sandbox_init_point || subscription.body.back_url, subscription });
+    return res.status(200).json({ init_point: preapproval.init_point });
   } catch (error) {
     console.error("Error al crear suscripción:", error);
-    return res.status(500).json({ error: "Error al crear suscripción", details: error });
+    return res.status(500).json({ error: "No se pudo crear la suscripción" });
   }
 }
-
