@@ -1,4 +1,4 @@
-import MercadoPago from "mercadopago";
+import { MercadoPagoConfig, PreApproval } from "mercadopago";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -8,17 +8,16 @@ export default async function handler(req, res) {
   try {
     const { email, plan } = req.body;
 
-    // 🔑 Inicializar con tu access token de producción
-    const client = new MercadoPago({
-      accessToken: process.env.MERCADO_PAGO_TOKEN,
-    });
+    // Inicializar con tu access token
+    const client = new MercadoPagoConfig({ accessToken: process.env.MERCADO_PAGO_TOKEN });
+    const preapproval = new PreApproval(client);
 
     // Calcular fecha de finalización (ejemplo: 1 año)
     const date = new Date();
     date.setFullYear(date.getFullYear() + 1);
 
-    // Crear suscripción (preapproval)
-    const preapproval = await client.preapproval.create({
+    // Crear suscripción
+    const subscription = await preapproval.create({
       body: {
         reason: plan,
         auto_recurring: {
@@ -34,7 +33,7 @@ export default async function handler(req, res) {
       },
     });
 
-    return res.status(200).json({ init_point: preapproval.init_point });
+    return res.status(200).json({ init_point: subscription.init_point });
   } catch (error) {
     console.error("Error al crear suscripción:", error);
     return res.status(500).json({ error: "No se pudo crear la suscripción" });
