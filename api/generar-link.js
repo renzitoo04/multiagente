@@ -1,7 +1,7 @@
 import mercadopago from "mercadopago";
 
 mercadopago.configure({
-  access_token: process.env.MP_ACCESS_TOKEN, // tu access token de producción
+  access_token: process.env.MERCADO_PAGO_TOKEN, // tu access token de producción
 });
 
 export default async function handler(req, res) {
