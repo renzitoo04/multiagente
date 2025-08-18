@@ -859,6 +859,41 @@ function generarPlanesPro() {
       }
     });
   });
+  // 👉 Botones Débito Automático (Suscripción)
+document.querySelectorAll(".debito-button").forEach(button => {
+  button.addEventListener("click", async function(e) {
+    e.preventDefault();
+    const plan = this.getAttribute("data-plan");
+    const email = localStorage.getItem("usuarioEmail");
+
+    try {
+      this.innerHTML = '<span class="loading"></span> Procesando...';
+      this.disabled = true;
+
+      const resp = await fetch("/api/generar-link2", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, plan })
+      });
+
+      const data = await resp.json();
+      if (data.init_point) {
+        window.location.href = data.init_point; // redirige a la suscripción
+      } else {
+        showNotification("Error generando el link de débito automático", "error");
+      }
+    } catch (error) {
+      console.error("Error en débito automático:", error);
+      showNotification("Hubo un problema con el débito automático", "error");
+    } finally {
+      this.innerHTML = `
+        <img src="https://cdn-icons-png.flaticon.com/512/633/633611.png" alt="Tarjeta" class="button-icon">
+        Débito Automático
+      `;
+      this.disabled = false;
+    }
+  });
+});
 }
 
 // Llamar a la función para generar los planes al cargar la página
