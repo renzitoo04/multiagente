@@ -806,6 +806,14 @@ function generarPlanesPro() {
           <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="Mercado Pago Logo" class="button-icon">
           Pagar con Mercado Pago
         </button>
+
+        <!-- Botón de Débito Automático -->
+        <button class="debito-button" data-plan="${planId}">
+          <img src="https://cdn-icons-png.flaticon.com/512/633/633611.png" 
+              alt="Tarjeta" class="button-icon">
+          Débito Automático
+        </button>
+
       </div>
     `;
 
@@ -918,6 +926,18 @@ document.getElementById('registro-form').addEventListener('submit', async functi
       iconElement.textContent = "👁"; // icono cuando está oculto
     }
   }
+  // 👉 Listener del botón Débito Automático
+  document.getElementById("btn-debito-automatico").addEventListener("click", async (e) => {
+    e.preventDefault();
+    const email = localStorage.getItem("usuarioEmail");
+    const resp = await fetch("/api/generar-link2", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, plan: "Plan Pro - Suscripción" })
+    });
+    const data = await resp.json();
+    if (data.init_point) window.open(data.init_point, "_blank");
+  });
 
   </script>
 

@@ -1,41 +1,55 @@
-import { MercadoPagoConfig, PreApproval } from "mercadopago";
+import dotenv from 'dotenv';
+dotenv.config();
+
+import { Preference } from 'mercadopago';
+
+const preference = new Preference({ accessToken: process.env.MERCADO_PAGO_TOKEN });
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Método no permitido" });
+  const plan = req.method === 'POST' ? req.body.plan : req.query.plan;
+  const userEmail = req.method === 'POST' ? req.body.email : req.query.email;
+  
+  if (!plan || !userEmail) {
+    console.warn("❌ Faltan parámetros requeridos.");
+    return res.status(400).json({ error: 'Falta el parámetro "plan" o "email".' });
+  }
+
+  const planes = {
+    plan_2_numeros: { title: 'Plan PRO - 2 números', price: 6 },
+    plan_3_numeros: { title: 'Plan PRO - 3 números', price: 9 },
+    plan_4_numeros: { title: 'Plan PRO - 4 números', price: 12 },
+  };
+
+  const planInfo = planes[plan];
+
+  if (!planInfo) {
+    return res.status(400).json({ error: 'Plan no válido o no especificado.' });
   }
 
   try {
-    const { email, plan } = req.body;
-
-    // Inicializar con tu access token
-    const client = new MercadoPagoConfig({ accessToken: process.env.MERCADO_PAGO_TOKEN });
-    const preapproval = new PreApproval(client);
-
-    // Calcular fecha de finalización (ejemplo: 1 año)
-    const date = new Date();
-    date.setFullYear(date.getFullYear() + 1);
-
-    // Crear suscripción
-    const subscription = await preapproval.create({
+    const response = await preference.create({
       body: {
-        reason: plan,
-        auto_recurring: {
-          frequency: 1,
-          frequency_type: "months",
-          transaction_amount: 20, // 💲 importe mensual en ARS
-          currency_id: "ARS",
-          start_date: new Date().toISOString(),
-          end_date: date.toISOString(),
+        items: [
+          {
+            title: planInfo.title,
+            quantity: 1,
+            unit_price: planInfo.price
+          }
+        ],
+        external_reference: userEmail, // Usamos el email como referencia
+        back_urls: {
+          success: 'https://www.linkify.com.ar/panel',
+          failure: 'https://www.linkify.com.ar/fallo',
+          pending: 'https://www.linkify.com.ar/pendiente'
         },
-        back_url: "https://www.linkify.com.ar/panel", // redirección al volver
-        payer_email: email,
-      },
+        auto_return: 'approved',
+        notification_url: 'https://www.linkify.com.ar/api/webhook' // Asegúrate de configurar esto
+      }
     });
 
-    return res.status(200).json({ init_point: subscription.init_point });
-  } catch (error) {
-    console.error("Error al crear suscripción:", error);
-    return res.status(500).json({ error: "No se pudo crear la suscripción" });
+    return res.status(200).json({ init_point: response.init_point });
+  } catch (err) {
+    console.error('Error al crear preferencia de Mercado Pago:', err);
+    return res.status(500).json({ error: 'Error al generar el link de pago', detalles: err.message });
   }
 }
