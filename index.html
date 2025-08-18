@@ -205,7 +205,11 @@
         <input type="email" id="registro-email" placeholder="Ingresa tu email" required>
         
         <label for="registro-password">Contraseña:</label>
-        <input type="password" id="registro-password" placeholder="Ingresa tu contraseña" required>
+        <div class="password-container">
+          <input type="password" id="registro-password" placeholder="Ingresa tu contraseña" required>
+          <span class="toggle-password" onclick="togglePassword('registro-password', this)">👁</span>
+        </div>
+
         
         <button type="submit" class="btn btn-primary">Registrarse</button>
       </form>
@@ -940,3 +944,4 @@ document.getElementById('registro-form').addEventListener('submit', async functi
   
 </body>
 </html>
+<lebel for
