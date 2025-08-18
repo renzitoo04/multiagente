@@ -1548,3 +1548,32 @@
   user-select: none;
   font-size: 14px;
 }
+
+
+/* Botón de Débito Automático */
+.debito-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #4caf50, #2e7d32); /* Verde tipo tarjeta */
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+}
+
+.debito-button:hover {
+  background: linear-gradient(135deg, #388e3c, #1b5e20);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.5);
+}
+
+.debito-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+}
