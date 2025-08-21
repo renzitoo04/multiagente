@@ -22,7 +22,7 @@ export default async function handler(req, res) {
       console.log("Detalles del pago único:", payment);
 
       if (payment && payment.status === "approved") {
-        const email = payment.payer.email;
+        const email = payment.external_reference;
         const descripcion = payment.description || "";
         console.log(`Pago único aprobado para: ${email}, Plan: ${descripcion}`);
 
@@ -64,7 +64,7 @@ export default async function handler(req, res) {
       console.log("Detalles del pago recurrente:", payment);
 
       if (payment && payment.status === "approved") {
-        const email = payment.payer.email;
+        const email = payment.external_reference;
         const descripcion = payment.description || "";
         console.log(`Pago recurrente aprobado para: ${email}, Plan: ${descripcion}`);
 
