@@ -1,63 +1,102 @@
-import mercadopago, { Payment } from 'mercadopago';
 import { createClient } from '@supabase/supabase-js';
+import mercadopago from 'mercadopago';
 
-// Configurar Mercado Pago
-const mp = new mercadopago.MercadoPagoConfig({
-  accessToken: process.env.MERCADO_PAGO_TOKEN
-});
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-// Configurar Supabase
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-);
-
-// Webhook Mercado Pago
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Método no permitido' });
-  }
-
   try {
-    console.log('Webhook recibido:', req.body);
+    console.log("Webhook recibido:", req.body);
 
-    const { type, data } = req.body;
+    const { type, action, data } = req.body;
 
-    if (type === 'preapproval') {
-      console.log('Suscripción creada:', data.id);
-      // Podés guardar en Supabase que el usuario tiene una suscripción activa
-      return res.status(200).json({ message: 'Preapproval procesado' });
-    }
+    // --- PAGOS ÚNICOS ---
+    if (type === "payment" && action === "payment.created") {
+      const paymentId = data.id;
 
-    if (type === 'authorized_payment') {
-      console.log('Pago recurrente recibido:', data.id);
+      // Obtener detalles del pago
+      const payment = await mercadopago.payment.findById(paymentId);
+      console.log("Detalles del pago único:", payment);
 
-      // Consultar detalles del pago recurrente
-      const payment = await new Payment(mp).get({ id: data.id });
-      const status = payment.status;
-      const userEmail = payment.external_reference;
+      if (payment && payment.body.status === "approved") {
+        const email = payment.body.payer.email;
+        const descripcion = payment.body.description || "";
+        console.log(`Pago único aprobado para: ${email}, Plan: ${descripcion}`);
 
-      if (status === 'approved') {
-        // Sumar 30 días a la suscripción
+        // Determinar limiteNumeros según el plan
+        let limiteNumeros = 1;
+        if (descripcion.includes("2 números")) limiteNumeros = 2;
+        if (descripcion.includes("3 números")) limiteNumeros = 3;
+
+        // Calcular nueva fecha (un mes desde hoy)
         const nuevaFecha = new Date();
-        nuevaFecha.setDate(nuevaFecha.getDate() + 30);
+        nuevaFecha.setMonth(nuevaFecha.getMonth() + 1);
 
-        await supabase
-          .from('usuarios')
+        // Actualizar en Supabase
+        const { error } = await supabase
+          .from("usuarios")
           .update({
+            limiteNumeros,
             suscripcion_valida_hasta: nuevaFecha.toISOString()
           })
-          .eq('email', userEmail);
+          .eq("email", email);
 
-        console.log(`Suscripción extendida para ${userEmail}`);
+        if (error) {
+          console.error("Error actualizando en Supabase:", error);
+          return res.status(500).json({ error });
+        }
+
+        console.log(`Supabase actualizado para ${email}`);
       }
 
-      return res.status(200).json({ message: 'Pago recurrente procesado' });
+      return res.status(200).json({ message: "Pago único procesado" });
     }
 
-    return res.status(200).json({ message: 'Evento ignorado' });
-  } catch (err) {
-    console.error('Error procesando webhook:', err);
-    return res.status(500).json({ error: 'Error interno en el webhook' });
+    // --- SUSCRIPCIONES / DÉBITOS AUTOMÁTICOS ---
+    if (type === "authorized_payment" || action === "authorized_payment.created") {
+      const paymentId = data.id;
+
+      const payment = await mercadopago.payment.findById(paymentId);
+      console.log("Detalles del pago recurrente:", payment);
+
+      if (payment && payment.body.status === "approved") {
+        const email = payment.body.payer.email;
+        const descripcion = payment.body.description || "";
+        console.log(`Pago recurrente aprobado para: ${email}, Plan: ${descripcion}`);
+
+        // Determinar limiteNumeros según el plan
+        let limiteNumeros = 1;
+        if (descripcion.includes("2 números")) limiteNumeros = 2;
+        if (descripcion.includes("3 números")) limiteNumeros = 3;
+
+        // Calcular nueva fecha (un mes desde hoy)
+        const nuevaFecha = new Date();
+        nuevaFecha.setMonth(nuevaFecha.getMonth() + 1);
+
+        const { error } = await supabase
+          .from("usuarios")
+          .update({
+            limiteNumeros,
+            suscripcion_valida_hasta: nuevaFecha.toISOString()
+          })
+          .eq("email", email);
+
+        if (error) {
+          console.error("Error actualizando en Supabase:", error);
+          return res.status(500).json({ error });
+        }
+
+        console.log(`Supabase actualizado para ${email}`);
+      }
+
+      return res.status(200).json({ message: "Pago recurrente procesado" });
+    }
+
+    // --- CUALQUIER OTRO EVENTO ---
+    console.log("Evento ignorado:", type, action);
+    return res.status(200).json({ message: "Evento ignorado" });
+
+  } catch (error) {
+    console.error("Error procesando webhook:", error);
+    return res.status(500).json({ error: error.message });
   }
 }
