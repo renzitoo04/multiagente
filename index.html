@@ -287,7 +287,7 @@
   async function login() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
-    const telefono = document.getElementById('registro-telefono').value.trim();
+    
     const rememberMe = document.getElementById('remember-me').checked;
     const loginButton = document.querySelector('#login-container button');
     const loginError = document.getElementById('login-error');
@@ -309,7 +309,7 @@
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, telefono }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
@@ -904,8 +904,9 @@ document.getElementById('registro-form').addEventListener('submit', async functi
 
   const email = document.getElementById('registro-email').value.trim();
   const password = document.getElementById('registro-password').value.trim();
+  const telefono = document.getElementById('registro-telefono').value.trim();
 
-  if (!email || !password) {
+  if (!email || !password || !telefono) {
     alert('Por favor, completá todos los campos.');
     return;
   }
@@ -915,7 +916,7 @@ document.getElementById('registro-form').addEventListener('submit', async functi
     const registroResponse = await fetch(`${window.location.origin}/api/registro`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password, telefono })
     });
 
     const registroData = await registroResponse.json();
