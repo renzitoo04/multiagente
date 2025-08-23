@@ -30,7 +30,7 @@ export default async function handler(req, res) {
   // Crear usuario con limiteNumeros en 1 y guardar el teléfono en la columna "numeros"
   const { error: errorInsert } = await supabase
     .from('usuarios')
-    .insert([{ email, password, numeros: telefono, limiteNumeros: 1 }]); // 👈 acá lo guardamos
+    .insert([{ email, password, telefono, limiteNumeros: 1 }]); // 👈 acá lo guardamos
 
   if (errorInsert) {
     console.error('Error al crear usuario:', errorInsert);
