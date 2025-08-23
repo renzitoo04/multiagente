@@ -740,6 +740,7 @@
   });
 
 });
+
   </script>
   
   <!--Start of Tawk.to Script-->
@@ -899,13 +900,12 @@ document.querySelectorAll(".debito-button").forEach(button => {
       `;
       this.disabled = false;
     }
+  });
 });
 }
 
 // Llamar a la función para generar los planes al cargar la página
-document.addEventListener('DOMContentLoaded', function() {
-  generarPlanesPro();
-});
+document.addEventListener('DOMContentLoaded', generarPlanesPro);
 
 // Escuchar el submit del formulario de registro
 document.getElementById('registro-form').addEventListener('submit', async function (e) {
