@@ -215,6 +215,7 @@
 
         
         <button type="submit" class="btn btn-primary">Registrarse</button>
+        <p><a href="#" id="volver-login">↩ Volver al inicio</a></p>
       </form>
     </div>
   </div>
@@ -731,7 +732,15 @@
       window.location.href = '/';
     }
   }
+  // Listener para volver al login desde el registro
+  document.getElementById('volver-login').addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById('registro-container').style.display = 'none';
+    document.getElementById('login-container').style.display = 'block';
+  });
+
 });
+
   </script>
   
   <!--Start of Tawk.to Script-->
@@ -932,11 +941,12 @@ document.getElementById('registro-form').addEventListener('submit', async functi
       const loginData = await loginResponse.json();
 
       if (loginResponse.ok) {
-        alert('Registrado e iniciado sesión correctamente.');
-        window.location.href = '/'; // Redirigir al panel
+        showNotification('🎉 Registro completado e inicio de sesión exitoso');
+        window.location.href = '/';
       } else {
-        alert('Cuenta creada, pero no se pudo iniciar sesión automáticamente.');
+        showNotification('Cuenta creada, pero no se pudo iniciar sesión automáticamente', 'error');
       }
+
     } else {
       alert(registroData.error || 'No se pudo crear la cuenta.');
     }
