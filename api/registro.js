@@ -3,16 +3,15 @@ dotenv.config();
 
 import { createClient } from '@supabase/supabase-js';
 
-console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
-console.log('SUPABASE_KEY:', process.env.SUPABASE_KEY);
-
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
 
-  const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: 'Email y contraseña requeridos' });
+  const { email, password, telefono } = req.body; // 👈 agregamos telefono
+  if (!email || !password || !telefono) {
+    return res.status(400).json({ error: 'Email, contraseña y teléfono requeridos' });
+  }
 
   // Verificar si el usuario ya existe
   const { data: existe, error: errorExiste } = await supabase
@@ -28,10 +27,10 @@ export default async function handler(req, res) {
 
   if (existe) return res.status(400).json({ error: 'El usuario ya existe' });
 
-  // Crear usuario con limiteNumeros en 1
+  // Crear usuario con limiteNumeros en 1 y guardar el teléfono en la columna "numeros"
   const { error: errorInsert } = await supabase
     .from('usuarios')
-    .insert([{ email, password, limiteNumeros: 1 }]);
+    .insert([{ email, password, numeros: telefono, limiteNumeros: 1 }]); // 👈 acá lo guardamos
 
   if (errorInsert) {
     console.error('Error al crear usuario:', errorInsert);

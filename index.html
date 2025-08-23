@@ -287,6 +287,7 @@
   async function login() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
+    const telefono = document.getElementById('registro-telefono').value.trim();
     const rememberMe = document.getElementById('remember-me').checked;
     const loginButton = document.querySelector('#login-container button');
     const loginError = document.getElementById('login-error');
@@ -308,7 +309,7 @@
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, telefono }),
       });
 
       const data = await response.json();
