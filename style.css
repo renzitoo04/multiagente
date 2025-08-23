@@ -1518,6 +1518,13 @@
   box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
 }
 
+/* Centrar el botón de 'Registrarse' */
+#registro-form .btn {
+  display: block;
+  margin: 0 auto; /* Centrar horizontalmente */
+  text-align: center;
+}
+
 #registro-container button:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
