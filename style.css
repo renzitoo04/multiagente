@@ -1577,3 +1577,28 @@
   transform: translateY(1px);
   box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
 }
+
+/* Estilo para el botón de 'Volver al inicio' */
+.volver-inicio-button {
+  background-color: #ff5722; /* Color llamativo */
+  color: #fff; /* Texto blanco */
+  font-size: 16px; /* Tamaño de fuente más grande */
+  padding: 10px 20px; /* Espaciado interno */
+  border: none; /* Sin bordes */
+  border-radius: 5px; /* Bordes redondeados */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Sombra para destacar */
+  cursor: pointer; /* Cambiar el cursor al pasar */
+  transition: all 0.3s ease; /* Animación suave */
+}
+
+/* Hover para el botón de 'Volver al inicio' */
+.volver-inicio-button:hover {
+  background-color: #e64a19; /* Color más oscuro al pasar */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3); /* Sombra más intensa */
+}
+
+/* Active para el botón de 'Volver al inicio' */
+.volver-inicio-button:active {
+  background-color: #d84315; /* Color aún más oscuro al hacer clic */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra más pequeña */
+}
