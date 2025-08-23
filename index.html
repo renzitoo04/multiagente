@@ -740,7 +740,6 @@
   });
 
 });
-
   </script>
   
   <!--Start of Tawk.to Script-->
@@ -900,12 +899,13 @@ document.querySelectorAll(".debito-button").forEach(button => {
       `;
       this.disabled = false;
     }
-  });
 });
 }
 
 // Llamar a la función para generar los planes al cargar la página
-document.addEventListener('DOMContentLoaded', generarPlanesPro);
+document.addEventListener('DOMContentLoaded', function() {
+  generarPlanesPro();
+});
 
 // Escuchar el submit del formulario de registro
 document.getElementById('registro-form').addEventListener('submit', async function (e) {
@@ -983,9 +983,10 @@ document.getElementById('registro-form').addEventListener('submit', async functi
     const data = await resp.json();
     if (data.init_point) window.open(data.init_point, "_blank");
   });
-</script>
 
-<style>
+  </script>
+
+  <style>
 @media (max-width: 768px) {
   /* Estilos para pantallas pequeñas */
   .container {
@@ -1003,7 +1004,8 @@ document.getElementById('registro-form').addEventListener('submit', async functi
     text-align: center;
   }
 }
-</style>
+  </style>
 
+  
 </body>
 </html>
