@@ -741,72 +741,39 @@
   }
   
   @media (max-width: 768px) {
-  /* Ajustar el contenedor principal */
-  .container {
-    padding: 10px;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
+  .main-column {
+    min-width: unset;   /* sacar el mínimo de 600px */
+    max-width: 100%;
+    padding: 0 10px;
   }
 
-  /* Ajustar el formulario de inicio de sesión */
-  #login-container {
-    width: 90%;
-    margin: 20px auto;
-    padding: 20px;
-    box-shadow: none;
+  .side-column {
+    width: 100%;  /* que ocupe todo el ancho en mobile */
+    margin-top: 20px;
   }
 
-  #login-container input[type="email"],
-  #login-container input[type="password"] {
-    font-size: 14px;
-    padding: 12px;
-  }
-
-  #login-container button {
-    font-size: 16px;
-    padding: 12px;
-  }
-
-  /* Ajustar el formulario de registro */
-  #registro-container {
-    width: 90%;
-    margin: 20px auto;
-    padding: 20px;
-    box-shadow: none;
-  }
-
-  #registro-container input[type="email"],
-  #registro-container input[type="password"] {
-    font-size: 14px;
-    padding: 12px;
-  }
-
-  #registro-container button {
-    font-size: 16px;
-    padding: 12px;
-  }
-
-  /* Ajustar el contenedor de edición de links */
   #editar-link-container {
-    width: 90%;
+    transform: none;   /* quitar el corrimiento lateral */
+    width: 95%;
     margin: 20px auto;
-    padding: 20px;
-    box-shadow: none;
   }
 
-  /* Ajustar el footer */
-  footer {
-    flex-direction: column;
-    text-align: center;
-    padding: 10px;
+  form {
+    padding: 20px;   /* menos padding en pantallas chicas */
   }
 
-  footer .footer-links {
+  .button-group {
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
+  }
+
+  .user-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
   }
 }
+
 
   /* Modal de planes - ajustado según imagen de referencia */
   .modal-overlay {
