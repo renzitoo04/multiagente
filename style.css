@@ -752,6 +752,29 @@
   }
   
   @media (max-width: 768px) {
+    @media (max-width: 768px) {
+  .container {
+    max-width: 100% !important;
+    padding: 0 10px;
+    overflow-x: hidden;
+  }
+
+  .main-column {
+    min-width: unset !important;
+    max-width: 100% !important;
+  }
+
+  #editar-link-container {
+    transform: none !important;
+    width: 95% !important;
+    margin: 20px auto !important;
+  }
+
+  body {
+    overflow-x: hidden; /* evita scroll horizontal */
+  }
+}
+
     #editar-link-container {
     transform: none !important;
     width: 95%;
