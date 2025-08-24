@@ -741,6 +741,11 @@
   }
   
   @media (max-width: 768px) {
+    #editar-link-container {
+    transform: none !important;
+    width: 95%;
+    margin: 20px auto;
+  }
   .main-column {
     min-width: unset;   /* sacar el mínimo de 600px */
     max-width: 100%;
