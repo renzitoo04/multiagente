@@ -235,9 +235,6 @@
   <!-- Notification element with improved styling -->
   <div class="notification" id="notification"></div>
 
-  <!-- Botón de Ver Planes Pro -->
-<button id="ver-planes-pro" style="display: none;">Ver Planes Pro</button>
-
   <script>
   let contadorNumeros = 1;
   let limiteNumeros = 5; // Default value, will be updated on login
@@ -742,12 +739,6 @@
     document.getElementById('login-container').style.display = 'block';
   });
 
-  // Verificar si el usuario ha iniciado sesión
-    const usuarioAutenticado = localStorage.getItem('usuarioAutenticado'); // Ejemplo: usar localStorage para guardar el estado de sesión
-
-    if (usuarioAutenticado === 'true') {
-      document.getElementById('ver-planes-pro').style.display = 'block';
-    }
 });
 
   </script>
@@ -1419,6 +1410,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 </style>
+ <script>
+    // Función para verificar y mostrar buttons-plnbuttons si corresponde
+    function checkAndShowButtons() {
+      const usuarioEmail = localStorage.getItem('usuarioEmail');
+      const currentPath = window.location.pathname;
+      const buttonsElement = document.getElementById('buttons-plnbuttons');
+      
+      // Mostrar solo si hay un usuario autenticado y está en /panel
+      if (usuarioEmail && currentPath === '/panel') {
+        buttonsElement.style.display = 'block';
+      } else {
+        buttonsElement.style.display = 'none';
+      }
+    }
+
+    // Verificar al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+      checkAndShowButtons();
+    });
+
+    // También verificar cuando cambia la ruta (para SPA)
+    window.addEventListener('popstate', checkAndShowButtons);
+  </script>
 
  
 
