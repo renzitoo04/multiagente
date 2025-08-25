@@ -1305,6 +1305,130 @@ document.addEventListener('DOMContentLoaded', function() {
   window.addEventListener('load', adjustLayout);
   window.addEventListener('resize', adjustLayout);
 </script>
+<style>
+  /* Estilo mejorado para los detalles del link */
+  #detalles-link {
+    background: linear-gradient(135deg, #1c2541 0%, #2d3b62 100%) !important;
+    border: 2px solid #25d366 !important;
+    border-radius: 15px !important;
+    padding: 25px !important;
+    box-shadow: 0 10px 30px rgba(37, 211, 102, 0.2) !important;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #detalles-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, #25d366, #4fc3f7);
+  }
+
+  #detalles-link h3 {
+    color: #25d366 !important;
+    font-size: 1.4rem !important;
+    margin-bottom: 20px !important;
+    text-align: center;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  #detalles-link p {
+    margin: 15px 0;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border-left: 3px solid #4fc3f7;
+    transition: all 0.3s ease;
+  }
+
+  #detalles-link p:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+  }
+
+  #detalles-link strong {
+    color: #4fc3f7;
+    font-weight: 600;
+  }
+
+  #detalles-link a {
+    color: #25d366 !important;
+    font-weight: bold;
+    text-decoration: none;
+    background: rgba(37, 211, 102, 0.1);
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(37, 211, 102, 0.3);
+    transition: all 0.3s ease;
+    display: inline-block;
+    margin-top: 5px;
+    word-break: break-all;
+  }
+
+  #detalles-link a:hover {
+    background: rgba(37, 211, 102, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+  }
+
+  /* Efecto de brillo sutil */
+  #detalles-link {
+    position: relative;
+  }
+
+  #detalles-link::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(30deg);
+    animation: shine 6s infinite linear;
+    pointer-events: none;
+  }
+
+  @keyframes shine {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+
+  /* Responsive para móviles */
+  @media (max-width: 768px) {
+    #detalles-link {
+      padding: 20px 15px !important;
+      margin: 20px 0 !important;
+    }
+
+    #detalles-link h3 {
+      font-size: 1.2rem !important;
+    }
+
+    #detalles-link p {
+      padding: 10px;
+      margin: 12px 0;
+    }
+
+    #detalles-link a {
+      font-size: 0.9rem;
+      padding: 6px 10px;
+    }
+  }
+</style>
 
  
 
