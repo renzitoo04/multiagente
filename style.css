@@ -12,6 +12,11 @@
     flex-direction: column;
   }
 
+  /* Evitar scroll horizontal */
+  body {
+    overflow-x: hidden;
+  }
+
   /* Container for better alignment - optimized for desktop */
   .container {
     width: 100%;
@@ -22,6 +27,19 @@
     display: flex;
     flex-direction: column;
     align-items: center; /* Centrar todos los elementos hijos */
+  }
+
+  /* Centrar el apartado de inicio de sesión */
+  #login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    box-sizing: border-box;
   }
 
   /* Enhanced header with subtle animation */
@@ -483,8 +501,6 @@
     text-align: center;
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(37, 211, 102, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
   
   #login-container:hover {
