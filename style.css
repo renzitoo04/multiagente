@@ -1597,32 +1597,3 @@
   }
 }
 
-/* Estilo mejorado para la caja de detalles del link generado */
-.details-container {
-  background: linear-gradient(135deg, #4caf50, #8bc34a); /* Fondo llamativo */
-  color: #ffffff; /* Texto blanco para contraste */
-  font-size: 1.2rem; /* Tamaño de letra más grande */
-  font-weight: bold; /* Texto más destacado */
-  padding: 20px; /* Espaciado interno */
-  border-radius: 12px; /* Bordes redondeados */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Sombra para destacar */
-  text-align: left; /* Alinear el texto a la izquierda */
-  margin: 20px auto; /* Centrado horizontal */
-  max-width: 600px; /* Ancho máximo */
-}
-
-.details-container p {
-  margin: 10px 0; /* Espaciado entre párrafos */
-}
-
-.details-container a {
-  color: #ffffff; /* Mantener el texto blanco */
-  text-decoration: underline; /* Subrayar el link */
-  font-size: 1.2rem; /* Tamaño de letra ajustado para el link */
-}
-
-.details-container a:hover {
-  color: #ffeb3b; /* Cambiar color al pasar el mouse */
-  text-decoration: none; /* Quitar subrayado al hover */
-}
-
