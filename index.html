@@ -1413,6 +1413,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
  
 
-  
+  <!-- Apartado de Ver Planes Pro -->
+  <div id="planes-pro" style="display: none;">
+    <!-- ...contenido existente del apartado de Ver Planes Pro... -->
+  </div>
+
+  <script>
+    // Verificar si el usuario ha iniciado sesión
+    const usuarioAutenticado = localStorage.getItem('usuarioAutenticado'); // Ejemplo: usar localStorage para guardar el estado de sesión
+
+    if (usuarioAutenticado === 'true') {
+      document.getElementById('planes-pro').style.display = 'block';
+    }
+  </script>
 </body>
 </html>
