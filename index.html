@@ -712,6 +712,14 @@
           <p>Link acortado con éxito:</p>
           <a href="${shortLink}" target="_blank">${shortLink}</a>
         `;
+        document.getElementById('output').innerHTML = `
+        <p>Tu link generado:</p>
+        <a href="/api/soporte?id=${linkData.id}" target="_blank">${linkData.link}</a>
+        <div id="estadisticas">Cargando estadísticas...</div>
+      `;
+
+        cargarEstadisticas(linkData.id);
+
         document.getElementById('acortar-link-output').style.display = 'block';
         
         // Show success notification
@@ -1792,6 +1800,30 @@ document.addEventListener('DOMContentLoaded', function() {
     // mostrarEstadisticasClicks();
   }
 });
+</script>
+<script>
+async function cargarEstadisticas(linkId) {
+  try {
+    const res = await fetch(`/api/clicks?id=${linkId}&days=30`);
+    const data = await res.json();
+    if (res.ok) {
+      // acá ponés lo que quieras hacer con los datos
+      console.log("Labels:", data.labels);
+      console.log("Values:", data.values);
+
+      // ejemplo: mostrar datos en el div "estadisticas"
+      document.getElementById('estadisticas').innerText =
+        `Clicks últimos 30 días: ${data.values.reduce((a,b) => a+b, 0)}`;
+    } else {
+      document.getElementById('estadisticas').innerText =
+        "Error al cargar las estadísticas. Intenta nuevamente más tarde.";
+    }
+  } catch (e) {
+    console.error(e);
+    document.getElementById('estadisticas').innerText =
+      "Error al cargar las estadísticas. Intenta nuevamente más tarde.";
+  }
+}
 </script>
 
  
