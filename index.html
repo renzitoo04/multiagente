@@ -1410,29 +1410,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 </style>
- <script>
-    // Función para verificar y mostrar buttons-plnbuttons si corresponde
-    function checkAndShowButtons() {
-      const usuarioEmail = localStorage.getItem('usuarioEmail');
-      const currentPath = window.location.pathname;
-      const buttonsElement = document.getElementById('buttons-plnbuttons');
-      
-      // Mostrar solo si hay un usuario autenticado y está en /panel
-      if (usuarioEmail && currentPath === '/panel') {
-        buttonsElement.style.display = 'block';
-      } else {
-        buttonsElement.style.display = 'none';
-      }
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const boton = document.getElementById('buttons-plnbuttons');
+    if (window.location.pathname === '/panel') {
+      boton.style.display = 'block';
     }
+  });
+</script>
 
-    // Verificar al cargar la página
-    document.addEventListener('DOMContentLoaded', function() {
-      checkAndShowButtons();
-    });
 
-    // También verificar cuando cambia la ruta (para SPA)
-    window.addEventListener('popstate', checkAndShowButtons);
-  </script>
 
  
 
