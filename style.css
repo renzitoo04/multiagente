@@ -1560,13 +1560,3 @@
   background-color: #d84315; /* Color aún más oscuro al hacer clic */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra más pequeña */
 }
-html, body {
-  width: 100%;
-  overflow-x: hidden;
-}
-
-#login-container {
-  margin: 40px auto;
-  left: 50%;
-  transform: translateX(-50%);
-}
