@@ -1223,6 +1223,88 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
+<style>
+  /* Ajustar el ancho del contenedor de editar link */
+  #editar-link-container {
+    max-width: 500px !important;
+    width: 90% !important;
+    transform: none !important;
+    margin: 30px auto !important;
+    padding: 20px !important;
+  }
+
+  /* Centrar el botón de planes en el header */
+  .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  /* Asegurar que el botón no se corte en móviles */
+  .plans-button {
+    white-space: nowrap;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+
+  /* Ajustes específicos para móviles en el header */
+  @media (max-width: 768px) {
+    .logo-container {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .plans-button {
+      margin: 0 auto;
+      order: 2;
+      width: 100%;
+      max-width: 200px;
+      text-align: center;
+    }
+    
+    .logo {
+      margin: 0 auto;
+      order: 1;
+    }
+  }
+
+  /* Ajustar inputs dentro del editor */
+  #editar-numeros-container .numero-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #editar-numeros-container .bandera-container {
+    align-self: flex-start;
+  }
+
+  /* Textarea más compacto */
+  #editar-mensaje {
+    min-height: 80px;
+    resize: vertical;
+  }
+</style>
+
+<script>
+  // Script para mejorar el layout en diferentes tamaños de pantalla
+  function adjustLayout() {
+    const screenWidth = window.innerWidth;
+    const editContainer = document.getElementById('editar-link-container');
+    
+    if (screenWidth < 768) {
+      // Ajustes adicionales para móviles
+      if (editContainer) {
+        editContainer.style.padding = '15px';
+        editContainer.style.margin = '20px auto';
+      }
+    }
+  }
+
+  // Ejecutar al cargar y al redimensionar
+  window.addEventListener('load', adjustLayout);
+  window.addEventListener('resize', adjustLayout);
+</script>
 
  
 
