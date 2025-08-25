@@ -973,6 +973,256 @@ document.getElementById('registro-form').addEventListener('submit', async functi
   });
 
   </script>
+  <style>
+/* Media queries mejoradas para móviles */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .container {
+    max-width: 100% !important;
+    padding: 0 10px;
+  }
+
+  header {
+    padding: 12px 15px;
+    position: relative;
+  }
+
+  .logo {
+    height: 50px !important;
+  }
+
+  .plans-button {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .premium-badge {
+    font-size: 0.6rem;
+    padding: 2px 5px;
+  }
+
+  h1 {
+    font-size: 1.8rem !important;
+    margin: 20px 0;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+
+  h3 {
+    font-size: 1.2rem !important;
+  }
+
+  /* Formularios */
+  form {
+    padding: 20px 15px !important;
+    margin: 20px 0 !important;
+    border-radius: 15px;
+  }
+
+  form input[type="text"],
+  form input[type="email"],
+  form input[type="password"],
+  .numero {
+    padding: 14px 16px !important;
+    font-size: 16px !important; /* Evita zoom en iOS */
+  }
+
+  /* Login container */
+  #login-container {
+    margin: 30px auto !important;
+    padding: 30px 20px !important;
+    width: 95% !important;
+  }
+
+  /* Botones */
+  .button-group {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .button-group button {
+    width: 100%;
+    max-width: 100% !important;
+  }
+
+  form button[onclick="generarLink()"] {
+    width: 100%;
+    max-width: 100% !important;
+    padding: 16px !important;
+  }
+
+  /* Números container */
+  .numbers-grid {
+    gap: 15px;
+  }
+
+  .numero-container {
+    padding: 12px;
+  }
+
+  .bandera {
+    width: 28px !important;
+    height: 20px !important;
+  }
+
+  /* User section */
+  .user-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .logout-button {
+    align-self: stretch;
+    text-align: center;
+    padding: 12px;
+  }
+
+  /* Output section */
+  .output {
+    padding: 20px;
+    margin: 20px 0;
+  }
+
+  /* Editar link container */
+  #editar-link-container {
+    transform: none !important;
+    width: 95% !important;
+    margin: 20px auto !important;
+    padding: 20px;
+  }
+
+  /* Modal */
+  .modal-container {
+    width: 95% !important;
+    padding: 20px;
+    margin: 20px auto;
+  }
+
+  .plan-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .whatsapp-button,
+  .mercadopago-button,
+  .debito-button {
+    justify-content: center;
+    padding: 12px 16px;
+    font-size: 1rem;
+  }
+
+  /* Footer */
+  footer {
+    padding: 20px 0;
+    margin-top: 40px;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  footer a:not(:last-child)::after {
+    display: none;
+  }
+}
+
+/* Ajustes específicos para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 5px;
+  }
+
+  form {
+    padding: 15px 10px !important;
+  }
+
+  #login-container {
+    padding: 20px 15px !important;
+  }
+
+  .logo {
+    height: 45px !important;
+  }
+
+  h1 {
+    font-size: 1.6rem !important;
+  }
+
+  .user-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 1.2rem !important;
+  }
+}
+
+/* Mejoras de usabilidad para dispositivos táctiles */
+button, 
+a, 
+input[type="button"], 
+input[type="submit"] {
+  min-height: 44px; /* Tamaño mínimo para elementos táctiles */
+  touch-action: manipulation; /* Mejora la respuesta táctil */
+}
+
+input, 
+textarea {
+  font-size: 16px !important; /* Evita el zoom en iOS */
+}
+
+/* Prevenir zoom en inputs en iOS */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea {
+    font-size: 16px !important;
+  }
+}
+</style>
+
+<script>
+// Script para mejorar la experiencia móvil
+document.addEventListener('DOMContentLoaded', function() {
+  // Detectar si es un dispositivo móvil
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  
+  if (isMobile) {
+    // Añadir clase al body para targeting específico
+    document.body.classList.add('is-mobile');
+    
+    // Mejorar el comportamiento de los dropdowns y elementos interactivos
+    const allButtons = document.querySelectorAll('button');
+    allButtons.forEach(button => {
+      button.addEventListener('touchstart', function() {
+        this.style.transform = 'scale(0.98)';
+      });
+      
+      button.addEventListener('touchend', function() {
+        this.style.transform = '';
+      });
+    });
+  }
+  
+  // Prevenir acciones por defecto en enlaces
+  document.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', function(e) {
+      if (this.getAttribute('href') === '#') {
+        e.preventDefault();
+      }
+    });
+  });
+});
+</script>
 
  
 
