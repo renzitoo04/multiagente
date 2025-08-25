@@ -1,14 +1,9 @@
 // estadisticas-clicks.js
-import express from "express";
-import fetch from "node-fetch";
+import fetch from 'node-fetch';
 
-const router = express.Router();
-
-// Token de TinyURL Premium (ya lo tenés en tus env)
 const TINYURL_TOKEN = process.env.TINYURL_TOKEN || "y2SOyajOeWvjPgcWeISvzjHa3fKGkhfgnYNc9sxVLRtR7ZrHW28v7saCeNCw";
 
-// Endpoint: /api/clicks?id=LINK_ID&days=30
-router.get("/clicks", async (req, res) => {
+export default async function handler(req, res) {
   try {
     const { id, days } = req.query;
 
@@ -40,12 +35,10 @@ router.get("/clicks", async (req, res) => {
     const labels = stats.map(item => item.date);
     const values = stats.map(item => item.clicks);
 
-    res.json({ labels, values });
+    res.status(200).json({ labels, values });
 
   } catch (error) {
     console.error("Error al obtener estadísticas:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
-});
-
-export default router;
+}
