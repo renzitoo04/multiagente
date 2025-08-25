@@ -1535,7 +1535,7 @@
   color: #ffffff;
   font-weight: bold;
   font-size: 1.1rem;
-  border-radius: 12px;
+  border-radius: 12px; /* Bordes redondeados */
   text-decoration: none;
   transition: all 0.3s ease;
   box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
@@ -1595,5 +1595,30 @@
   h1, h2, h3 {
     font-size: 1.5rem;
   }
+}
+
+/* Estilo mejorado para la sección de detalles del link generado */
+.output {
+  background: linear-gradient(135deg, #ff9800, #f44336); /* Fondo llamativo */
+  color: #ffffff; /* Texto blanco para contraste */
+  font-size: 1.5rem; /* Tamaño de letra más grande */
+  font-weight: bold; /* Texto más destacado */
+  padding: 20px; /* Espaciado interno */
+  border-radius: 12px; /* Bordes redondeados */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Sombra para destacar */
+  text-align: center; /* Centrar el texto */
+  margin: 20px auto; /* Centrado horizontal */
+  max-width: 600px; /* Ancho máximo */
+}
+
+.output a {
+  color: #ffffff; /* Mantener el texto blanco */
+  text-decoration: underline; /* Subrayar el link */
+  font-size: 1.2rem; /* Tamaño de letra ajustado para el link */
+}
+
+.output a:hover {
+  color: #ffeb3b; /* Cambiar color al pasar el mouse */
+  text-decoration: none; /* Quitar subrayado al hover */
 }
 
