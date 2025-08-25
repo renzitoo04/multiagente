@@ -1465,6 +1465,333 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 </style>
+<style>
+  /* Estilos para el contenedor de estadísticas */
+  #link-stats-container {
+    display: none;
+    background: linear-gradient(135deg, #1c2541 0%, #2d3b62 100%);
+    border: 2px solid #25d366;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 30px auto;
+    box-shadow: 0 10px 30px rgba(37, 211, 102, 0.2);
+    position: relative;
+    overflow: hidden;
+    max-width: 800px;
+    width: 90%;
+  }
+
+  #link-stats-container h3 {
+    color: #25d366;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .stats-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .stats-controls select,
+  .stats-controls button {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(42, 47, 74, 0.8);
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .stats-controls select:hover,
+  .stats-controls button:hover {
+    background: rgba(47, 52, 81, 0.9);
+    border-color: #25d366;
+  }
+
+  .stats-canvas-container {
+    width: 100%;
+    height: 300px;
+    margin-top: 20px;
+  }
+
+  .stats-summary {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    min-width: 120px;
+    border-left: 3px solid #4fc3f7;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #25d366;
+    margin: 5px 0;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .no-stats-message {
+    text-align: center;
+    padding: 30px;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    #link-stats-container {
+      padding: 15px;
+    }
+    
+    .stats-controls {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .stats-controls select,
+    .stats-controls button {
+      width: 100%;
+      max-width: 250px;
+    }
+    
+    .stats-summary {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .stat-card {
+      width: 100%;
+      max-width: 200px;
+    }
+  }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Variable global para la instancia del gráfico
+let clicksChart = null;
+
+// Función para mostrar estadísticas de clicks
+async function mostrarEstadisticasClicks() {
+  const email = localStorage.getItem('usuarioEmail');
+  const linkID = localStorage.getItem(`linkID_${email}`);
+  const statsContainer = document.getElementById('link-stats-container');
+  const statsContent = document.getElementById('link-stats-content');
+  
+  if (!linkID) {
+    statsContent.innerHTML = '<p class="no-stats-message">No hay un link generado para mostrar estadísticas.</p>';
+    statsContainer.style.display = 'block';
+    return;
+  }
+
+  // Mostrar mensaje de carga
+  statsContent.innerHTML = `
+    <div style="text-align: center; padding: 30px;">
+      <div class="loading" style="margin: 0 auto;"></div>
+      <p>Cargando estadísticas...</p>
+    </div>
+  `;
+  statsContainer.style.display = 'block';
+
+  try {
+    // Aquí debes reemplazar con tu endpoint real de TinyURL
+    // Esta es una implementación de ejemplo
+    const response = await fetch(`/api/estadisticas-clicks?link_id=${linkID}`);
+    const data = await response.json();
+    
+    if (response.ok && data.labels && data.values) {
+      renderizarGrafico(data.labels, data.values);
+      
+      // Calcular totales
+      const totalClicks = data.values.reduce((sum, value) => sum + value, 0);
+      const promedioDiario = totalClicks / data.values.length;
+      const maxClicks = Math.max(...data.values);
+      
+      statsContent.innerHTML = `
+        <div class="stats-controls">
+          <select id="rango-tiempo" onchange="cambiarRangoTiempo()">
+            <option value="7">Últimos 7 días</option>
+            <option value="30" selected>Últimos 30 días</option>
+            <option value="90">Últimos 3 meses</option>
+          </select>
+          <button onclick="exportarDatos()">Exportar Datos</button>
+        </div>
+        <div class="stats-canvas-container">
+          <canvas id="clicks-chart"></canvas>
+        </div>
+        <div class="stats-summary">
+          <div class="stat-card">
+            <div class="stat-value">${totalClicks}</div>
+            <div class="stat-label">Clicks Totales</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${promedioDiario.toFixed(1)}</div>
+            <div class="stat-label">Promedio Diario</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${maxClicks}</div>
+            <div class="stat-label">Máximo en un Día</div>
+          </div>
+        </div>
+      `;
+      
+      // Renderizar el gráfico
+      renderizarGrafico(data.labels, data.values);
+    } else {
+      statsContent.innerHTML = `
+        <p class="no-stats-message">No hay datos de clicks disponibles para este link.</p>
+        <p style="text-align: center; color: rgba(255,255,255,0.6); font-size: 0.9rem;">
+          Los datos de clicks pueden tardar hasta 24 horas en aparecer después de generar el link.
+        </p>
+      `;
+    }
+  } catch (error) {
+    console.error('Error al cargar estadísticas:', error);
+    statsContent.innerHTML = `
+      <p class="no-stats-message">Error al cargar las estadísticas. Intenta nuevamente más tarde.</p>
+    `;
+  }
+}
+
+// Función para renderizar el gráfico
+function renderizarGrafico(labels, values) {
+  const ctx = document.getElementById('clicks-chart').getContext('2d');
+  
+  // Destruir gráfico anterior si existe
+  if (clicksChart) {
+    clicksChart.destroy();
+  }
+  
+  // Crear nuevo gráfico
+  clicksChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Clicks por Día',
+        data: values,
+        backgroundColor: 'rgba(37, 211, 102, 0.5)',
+        borderColor: 'rgba(37, 211, 102, 1)',
+        borderWidth: 1,
+        borderRadius: 5,
+        hoverBackgroundColor: 'rgba(37, 211, 102, 0.7)'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(255, 255, 255, 0.1)'
+          },
+          ticks: {
+            color: 'rgba(255, 255, 255, 0.7)'
+          }
+        },
+        x: {
+          grid: {
+            color: 'rgba(255, 255, 255, 0.1)'
+          },
+          ticks: {
+            color: 'rgba(255, 255, 255, 0.7)',
+            maxRotation: 45,
+            minRotation: 45
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: {
+            color: 'rgba(255, 255, 255, 0.7)'
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(28, 37, 65, 0.9)',
+          titleColor: '#25d366',
+          bodyColor: 'rgba(255, 255, 255, 0.8)',
+          borderColor: 'rgba(37, 211, 102, 0.5)',
+          borderWidth: 1
+        }
+      }
+    }
+  });
+}
+
+// Función para cambiar el rango de tiempo (ejemplo)
+function cambiarRangoTiempo() {
+  const rango = document.getElementById('rango-tiempo').value;
+  // Aquí implementarías la lógica para recargar los datos con el nuevo rango
+  mostrarEstadisticasClicks(); // Recargar con el nuevo rango
+}
+
+// Función para exportar datos (ejemplo)
+function exportarDatos() {
+  // Implementar lógica de exportación
+  showNotification('Funcionalidad de exportación en desarrollo', 'info');
+}
+
+// Modificar la función mostrarDetallesLink para incluir el botón de estadísticas
+function mostrarDetallesLink(linkData) {
+  const { link, numeros, mensaje } = linkData;
+
+  // Mostrar los detalles del link en el contenedor
+  const detallesLink = document.getElementById('detalles-link');
+  detallesLink.style.display = 'block';
+  detallesLink.innerHTML = `
+    <h3>Detalles del Link Generado</h3>
+    <p><strong>Números:</strong> ${numeros.join(', ')}</p>
+    <p><strong>Mensaje Automático:</strong> ${mensaje || 'Sin mensaje'}</p>
+    <p><strong>Link:</strong> <a href="${link}" target="_blank">${link}</a></p>
+    <div style="text-align: center; margin-top: 20px;">
+      <button onclick="mostrarEstadisticasClicks()" style="
+        background: #25d366;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s ease;
+      " onmouseover="this.style.background='#1da851'" onmouseout="this.style.background='#25d366'">
+        📊 Ver Estadísticas de Clicks
+      </button>
+    </div>
+  `;
+}
+
+// Llamar a mostrarEstadisticasClicks cuando la página cargue si hay un link
+document.addEventListener('DOMContentLoaded', function() {
+  // Esta parte se ejecutará cuando el usuario ya esté logueado y tenga un link
+  const email = localStorage.getItem('usuarioEmail');
+  if (email && localStorage.getItem(`linkID_${email}`)) {
+    // Opcional: cargar estadísticas automáticamente
+    // mostrarEstadisticasClicks();
+  }
+});
+</script>
 
  
 
