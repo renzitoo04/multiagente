@@ -107,39 +107,52 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'GET') {
-    const { id } = req.query;
+  const { id } = req.query;
 
-    if (!id) {
-      return res.status(400).json({ error: 'Falta el ID del link.' });
-    }
-
-    try {
-      // Recuperar los datos del link desde Supabase
-      const { data: linkData, error } = await supabase
-        .from('link')
-        .select('numeros, mensaje')
-        .eq('id', id)
-        .single();
-
-      if (error || !linkData) {
-        return res.status(404).json({ error: 'No se encontró el link.' });
-      }
-
-      // Rotar entre los números
-      if (!indicesRotacion[id]) {
-        indicesRotacion[id] = 0; // Inicializar el índice de rotación si no existe
-      }
-      const numeroSeleccionado = linkData.numeros[indicesRotacion[id]];
-      indicesRotacion[id] = (indicesRotacion[id] + 1) % linkData.numeros.length; // Actualizar el índice de rotación
-
-      // Redirigir al número seleccionado en WhatsApp con el mensaje automático
-      const whatsappLink = `https://wa.me/${numeroSeleccionado}?text=${encodeURIComponent(linkData.mensaje)}`;
-      return res.redirect(302, whatsappLink);
-    } catch (error) {
-      console.error('Error al redirigir:', error);
-      return res.status(500).json({ error: 'Error interno del servidor.' });
-    }
+  if (!id) {
+    return res.status(400).json({ error: 'Falta el ID del link.' });
   }
+
+  try {
+    // Recuperar los datos del link desde Supabase
+    const { data: linkData, error } = await supabase
+      .from('link')
+      .select('numeros, mensaje')
+      .eq('id', id)
+      .single();
+
+    if (error || !linkData) {
+      return res.status(404).json({ error: 'No se encontró el link.' });
+    }
+
+    // Registrar el click
+    try {
+      const ip = String((req.headers['x-forwarded-for'] || req.socket.remoteAddress || '')).split(',')[0].trim();
+      const ua = req.headers['user-agent'] || '';
+      const referer = req.headers['referer'] || req.headers['referrer'] || '';
+      await supabase
+        .from('clicks')
+        .insert([{ link_id: id, ip, ua, referer }]);
+    } catch (e) {
+      console.error('No se pudo registrar el click:', e);
+    }
+
+    // Rotar entre números (lógica que ya tenías antes)
+    if (!indicesRotacion[id]) {
+      indicesRotacion[id] = 0;
+    }
+    const numeroSeleccionado = linkData.numeros[indicesRotacion[id]];
+    indicesRotacion[id] = (indicesRotacion[id] + 1) % linkData.numeros.length;
+
+    // Redirigir al número en WhatsApp
+    const whatsappLink = `https://wa.me/${numeroSeleccionado}?text=${encodeURIComponent(linkData.mensaje)}`;
+    return res.redirect(302, whatsappLink);
+
+  } catch (error) {
+    console.error('Error al redirigir:', error);
+    return res.status(500).json({ error: 'Error interno del servidor.' });
+  }
+}
 
   if (req.method === 'PATCH') {
     const { email, id, numeros, mensaje } = req.body;

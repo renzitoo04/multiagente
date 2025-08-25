@@ -162,7 +162,7 @@
           </div>
         </div>
         
-        <!-- Side column for editing -->
+        <!-- Side column for editing --> 
         <div class="side-column">
           <!-- Edit link container -->
           <div id="editar-link-container" style="display: none;">
@@ -171,6 +171,58 @@
             <textarea id="editar-mensaje" placeholder="Editar mensaje automático"></textarea>
             <button onclick="actualizarLink()">Actualizar Link</button>
           </div>
+
+          <!-- Apartado de estadísticas -->
+          <section id="estadisticas" style="max-width: 900px; margin: 24px auto;">
+            <h3 style="margin: 0 0 12px;">Clics del link</h3>
+            <div style="width:100%; height:280px;">
+              <canvas id="clickChart"></canvas>
+            </div>
+          </section>
+        </div> <!-- cierre de .side-column -->
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+          async function renderClicks(email) {
+            try {
+              const r1 = await fetch(`/api/link?email=${encodeURIComponent(email)}`);
+              if (!r1.ok) throw new Error('No se pudo obtener el link del usuario');
+              const linkInfo = await r1.json();
+              const linkId = linkInfo.id;
+
+              const r2 = await fetch(`/api/clicks?id=${encodeURIComponent(linkId)}&days=30`);
+              const { labels, values } = await r2.json();
+
+              const ctx = document.getElementById('clickChart');
+              if (!ctx) return;
+              new Chart(ctx, {
+                type: 'line',
+                data: {
+                  labels,
+                  datasets: [{
+                    label: 'Clics por día',
+                    data: values,
+                    tension: 0.3
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+                  plugins: { legend: { display: true } }
+                }
+              });
+            } catch (e) {
+              console.error(e);
+            }
+          }
+
+          // Llamada al renderizado: asegurate de tener el email guardado
+          // Ejemplo si usás sessionStorage/localStorage:
+          // const email = sessionStorage.getItem('usuarioEmail');
+          // if (email) renderClicks(email);
+        </script>
+
           
           <!-- Shortened link stats could go here -->
           <div id="link-stats-container" class="card" style="display: none;">
@@ -354,6 +406,9 @@
           localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
           localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
           localStorage.setItem(`linkID_${email}`, linkData.id);
+          // 🔹 Llamada al gráfico
+          renderClicks(email);
+  
         }
 
         // Ocultar el apartado "¿Para qué sirve Linkify?"
