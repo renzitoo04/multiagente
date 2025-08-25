@@ -15,9 +15,25 @@ export default async function handler(req, res) {
   }
 
   const planes = {
-    plan_2_numeros: { title: 'Plan PRO - 2 números', price: 6 },
-    plan_3_numeros: { title: 'Plan PRO - 3 números', price: 9 },
-    plan_4_numeros: { title: 'Plan PRO - 4 números', price: 12 },
+    plan_2_numeros: { title: 'Plan PRO - 2 números', price: 8000 },
+    plan_3_numeros: { title: 'Plan PRO - 3 números', price: 12000 },
+    plan_4_numeros: { title: 'Plan PRO - 4 números', price: 16000 },
+    plan_2_numeros: { title: 'Plan PRO - 5 números', price: 20100 },
+    plan_3_numeros: { title: 'Plan PRO - 6 números', price: 24120 },
+    plan_4_numeros: { title: 'Plan PRO - 7 números', price: 28140 },
+    plan_2_numeros: { title: 'Plan PRO - 8 números', price: 32160 },
+    plan_3_numeros: { title: 'Plan PRO - 9 números', price: 36180 },
+    plan_4_numeros: { title: 'Plan PRO - 10 números', price: 40200 },
+    plan_2_numeros: { title: 'Plan PRO - 11 números', price: 44220 },
+    plan_3_numeros: { title: 'Plan PRO - 12 números', price: 48240 },
+    plan_4_numeros: { title: 'Plan PRO - 13 números', price: 52260 },
+    plan_2_numeros: { title: 'Plan PRO - 14 números', price: 56280 },
+    plan_3_numeros: { title: 'Plan PRO - 15 números', price: 60300 },
+    plan_4_numeros: { title: 'Plan PRO - 16 números', price: 64320 },
+    plan_2_numeros: { title: 'Plan PRO - 17 números', price: 68340 },
+    plan_3_numeros: { title: 'Plan PRO - 18 números', price: 72360 },
+    plan_4_numeros: { title: 'Plan PRO - 19 números', price: 76380 },
+    plan_2_numeros: { title: 'Plan PRO - 20 números', price: 80400 },
   };
 
   const planInfo = planes[plan];
