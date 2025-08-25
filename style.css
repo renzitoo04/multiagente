@@ -1609,7 +1609,7 @@
   #buttons-plnbuttons {
     margin: 0 auto; /* Centrado horizontal */
     display: block; /* Asegurar que se muestre como bloque */
-    max-width: 300px; /* Ancho máximo para evitar que se corte */
+    max-width: 100px; /* Ancho máximo para evitar que se corte */
   }
 
   /* Centrar el apartado de Editar Link */
@@ -1617,7 +1617,7 @@
     margin: 40px auto; /* Centrado vertical y horizontal */
     transform: none; /* Eliminar cualquier desplazamiento */
     max-width: 600px; /* Ancho máximo */
-    width: 90%; /* Ancho relativo para responsividad */
+    width: 50%; /* Ancho relativo para responsividad */
   }
 }
 
