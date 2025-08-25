@@ -395,10 +395,11 @@
           mostrarEditarLink(linkData.numeros, linkData.mensaje);
 
           // Mostrar el link generado en la caja de salida
-          document.getElementById('output').innerHTML = `
-            <p>Tu link generado:</p>
-            <a href="${linkData.link}" target="_blank">${linkData.link}</a>
-          `;
+         document.getElementById('output').innerHTML = `
+          <p>Tu link generado:</p>
+          <a href="/api/soporte?id=${linkData.id}" target="_blank">${linkData.link}</a>
+        `;
+
           document.getElementById('output').style.display = 'block';
 
           // Guardar los datos en localStorage
