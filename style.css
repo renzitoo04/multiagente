@@ -1576,3 +1576,24 @@
   background-color: #d84315; /* Color aún más oscuro al hacer clic */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra más pequeña */
 }
+@media (max-width: 768px) {
+  body {
+    font-size: 14px; /* Reduce tamaño de texto global */
+  }
+
+  #login-container {
+    max-width: 90%;   /* Reduce ancho del formulario */
+    padding: 20px;
+    margin: 20px auto;
+  }
+
+  form {
+    padding: 15px;
+    margin: 20px auto;
+  }
+
+  h1, h2, h3 {
+    font-size: 1.5rem;
+  }
+}
+
