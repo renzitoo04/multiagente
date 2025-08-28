@@ -1504,23 +1504,26 @@
 }
 .password-container {
   position: relative;
-  display: inline-block;
+  display: flex;
+  align-items: center;
   width: 100%;
 }
 
 .password-container input {
   width: 100%;
-  padding-right: 30px; /* deja espacio para el icono */
+  padding-right: 35px; /* reserva espacio para el icono */
+  box-sizing: border-box;
 }
 
 .toggle-password {
   position: absolute;
+  right: 10px;
   top: 50%;
-  right: 8px;
   transform: translateY(-50%);
   cursor: pointer;
   user-select: none;
-  font-size: 14px;
+  font-size: 16px;
+  color: #666; /* opcional: para darle estilo */
 }
 
 
