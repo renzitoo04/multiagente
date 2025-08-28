@@ -1509,18 +1509,11 @@
   width: 100%;
 }
 
-.password-container input[type="password"],
-.password-container input[type="text"] {
+.password-container input {
   width: 100%;
-  padding-right: 35px; /* espacio para el ícono */
+  padding-right: 35px; /* reserva espacio para el icono */
   box-sizing: border-box;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  height: 40px;
-  font-size: 16px;
-  font-family: inherit; /* asegura que la fuente no cambie */
 }
-
 
 .toggle-password {
   position: absolute;
