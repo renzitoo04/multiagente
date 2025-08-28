@@ -1412,6 +1412,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 </style>
+<style>
+/* Ajustes específicos para el botón de planes en escritorio */
+@media (min-width: 769px) {
+  .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+
+  .plans-button {
+    margin-left: auto;
+    margin-right: 20px; /* Ajusta este valor según necesites */
+    white-space: nowrap;
+  }
+}
+
+/* Asegurar que el logo y el botón se mantengan alineados */
+.logo {
+  height: 60px;
+  margin-right: 15px;
+}
+
+/* Mantener los estilos existentes para móviles */
+@media (max-width: 768px) {
+  .logo-container {
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .plans-button {
+    margin: 0 auto;
+    order: 2;
+    width: 100%;
+    max-width: 200px;
+    text-align: center;
+  }
+}
+</style>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
