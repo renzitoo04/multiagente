@@ -1507,20 +1507,20 @@
   display: flex;
   align-items: center;
   width: 100%;
-  border: 1px solid transparent; /* Evitar cambios de tamaño */
 }
 
-.password-container input {
+.password-container input[type="password"],
+.password-container input[type="text"] {
   width: 100%;
-  padding-right: 35px; /* Reserva espacio para el icono */
+  padding-right: 35px; /* espacio para el ícono */
   box-sizing: border-box;
-  transition: border-color 0.3s ease; /* Suavizar cambios de borde */
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  height: 40px;
+  font-size: 16px;
+  font-family: inherit; /* asegura que la fuente no cambie */
 }
 
-.password-container input:focus {
-  outline: none;
-  border-color: rgba(37, 211, 102, 0.5); /* Color de borde al enfoque */
-}
 
 .toggle-password {
   position: absolute;
@@ -1530,11 +1530,7 @@
   cursor: pointer;
   user-select: none;
   font-size: 16px;
-  color: #666; /* Opcional: para darle estilo */
-}
-
-.toggle-password:active {
-  transform: translateY(-50%) scale(0.95); /* Efecto al hacer clic */
+  color: #666; /* opcional: para darle estilo */
 }
 
 
