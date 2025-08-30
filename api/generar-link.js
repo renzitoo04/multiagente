@@ -15,7 +15,8 @@ export default async function handler(req, res) {
   }
 
   const planes = {
-    plan_1_numero: {title: 'Plan PRO - 1 números', price: 4000},
+    plan_1_numeros: { title: 'Plan PRO - 1 número', price: 4000 },
+
     plan_2_numeros: { title: 'Plan PRO - 2 números', price: 7800 },
     plan_3_numeros: { title: 'Plan PRO - 3 números', price: 12000 },
     plan_4_numeros: { title: 'Plan PRO - 4 números', price: 16000 },
