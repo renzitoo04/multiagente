@@ -9,22 +9,8 @@ const indicesRotacion = {}; // Control de índices de rotación por ID
 
 async function acortarLink(linkOriginal) {
   try {
-    const response = await fetch('https://api.tinyurl.com/create', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.TINYURL_TOKEN}`, // Token de TinyURL
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ url: linkOriginal, domain: 'tiny.one' }),
-    });
-
-    if (!response.ok) {
-      console.error('Error al acortar el link:', await response.text());
-      return linkOriginal; // Devuelve el link original si falla
-    }
-
-    const data = await response.json();
-    return data.data.tiny_url; // Devuelve el link acortado
+    // Devuelve directamente el link original sin acortar
+    return linkOriginal;
   } catch (error) {
     console.error('Error en la función acortarLink:', error);
     return linkOriginal; // Devuelve el link original si ocurre un error
@@ -88,8 +74,8 @@ export default async function handler(req, res) {
       // Crear un link dinámico que apunte al backend
       const linkDinamico = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
 
-      // Acortar el link usando TinyURL
-      const linkAcortado = await acortarLink(linkDinamico);
+      // Usar directamente el link dinámico sin acortar
+      const linkAcortado = linkDinamico;
 
       // Guardar el link y los datos en Supabase
       const { error } = await supabase
