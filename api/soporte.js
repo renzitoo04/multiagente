@@ -5,12 +5,13 @@ dotenv.config();
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 const indicesRotacion = {}; // Control de índices de rotación por ID
 
-// Función para limpiar números (solo dígitos)
+// ✅ Función para limpiar números (solo dígitos)
 function limpiarNumero(numero) {
-  return numero.replace(/\D/g, ''); // elimina todo lo que no sea dígito
+  if (!numero) return '';
+  return String(numero).replace(/\D/g, '');
 }
 
-// Tinyurl (actualmente devuelve el mismo link)
+// ✅ Función para acortar links (placeholder)
 async function acortarLink(linkOriginal) {
   try {
     return linkOriginal;
@@ -21,6 +22,7 @@ async function acortarLink(linkOriginal) {
 }
 
 export default async function handler(req, res) {
+  // 🔹 Crear nuevo link
   if (req.method === 'POST') {
     const { email, numeros, mensaje } = req.body;
 
@@ -28,7 +30,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Datos inválidos. Asegúrate de enviar el email, números y mensaje.' });
     }
 
-    // Validar la suscripción del usuario
+    // Validar la suscripción
     try {
       const { data: usuario, error: errorUsuario } = await supabase
         .from('usuarios')
@@ -54,8 +56,9 @@ export default async function handler(req, res) {
 
     // Filtrar y limpiar números válidos
     const numerosValidos = numeros
-      .filter(num => num !== '' && num !== '+549')
-      .map(limpiarNumero);
+      .filter(num => num && num !== '+549')
+      .map(limpiarNumero)
+      .filter(n => n.length > 5);
 
     if (numerosValidos.length === 0) {
       return res.status(400).json({ error: 'No se encontraron números válidos.' });
@@ -73,13 +76,13 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Ya tienes un link generado. No puedes crear más de uno.' });
       }
 
-      // Generar un ID único para el link
+      // Generar ID único
       const id = Math.random().toString(36).substring(2, 8);
 
-      // Crear un link dinámico
+      // Crear link dinámico
       const linkDinamico = `${req.headers.origin || 'http://localhost:3000'}/api/soporte?id=${id}`;
 
-      // Guardar el link y los datos en Supabase
+      // Guardar en Supabase
       const { error } = await supabase
         .from('link')
         .insert([{ id, email, numeros: numerosValidos, mensaje, link: linkDinamico }]);
@@ -96,15 +99,13 @@ export default async function handler(req, res) {
     }
   }
 
+  // 🔹 Redirección al número de WhatsApp
   if (req.method === 'GET') {
     const { id } = req.query;
 
-    if (!id) {
-      return res.status(400).json({ error: 'Falta el ID del link.' });
-    }
+    if (!id) return res.status(400).json({ error: 'Falta el ID del link.' });
 
     try {
-      // Recuperar los datos del link desde Supabase
       const { data: linkData, error } = await supabase
         .from('link')
         .select('numeros, mensaje')
@@ -115,35 +116,41 @@ export default async function handler(req, res) {
         return res.status(404).json({ error: 'No se encontró el link.' });
       }
 
-      // Registrar el click
+      // Registrar el click (asincrónicamente)
       (async () => {
         try {
           const ip = String((req.headers['x-forwarded-for'] || req.socket.remoteAddress || '')).split(',')[0].trim();
           const ua = req.headers['user-agent'] || '';
           const referer = req.headers['referer'] || req.headers['referrer'] || '';
-          supabase.from('clicks').insert([{ link_id: id, ip, ua, referer }]); // sin await
+          await supabase.from('clicks').insert([{ link_id: id, ip, ua, referer }]);
         } catch (e) {
           console.error('No se pudo registrar el click:', e);
         }
       })();
 
-      // Rotar entre números
-      if (!indicesRotacion[id]) {
-        indicesRotacion[id] = 0;
-      }
+      // Rotación entre números
+      if (!indicesRotacion[id]) indicesRotacion[id] = 0;
       const numeroSeleccionado = limpiarNumero(linkData.numeros[indicesRotacion[id]]);
       indicesRotacion[id] = (indicesRotacion[id] + 1) % linkData.numeros.length;
 
-      // Redirigir al número en WhatsApp
-      const whatsappLink = `https://wa.me/${numeroSeleccionado}?text=${encodeURIComponent(linkData.mensaje)}`;
-      return res.redirect(302, whatsappLink);
+      const mensajeCodificado = encodeURIComponent(linkData.mensaje || '');
+      const whatsappLink = `https://wa.me/${numeroSeleccionado}?text=${mensajeCodificado}`;
 
+      // ✅ Validar formato antes de redirigir
+      try {
+        new URL(whatsappLink);
+        return res.redirect(302, whatsappLink);
+      } catch (err) {
+        console.error('Error: link inválido generado →', whatsappLink);
+        return res.status(400).json({ error: 'Link de WhatsApp inválido.' });
+      }
     } catch (error) {
       console.error('Error al redirigir:', error);
       return res.status(500).json({ error: 'Error interno del servidor.' });
     }
   }
 
+  // 🔹 Actualizar link existente
   if (req.method === 'PATCH') {
     const { email, id, numeros, mensaje } = req.body;
 
@@ -151,17 +158,16 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Datos inválidos. Asegúrate de enviar el email, ID, números y mensaje.' });
     }
 
-    // Filtrar y limpiar números válidos
     const numerosValidos = numeros
-      .filter(num => num !== '' && num !== '+549')
-      .map(limpiarNumero);
+      .filter(num => num && num !== '+549')
+      .map(limpiarNumero)
+      .filter(n => n.length > 5);
 
     if (numerosValidos.length === 0) {
       return res.status(400).json({ error: 'No se encontraron números válidos.' });
     }
 
     try {
-      // Actualizar los datos en Supabase
       const { error } = await supabase
         .from('link')
         .update({ numeros: numerosValidos, mensaje })
@@ -170,16 +176,16 @@ export default async function handler(req, res) {
 
       if (error) {
         console.error('Error al actualizar el link en Supabase:', error);
-        return res.status(200).json({ message: 'Link actualizado correctamente.' });
+        return res.status(500).json({ error: 'No se pudo actualizar el link.' });
       }
 
       return res.status(200).json({ message: 'Link actualizado correctamente.' });
     } catch (error) {
       console.error('Error actualizando link:', error);
-      return res.status(200).json({ message: 'Link actualizado correctamente.' });
+      return res.status(500).json({ error: 'Error interno del servidor.' });
     }
   }
 
+  // 🔹 Método no permitido
   return res.status(405).json({ error: 'Método no permitido.' });
 }
-
