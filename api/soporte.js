@@ -116,16 +116,16 @@ export default async function handler(req, res) {
       }
 
       // Registrar el click
-      try {
-        const ip = String((req.headers['x-forwarded-for'] || req.socket.remoteAddress || '')).split(',')[0].trim();
-        const ua = req.headers['user-agent'] || '';
-        const referer = req.headers['referer'] || req.headers['referrer'] || '';
-        await supabase
-          .from('clicks')
-          .insert([{ link_id: id, ip, ua, referer }]);
-      } catch (e) {
-        console.error('No se pudo registrar el click:', e);
-      }
+      (async () => {
+        try {
+          const ip = String((req.headers['x-forwarded-for'] || req.socket.remoteAddress || '')).split(',')[0].trim();
+          const ua = req.headers['user-agent'] || '';
+          const referer = req.headers['referer'] || req.headers['referrer'] || '';
+          supabase.from('clicks').insert([{ link_id: id, ip, ua, referer }]); // sin await
+        } catch (e) {
+          console.error('No se pudo registrar el click:', e);
+        }
+      })();
 
       // Rotar entre números
       if (!indicesRotacion[id]) {
