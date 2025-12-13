@@ -1,0 +1,15 @@
+{
+  "rewrites": [
+    { "source": "/soporte", "destination": "/api/soporte.js" },
+    { "source": "/api/login", "destination": "/api/login.js" },
+    { "source": "/api/webhook", "destination": "/api/webhook.js" },
+    { "source": "/panel", "destination": "/" },
+    { "source": "/api/generar-link", "destination": "/api/generar-link.js" },
+    { "source": "/api/clicks", "destination": "/api/clicks.js" },
+    { "source": "/link/:shortId", "destination": "/api/redirect.js" },
+    { "source": "/api/conversion", "destination": "/api/conversion.js" },
+    { "source": "/api/facebook-config", "destination": "/api/facebook-config.js" },
+    { "source": "/api/conversion-stats", "destination": "/api/conversion-stats.js" }
+  ]
+}
+
