@@ -1,7 +1,8 @@
 {
   "rewrites": [
+    { "source": "/test-login", "destination": "/test-login.html" },
     { "source": "/soporte", "destination": "/api/soporte.js" },
-    { "source": "/api/login", "destination": "/api/login.js" },
+    { "source": "/api/login", "destination": "/api/login-debug.js" },
     { "source": "/api/webhook", "destination": "/api/webhook.js" },
     { "source": "/panel", "destination": "/" },
     { "source": "/api/generar-link", "destination": "/api/generar-link.js" },
