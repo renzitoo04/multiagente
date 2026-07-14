@@ -1,8 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 dotenv.config();
+import bcrypt from 'bcryptjs';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const ES_HASH_BCRYPT = /^\$2[aby]\$/;
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -27,7 +29,29 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Usuario no encontrado' });
     }
 
-    if (usuario.password.trim() !== password.trim()) {
+    const passwordIngresada = password.trim();
+    const passwordGuardada = usuario.password.trim();
+    let passwordValida;
+
+    if (ES_HASH_BCRYPT.test(passwordGuardada)) {
+      passwordValida = await bcrypt.compare(passwordIngresada, passwordGuardada);
+    } else {
+      // Cuenta creada antes de que hubiera hash: comparamos en texto plano
+      // y migramos la contraseña a hash de forma transparente si coincide.
+      passwordValida = passwordGuardada === passwordIngresada;
+      if (passwordValida) {
+        const nuevoHash = await bcrypt.hash(passwordIngresada, 10);
+        supabase
+          .from('usuarios')
+          .update({ password: nuevoHash })
+          .eq('email', email.trim())
+          .then(({ error: errorMigracion }) => {
+            if (errorMigracion) console.error('No se pudo migrar la contraseña a hash:', errorMigracion);
+          });
+      }
+    }
+
+    if (!passwordValida) {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
 

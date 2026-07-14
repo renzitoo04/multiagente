@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import { createClient } from '@supabase/supabase-js';
+import bcrypt from 'bcryptjs';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
@@ -28,9 +29,10 @@ export default async function handler(req, res) {
   if (existe) return res.status(400).json({ error: 'El usuario ya existe' });
 
   // Crear usuario con limiteNumeros en 1 y guardar el teléfono en la columna "numeros"
+  const passwordHasheada = await bcrypt.hash(password, 10);
   const { error: errorInsert } = await supabase
     .from('usuarios')
-    .insert([{ email, password, telefono, limiteNumeros: 1 }]); // 👈 acá lo guardamos
+    .insert([{ email, password: passwordHasheada, telefono, limiteNumeros: 1 }]); // 👈 acá lo guardamos
 
   if (errorInsert) {
     console.error('Error al crear usuario:', errorInsert);

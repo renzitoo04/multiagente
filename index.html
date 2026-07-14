@@ -4,109 +4,101 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Linkify - Generador de Links Multiagente</title>
-  <link rel="stylesheet" href="style.css"> <!-- Enlace al archivo CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+  <!-- ============ HEADER ============ -->
   <header>
     <div class="logo-container">
       <img src="https://raw.githubusercontent.com/username/linkify/main/assets/logo.png"
           alt="Linkify" class="logo"
           onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0ZXh0IHg9IjEwIiB5PSI1MCIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzI1ZDM2NiI+TGlua2lmeTwvdGV4dD48L3N2Zz4=';">
-      
+
       <button id="buttons-plnbuttons" class="plans-button" onclick="openPlansModal()">
         <span>💎</span> Ver Planes <span class="premium-badge">Pro</span>
       </button>
     </div>
-
   </header>
 
-  <!-- Modal de Planes -->
+  <!-- ============ MODAL DE PLANES ============ -->
   <div class="modal-overlay" id="plans-modal" style="display: none;">
     <div class="modal-container">
-      <button class="modal-close" onclick="closePlansModal()">×</button>
+      <button class="modal-close" onclick="closePlansModal()" aria-label="Cerrar">×</button>
       <div class="modal-header">
         <h2>Planes de Suscripción</h2>
-        <p>Paga solo por lo que necesitas. Nuestro modelo de precios simple te permite escalar tu negocio sin complicaciones.</p>
+        <p>$3 USD por cada número, por mes. Elegí cuántos necesitás.</p>
+        <ul class="plan-features-shared">
+          <li>✔ Acceso a tu link multiagente</li>
+          <li>✔ Distribución equitativa de mensajes entre tus números</li>
+          <li>✔ Soporte técnico por WhatsApp</li>
+          <li>✔ Panel de administración y personalización</li>
+        </ul>
       </div>
-      <div class="plans-container">
-        <div class="plan-card">
-          <div class="plan-name">Plan Multiagente</div>
-          <div class="plan-price">
-            <span class="price-amount">$3 USD</span>
-            <span class="price-period">POR CADA NÚMERO / MES</span>
-          </div>
-          <div class="plan-features">
-            <ul>
-              <li>Acceso a links multiagente</li>
-              <li>Soporte técnico por WhatsApp</li>
-              <li>Estadísticas de uso</li>
-              <li>Panel de administración</li>
-              <li>Distribución equitativa de mensajes</li>
-              <li>Personalización de links</li>
-            </ul>
-          </div>
-          <div class="plan-actions">
-            <!-- Botón de WhatsApp con el logo correcto -->
-            <a href="https://wa.me/+5491165388118?text=Hola%2C%20quiero%20información%20sobre%20los%20planes%20de%20Linkify" class="whatsapp-button" target="_blank">
-              <img src="https://thumbs.dreamstime.com/b/logotipo-de-icono-whatsapp-verde-medios-sociales-puedes-usar-donde-quieras-234325955.jpg" alt="WhatsApp Logo" class="button-icon">
-              Contratar por WhatsApp
-            </a>
-
-         
-            
-
-          </div>
-        </div>
-      </div>
+      <div class="plans-container"></div>
     </div>
   </div>
 
   <div class="container">
-    <!-- Login container with improved styling -->
-    <div id="login-container" class="active card">
+
+    <!-- ============ LOGIN ============ -->
+    <div id="login-container" class="card">
       <h2>Iniciar sesión</h2>
       <label for="email">Correo electrónico:</label>
       <input type="email" id="email" placeholder="Ingresa tu correo electrónico" required aria-label="Correo electrónico">
+
       <label for="password">Contraseña:</label>
       <div class="password-container">
-        <input type="password" id="password" placeholder="Ingresa tu contraseña" required aria-label="Contraseña" 
-              class="message-input" style="padding-right: 40px;">
-        <span class="toggle-password" onclick="togglePassword('password', this)">👁</span>
+        <input type="password" id="password" placeholder="Ingresa tu contraseña" required aria-label="Contraseña">
+        <span class="toggle-password" onclick="togglePassword('password', this)" role="button" aria-label="Mostrar contraseña"></span>
       </div>
 
-      <!-- Checkbox para recordar credenciales -->
       <div class="remember-me-container">
         <label class="remember-me">
           <input type="checkbox" id="remember-me" name="remember-me">
-          <span class="checkmark"></span>
           <span class="label-text">Recordarme</span>
         </label>
       </div>
-      
-      <!-- Botón de iniciar sesión -->
-      <button onclick="login()" aria-label="Iniciar sesión">Iniciar sesión</button>
+
+      <button class="btn-main" onclick="login()" aria-label="Iniciar sesión">Iniciar sesión</button>
       <p id="login-error"></p>
       <p>¿No tienes una cuenta? <a href="#" id="crear-cuenta-link">Crear cuenta</a></p>
     </div>
 
-    <!-- Info container moved to appear only in login screen -->
-    <div class="desktop-wrapper" id="login-info">
+    <!-- ============ ¿PARA QUÉ SIRVE LINKIFY? (solo antes de loguearse) ============ -->
+    <div id="login-info">
       <div class="info-container card">
         <h2 class="info-title">¿Para qué sirve Linkify?</h2>
-        <p>Linkify es una herramienta creada especialmente para creadores de contenido, emprendedores y vendedores que usan WhatsApp como su canal principal de ventas y atención al cliente.</p>
-        <ul>
-          <li>✅ Evitá bloqueos por enviar demasiados mensajes desde un solo número</li>
-          <li>✅ Distribuí el flujo de clientes entre diferentes agentes u operadores</li>
+        <p class="info-lead">Un solo link para tu negocio que reparte automáticamente los mensajes de WhatsApp entre varios números, para que ningún agente se sature.</p>
+
+        <div class="steps-grid">
+          <div class="step-card">
+            <span class="step-number">1</span>
+            <h4>Cargás tus números</h4>
+            <p>Sumá los WhatsApp de tu equipo, los que necesites.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-number">2</span>
+            <h4>Generás tu link</h4>
+            <p>Un único link para tu bio, botones o anuncios.</p>
+          </div>
+          <div class="step-card">
+            <span class="step-number">3</span>
+            <h4>Se reparte solo</h4>
+            <p>Cada click rota al siguiente número, en orden.</p>
+          </div>
+        </div>
+
+        <ul class="benefits-list">
+          <li>✅ Evitá bloqueos por mandar demasiados mensajes desde un solo número</li>
           <li>✅ Atendé más rápido y de forma ordenada</li>
           <li>✅ Escalá tu negocio sin complicaciones</li>
         </ul>
-        <p>Si vendés o atendés por WhatsApp, Linkify te ayuda a organizar tu operación, mejorar la experiencia del cliente y aumentar tus conversiones.</p>
       </div>
     </div>
 
-    <!-- Dashboard layout for generator -->
+    <!-- ============ DASHBOARD (post-login) ============ -->
     <div id="generador-container" style="display: none;">
-      <!-- User section with logout button -->
       <div class="user-section">
         <div class="user-info">
           <div class="user-avatar" id="user-avatar">T</div>
@@ -116,22 +108,16 @@
           </div>
         </div>
         <button class="logout-button" onclick="cerrarSesion()">
-          <span class="icon">↩</span>
-          Cerrar sesión
+          <span class="icon">↩</span> Salir
         </button>
       </div>
 
       <h1>Generador de Links Multiagente</h1>
-      
-      <!-- Quick stats for dashboard feel -->
-      
-      
-      <!-- Two-column desktop layout -->
+
       <div class="dashboard-layout">
         <div class="main-column">
           <form id="form" class="card">
             <h3>Números de WhatsApp</h3>
-            <!-- Grid layout for number inputs -->
             <div id="numeros-container" class="numbers-grid">
               <div class="numero-container" id="numero-container-1">
                 <span class="bandera-container">
@@ -140,92 +126,56 @@
                 <input type="text" id="numero-1" class="numero" value="+549" placeholder="Ejemplo: 2944585356" aria-label="Número de WhatsApp">
               </div>
             </div>
-            
+
             <div class="button-group">
-              <button type="button" onclick="agregarNumero()" aria-label="Agregar otro número"><i>+</i> Agregar otro número</button>
-              <button type="button" onclick="quitarUltimoNumero()" aria-label="Quitar último número"><i>-</i> Quitar último número</button>
+              <button type="button" onclick="agregarNumero()" aria-label="Agregar otro número">+ Agregar número</button>
+              <button type="button" onclick="quitarUltimoNumero()" aria-label="Quitar último número">− Quitar último</button>
             </div>
 
-            <!-- Campo de mensaje automático en el generador principal -->
             <label for="mensaje">Mensaje automático:</label>
             <input type="text" id="mensaje" placeholder="Ejemplo: Hola, necesito ayuda" aria-label="Mensaje automático">
 
-            <button type="button" onclick="generarLink()" aria-label="Generar Link">Generar Link</button>
+            <button type="button" class="btn-main" onclick="generarLink()" aria-label="Generar Link">Generar Link</button>
           </form>
 
-          <!-- Enhanced output with copy button -->
-          <div class="output-container">
-            <div class="output card" id="output"></div>
-            <button class="copy-btn" id="copy-link-btn" onclick="copyToClipboard()" style="display: none;" aria-label="Copiar al portapapeles"></button>
-          </div>
-          
-          <!-- Details card with consistent styling -->
-          <div class="detalles-link card" id="detalles-link" style="display: none;">
-            <h3>Detalles del Link Generado</h3>
-            <p><strong>Números:</strong> <span id="numeros-generados"></span></p>
-            <p><strong>Mensaje Automático:</strong> <span id="mensaje-generado"></span></p>
-          </div>
+          <div class="card" id="detalles-link" style="display: none;"></div>
         </div>
-        
-        <!-- Side column for editing -->
+
         <div class="side-column">
-          <!-- Edit link container -->
-          <div id="editar-link-container" style="display: none;">
+          <div id="editar-link-container" class="card">
             <h3>Editar Link</h3>
             <div id="editar-numeros-container"></div>
+            <label for="editar-mensaje">Mensaje automático:</label>
             <textarea id="editar-mensaje" placeholder="Editar mensaje automático"></textarea>
             <button onclick="actualizarLink()">Actualizar Link</button>
-          </div>
-          
-          <!-- Shortened link stats could go here -->
-          <div id="link-stats-container" class="card" style="display: none;">
-            <h3>Estadísticas de Links</h3>
-            <div id="link-stats-content">
-              <p>Las estadísticas de tu link se mostrarán aquí.</p>
-            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Acortar link container -->
-    <div id="acortar-link-container" class="card" style="display: none;">
-      <h3>Acortar Link</h3>
-      <form id="acortar-link-form">
-        <label for="link-original">Ingresa un link para acortar:</label>
-        <input type="text" id="link-original" placeholder="Ejemplo: https://www.ejemplo.com" aria-label="Link para acortar" />
-        <button type="button" onclick="acortarLinkManual()" aria-label="Acortar Link">Acortar Link</button>
-      </form>
-      <div id="acortar-link-output" class="output"></div>
-    </div>
-
-    <!-- Remove this info container that appears after login -->
-    <!-- Keep only the info container inside the login-info div -->
-
-    <!-- Registro container -->
-    <div id="registro-container" style="display:none;">
+    <!-- ============ REGISTRO ============ -->
+    <div id="registro-container" class="card" style="display:none;">
       <h2>Crear cuenta</h2>
       <form id="registro-form">
         <label for="registro-email">Email:</label>
         <input type="email" id="registro-email" placeholder="Ingresa tu email" required>
-        
+
         <label for="registro-password">Contraseña:</label>
         <div class="password-container">
           <input type="password" id="registro-password" placeholder="Ingresa tu contraseña" required>
-          <span class="toggle-password" onclick="togglePassword('registro-password', this)">👁</span>
+          <span class="toggle-password" onclick="togglePassword('registro-password', this)" role="button" aria-label="Mostrar contraseña"></span>
         </div>
+
         <label for="registro-telefono">Teléfono personal:</label>
         <input type="text" id="registro-telefono" placeholder="+54 9 11 2345 6789" required>
 
-
-        
-        <button type="submit" class="btn btn-primary">Registrarse</button>
+        <button type="submit" class="btn-main">Registrarse</button>
         <p><a href="#" id="volver-login" class="volver-inicio-button">↩ Volver al inicio</a></p>
       </form>
     </div>
   </div>
 
-  <!-- Footer with updated copyright year -->
+  <!-- ============ FOOTER ============ -->
   <footer>
     <div class="footer-content">
       <div class="copyright">&copy; 2024 Linkify</div>
@@ -237,14 +187,12 @@
     </div>
   </footer>
 
-  <!-- Notification element with improved styling -->
   <div class="notification" id="notification"></div>
 
   <script>
   let contadorNumeros = 1;
-  let limiteNumeros = 5; // Default value, will be updated on login
+  let limiteNumeros = 5; // Se actualiza según el plan al iniciar sesión
 
-  // Function to add a new phone number field
   function agregarNumero() {
     if (contadorNumeros >= limiteNumeros) {
       showNotification(`Solo puedes agregar hasta ${limiteNumeros} números.`, 'error');
@@ -264,13 +212,11 @@
     `;
     container.appendChild(nuevoCampo);
 
-    // Deshabilitar el botón si se alcanza el límite
     if (contadorNumeros >= limiteNumeros) {
       document.querySelector('button[onclick="agregarNumero()"]').disabled = true;
     }
   }
 
-  // Function to remove the last phone number field
   function quitarUltimoNumero() {
     if (contadorNumeros > 1) {
       const container = document.getElementById('numeros-container');
@@ -279,7 +225,6 @@
         container.removeChild(ultimoCampo);
         contadorNumeros--;
 
-        // Habilitar el botón si el contador está por debajo del límite
         if (contadorNumeros < limiteNumeros) {
           document.querySelector('button[onclick="agregarNumero()"]').disabled = false;
         }
@@ -289,15 +234,14 @@
     }
   }
 
-  // Function to handle login
   async function login() {
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
-    
+
     const rememberMe = document.getElementById('remember-me').checked;
     const loginButton = document.querySelector('#login-container button');
     const loginError = document.getElementById('login-error');
-    
+
     loginError.style.display = 'none';
     loginError.textContent = '';
 
@@ -307,7 +251,6 @@
       return;
     }
 
-    // Mostrar estado de carga
     loginButton.innerHTML = '<span class="loading"></span> Iniciando sesión...';
     loginButton.disabled = true;
 
@@ -321,11 +264,8 @@
       const data = await response.json();
 
       if (response.ok) {
-        // Guardar el límite de números
         limiteNumeros = data.limiteNumeros;
         localStorage.setItem('limiteNumeros', limiteNumeros);
-
-        // Guardar email en localStorage
         localStorage.setItem('usuarioEmail', email);
 
         if (rememberMe) {
@@ -336,48 +276,21 @@
           localStorage.removeItem('rememberMe');
         }
 
-        // Consultar si el usuario ya tiene un link generado
         const linkResponse = await fetch(`/api/link?email=${email}`);
         const linkData = await linkResponse.json();
 
         if (linkResponse.ok) {
-          // Mostrar los detalles del link en el frontend
           mostrarDetallesLink(linkData);
-
-          // Mostrar el apartado de "Editar Link"
           mostrarEditarLink(linkData.numeros, linkData.mensaje);
 
-          // Mostrar el link generado en la caja de salida
-          document.getElementById('output').innerHTML = `
-            <p>Tu link generado:</p>
-            <a href="${linkData.link}" target="_blank">${linkData.link}</a>
-          `;
-          document.getElementById('output').style.display = 'block';
-
-          // Guardar los datos en localStorage
           localStorage.setItem(`linkGenerado_${email}`, linkData.link);
           localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(linkData.numeros));
           localStorage.setItem(`mensajeGenerado_${email}`, linkData.mensaje);
           localStorage.setItem(`linkID_${email}`, linkData.id);
         }
 
-        // Ocultar el apartado "¿Para qué sirve Linkify?"
-        const loginInfo = document.getElementById('login-info');
-        if (loginInfo) {
-          loginInfo.style.display = 'none';
-        }
-
-        // Redirigir al panel después de iniciar sesión
         window.location.href = '/panel';
-
-
-        // Configurar información del usuario
-        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
-        document.getElementById('user-email-display').textContent = email;
-
-        // Mostrar notificación de éxito
         showNotification('Sesión iniciada correctamente');
-       
 
       } else {
         loginError.textContent = data.error;
@@ -393,11 +306,9 @@
     }
   }
 
-  // Function to handle logout
   function cerrarSesion() {
     const email = localStorage.getItem('usuarioEmail');
 
-    // Limpiar datos del usuario en localStorage
     localStorage.removeItem('usuarioEmail');
     localStorage.removeItem(`linkGenerado_${email}`);
     localStorage.removeItem(`numerosGenerados_${email}`);
@@ -405,144 +316,87 @@
     localStorage.removeItem(`linkID_${email}`);
     localStorage.removeItem('limiteNumeros');
 
-    // Mostrar el contenedor de inicio de sesión
-    document.getElementById('login-container').style.display = 'block';
-    document.getElementById('generador-container').style.display = 'none';
-
-    // Limpiar el formulario de inicio de sesión
-    document.getElementById('email').value = '';
-    document.getElementById('password').value = '';
-
-    // Mostrar notificación
-    showNotification('Sesión cerrada correctamente. Por favor, inicia sesión nuevamente.');
+    window.location.href = '/';
   }
 
-  // Function to reset form state
-  function resetFormState() {
-    contadorNumeros = 1;
-    
-    // Reset the numbers container
-    document.getElementById('numeros-container').innerHTML = `
-      <div class="numero-container" id="numero-container-1">
-        <span class="bandera-container">
-          <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="bandera">
-        </span>
-        <input type="text" id="numero-1" class="numero" value="+549" placeholder="Ejemplo: 2944585356" aria-label="Número de WhatsApp">
-      </div>
-    `;
-    
-    // Clear message input
-    document.getElementById('mensaje').value = '';
-    
-    // Clear output and details
-    document.getElementById('output').innerHTML = '';
-    document.getElementById('detalles-link').style.display = 'none';
-    
-    // Enable add number button
-    const addButton = document.querySelector('button[onclick="agregarNumero()"]');
-    if (addButton) addButton.disabled = false;
-  }
-
-  // Function to show notification - improved
   function showNotification(message, type = 'success') {
     const notification = document.getElementById('notification');
     notification.textContent = message;
-    
+
     if (type === 'error') {
       notification.classList.add('error');
     } else {
       notification.classList.remove('error');
     }
-    
+
     notification.classList.add('show');
-    
-    // Clear any existing timeout to prevent multiple timeouts
+
     if (notification.timeoutId) {
       clearTimeout(notification.timeoutId);
     }
-    
-    // Set new timeout
+
     notification.timeoutId = setTimeout(() => {
       notification.classList.remove('show');
     }, 3000);
   }
 
-  // Function to generate a new link
   async function generarLink() {
-  const numeros = Array.from(document.querySelectorAll('.numero'))
-    .map(input => input.value.trim())
-    .filter(num => num !== '' && num !== '+549'); // Filtra números vacíos y el valor predeterminado
+    const numeros = Array.from(document.querySelectorAll('.numero'))
+      .map(input => input.value.trim())
+      .filter(num => num !== '' && num !== '+549');
 
-  const mensaje = document.getElementById('mensaje').value.trim();
-  const email = localStorage.getItem('usuarioEmail'); // Obtener el email desde localStorage
-  const generarButton = document.querySelector('button[onclick="generarLink()"]');
+    const mensaje = document.getElementById('mensaje').value.trim();
+    const email = localStorage.getItem('usuarioEmail');
+    const generarButton = document.querySelector('button[onclick="generarLink()"]');
 
-  if (!email) {
-    showNotification('Por favor, inicia sesión antes de generar un link.', 'error');
-    return;
-  }
-
-  // Verificar si el límite de números es igual a 1
-  
-
-  if (numeros.length === 0) {
-    showNotification('Por favor, ingresa al menos un número válido.', 'error');
-    return;
-  }
-
-  // Mostrar estado de carga
-  generarButton.innerHTML = '<span class="loading"></span> Generando...';
-  generarButton.disabled = true;
-
-  try {
-    const response = await fetch('/api/soporte', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, numeros, mensaje }), // Enviar el email en el cuerpo de la solicitud
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      // Guardar los datos en localStorage
-      localStorage.setItem(`linkGenerado_${email}`, data.link);
-      localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
-      localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
-      localStorage.setItem(`linkID_${email}`, data.id);
-
-      // Mostrar el link generado en la caja de salida
-      const output = document.getElementById('output');
-      output.innerHTML = `
-        <p>Tu link generado:</p>
-        <a href="${data.link}" target="_blank">${data.link}</a>
-      `;
-      output.style.display = 'block';
-
-      // Mostrar los detalles del link
-      mostrarDetallesLink(data);
-
-      // Mostrar el apartado de "Editar Link"
-      mostrarEditarLink(numeros, mensaje);
-
-      showNotification('¡Link generado con éxito!');
-    } else {
-      showNotification(data.error, 'error');
+    if (!email) {
+      showNotification('Por favor, inicia sesión antes de generar un link.', 'error');
+      return;
     }
-  } catch (error) {
-    console.error('Error generando link:', error);
-    showNotification('Error al generar el link. Inténtalo de nuevo.', 'error');
-  } finally {
-    generarButton.innerHTML = 'Generar Link';
-    generarButton.disabled = false;
-  }
-}
 
-  // Function to show the edit link form
+    if (numeros.length === 0) {
+      showNotification('Por favor, ingresa al menos un número válido.', 'error');
+      return;
+    }
+
+    generarButton.innerHTML = '<span class="loading"></span> Generando...';
+    generarButton.disabled = true;
+
+    try {
+      const response = await fetch('/api/soporte', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, numeros, mensaje }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem(`linkGenerado_${email}`, data.link);
+        localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
+        localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
+        localStorage.setItem(`linkID_${email}`, data.id);
+
+        mostrarDetallesLink({ link: data.link, numeros, mensaje });
+        mostrarEditarLink(numeros, mensaje);
+
+        showNotification('¡Link generado con éxito!');
+      } else {
+        showNotification(data.error, 'error');
+      }
+    } catch (error) {
+      console.error('Error generando link:', error);
+      showNotification('Error al generar el link. Inténtalo de nuevo.', 'error');
+    } finally {
+      generarButton.innerHTML = 'Generar Link';
+      generarButton.disabled = false;
+    }
+  }
+
   function mostrarEditarLink(numeros, mensaje) {
     const editarNumerosContainer = document.getElementById('editar-numeros-container');
     editarNumerosContainer.innerHTML = '';
 
-    // Asegurarse de que limiteNumeros sea un número entero
     const totalInputs = parseInt(limiteNumeros, 10) || 1;
 
     for (let i = 0; i < totalInputs; i++) {
@@ -562,14 +416,13 @@
     document.getElementById('editar-link-container').style.display = 'block';
   }
 
-  // Function to update a link
   async function actualizarLink() {
-    const email = localStorage.getItem('usuarioEmail'); // Obtener el email del usuario
-    const id = localStorage.getItem(`linkID_${email}`); // Obtener el ID del link
-    const mensaje = document.getElementById('editar-mensaje').value.trim(); // Obtener el mensaje actualizado
+    const email = localStorage.getItem('usuarioEmail');
+    const id = localStorage.getItem(`linkID_${email}`);
+    const mensaje = document.getElementById('editar-mensaje').value.trim();
     const numeros = Array.from(document.querySelectorAll('#editar-numeros-container input'))
       .map(input => input.value.trim())
-      .filter(num => num !== '' && num !== '+549'); // Obtener los números actualizados y filtrar valores inválidos
+      .filter(num => num !== '' && num !== '+549');
 
     const actualizarButton = document.querySelector('button[onclick="actualizarLink()"]');
 
@@ -583,7 +436,6 @@
       return;
     }
 
-    // Mostrar estado de carga
     actualizarButton.innerHTML = '<span class="loading"></span> Actualizando...';
     actualizarButton.disabled = true;
 
@@ -591,176 +443,119 @@
       const response = await fetch('/api/soporte', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, id, numeros, mensaje }), // Enviar los datos al backend
+        body: JSON.stringify({ email, id, numeros, mensaje }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Actualizar los datos en localStorage
         localStorage.setItem(`numerosGenerados_${email}`, JSON.stringify(numeros));
         localStorage.setItem(`mensajeGenerado_${email}`, mensaje);
 
-        // Actualizar los detalles del link en la interfaz
-        document.getElementById('numeros-generados').textContent = numeros.join(', ');
-        document.getElementById('mensaje-generado').textContent = mensaje || 'Sin mensaje';
+        const link = localStorage.getItem(`linkGenerado_${email}`);
+        mostrarDetallesLink({ link, numeros, mensaje });
 
-        // Mostrar notificación de éxito
         showNotification('¡Link actualizado correctamente!');
-    } else {
-      showNotification('¡Link actualizado correctamente!');
+      } else {
+        showNotification(data.error || 'No se pudo actualizar el link.', 'error');
+      }
+    } catch (error) {
+      console.error('Error actualizando el link:', error);
+      showNotification('Error al actualizar el link. Inténtalo de nuevo.', 'error');
+    } finally {
+      actualizarButton.innerHTML = 'Actualizar Link';
+      actualizarButton.disabled = false;
     }
-  } catch (error) {
-    console.error('Error actualizando el link:', error);
-    showNotification('¡Link actualizado correctamente!');
-  } finally {
-    actualizarButton.innerHTML = 'Actualizar Link';
-    actualizarButton.disabled = false;
   }
-}
 
-  // Function to display existing link details
   async function mostrarDetallesLink(linkData) {
     const { link, numeros, mensaje } = linkData;
 
-    // Mostrar los detalles del link en el contenedor
     const detallesLink = document.getElementById('detalles-link');
     detallesLink.style.display = 'block';
     detallesLink.innerHTML = `
-      <h3>Detalles del Link Generado</h3>
+      <h3>Tu Link Multiagente</h3>
       <p><strong>Números:</strong> ${numeros.join(', ')}</p>
       <p><strong>Mensaje Automático:</strong> ${mensaje || 'Sin mensaje'}</p>
-      <p><strong>Link:</strong> <a href="${link}" target="_blank">${link}</a></p>
+      <p class="link-row">
+        <a href="${link}" target="_blank">${link}</a>
+        <button type="button" class="copy-btn" onclick="copyToClipboard(this)" data-link="${link}" aria-label="Copiar link">📋 Copiar</button>
+      </p>
     `;
   }
 
-  // Function to manually shorten a link
-  async function acortarLinkManual() {
-    const linkOriginal = document.getElementById('link-original').value.trim();
-    const acortarButton = document.querySelector('button[onclick="acortarLinkManual()"]');
-
-    if (!linkOriginal) {
-      showNotification('Por favor, ingresa un link para acortar.', 'error');
-      return;
-    }
-
-    // Show loading state
-    acortarButton.innerHTML = '<span class="loading"></span> Acortando...';
-    acortarButton.disabled = true;
-
-    try {
-      // For demonstration purposes, we'll simulate a successful API response
-      setTimeout(() => {
-        const shortLink = `https://linkify.to/${Math.random().toString(36).substring(2, 8)}`;
-        
-        // Update UI with shortened link
-        document.getElementById('acortar-link-output').innerHTML = `
-          <p>Link acortado con éxito:</p>
-          <a href="${shortLink}" target="_blank">${shortLink}</a>
-        `;
-        document.getElementById('acortar-link-output').style.display = 'block';
-        
-        // Show success notification
-        showNotification('Link acortado correctamente');
-        
-        // Reset button state
-        acortarButton.innerHTML = 'Acortar Link';
-        acortarButton.disabled = false;
-      }, 1500);
-    } catch (error) {
-      console.error('Error al acortar el link:', error);
-      showNotification('Error al acortar el link. Inténtalo de nuevo.', 'error');
-      acortarButton.innerHTML = 'Acortar Link';
-      acortarButton.disabled = false;
-    }
+  function copyToClipboard(button) {
+    const link = button.getAttribute('data-link');
+    navigator.clipboard.writeText(link).then(() => {
+      showNotification('¡Link copiado al portapapeles!');
+    }).catch(() => {
+      showNotification('No se pudo copiar el link.', 'error');
+    });
   }
 
-  // Check login status on page load
   document.addEventListener('DOMContentLoaded', async () => {
-  const email = localStorage.getItem('usuarioEmail');
-
-  // Recuperar el limiteNumeros real desde localStorage si existe
-  const limiteGuardado = localStorage.getItem('limiteNumeros');
-  if (limiteGuardado) {
-    limiteNumeros = parseInt(limiteGuardado, 10);
-  }
-
-  if (email) {
-    try {
-      // Recuperar los datos del link desde Supabase
-      const linkResponse = await fetch(`/api/link?email=${email}`);
-
-      if (linkResponse.status === 403) {
-        // Ocultar todo lo relacionado al link
-        document.getElementById('detalles-link').style.display = 'none';
-        document.getElementById('editar-link-container').style.display = 'none';
-        document.getElementById('output').style.display = 'none';
-
-        // Mostrar un aviso
-        showNotification('Tu suscripción ha vencido. Renueva tu plan para ver el link.', 'error');
-      }
-
-      
-
-      if (linkResponse.ok) {
-        const linkData = await linkResponse.json();
-
-        // Suscripción activa → mostrar
-        document.getElementById('detalles-link').style.display = 'block';
-        document.getElementById('editar-link-container').style.display = 'block';
-        document.getElementById('output').style.display = 'block';
-
-        mostrarDetallesLink(linkData);
-        mostrarEditarLink(linkData.numeros, linkData.mensaje);
-      }
-    } catch (error) {
-      console.error('Error al cargar link:', error);
-      showNotification('Hubo un problema al cargar la información del link.', 'error');
-    }
-}
-
-  const currentPath = window.location.pathname;
-
-  if (currentPath === '/panel') {
     const email = localStorage.getItem('usuarioEmail');
-    if (email) {
-      // Mostrar el panel directamente si ya está logueado
-      document.getElementById('login-container').style.display = 'none';
-      document.getElementById('generador-container').style.display = 'block';
-      document.getElementById('user-email-display').textContent = email;
-      document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
-    } else {
-      // Si no está logueado, redirigir al inicio
-      window.location.href = '/';
+
+    const limiteGuardado = localStorage.getItem('limiteNumeros');
+    if (limiteGuardado) {
+      limiteNumeros = parseInt(limiteGuardado, 10);
     }
-  }
-  // Listener para volver al login desde el registro
-  document.getElementById('volver-login').addEventListener('click', function (e) {
-    e.preventDefault();
-    document.getElementById('registro-container').style.display = 'none';
-    document.getElementById('login-container').style.display = 'block';
+
+    if (email) {
+      try {
+        const linkResponse = await fetch(`/api/link?email=${email}`);
+
+        if (linkResponse.status === 403) {
+          document.getElementById('detalles-link').style.display = 'none';
+          document.getElementById('editar-link-container').style.display = 'none';
+          showNotification('Tu suscripción ha vencido. Renueva tu plan para ver el link.', 'error');
+        }
+
+        if (linkResponse.ok) {
+          const linkData = await linkResponse.json();
+          mostrarDetallesLink(linkData);
+          mostrarEditarLink(linkData.numeros, linkData.mensaje);
+        }
+      } catch (error) {
+        console.error('Error al cargar link:', error);
+        showNotification('Hubo un problema al cargar la información del link.', 'error');
+      }
+    }
+
+    const currentPath = window.location.pathname;
+
+    if (currentPath === '/panel') {
+      const email = localStorage.getItem('usuarioEmail');
+      if (email) {
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('login-info').style.display = 'none';
+        document.getElementById('generador-container').style.display = 'block';
+        document.getElementById('user-email-display').textContent = email;
+        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+
+        const boton = document.getElementById('buttons-plnbuttons');
+        if (boton) boton.style.display = 'block';
+      } else {
+        window.location.href = '/';
+      }
+    }
+
+    document.getElementById('volver-login').addEventListener('click', function (e) {
+      e.preventDefault();
+      document.getElementById('registro-container').style.display = 'none';
+      document.getElementById('login-container').style.display = 'block';
+      document.getElementById('login-info').style.display = 'block';
+    });
   });
 
-});
-
-  </script>
-  
-  
-
-  <script>
-  // Función para abrir el modal de planes
   function openPlansModal() {
-    const modal = document.getElementById('plans-modal');
-    modal.style.display = 'block';
+    document.getElementById('plans-modal').style.display = 'block';
   }
 
-  // Función para cerrar el modal de planes
   function closePlansModal() {
-    const modal = document.getElementById('plans-modal');
-    modal.style.display = 'none';
+    document.getElementById('plans-modal').style.display = 'none';
   }
 
-  // Cerrar el modal si se hace clic fuera de él
   window.onclick = function(event) {
     const modal = document.getElementById('plans-modal');
     if (event.target === modal) {
@@ -768,710 +563,163 @@
     }
   };
 
-  // Generar dinámicamente las cajas de planes PRO
-// Función para generar dinámicamente las cajas de planes PRO
-function generarPlanesPro() {
-  const plansContainer = document.querySelector('.plans-container');
-  plansContainer.innerHTML = ''; // Limpiar contenido previo
+  function generarPlanesPro() {
+    const plansContainer = document.querySelector('.plans-container');
+    plansContainer.innerHTML = '';
 
-  for (let i = 1; i <= 20; i++) {
-    const precio = i * 3; // $3 USD por cada número
-    const planId = `plan_${i}_numeros`;
+    for (let i = 1; i <= 20; i++) {
+      const precio = i * 3;
+      const planId = `plan_${i}_numeros`;
 
-    const planCard = document.createElement('div');
-    planCard.classList.add('plan-card');
+      const planCard = document.createElement('div');
+      planCard.classList.add('plan-card');
 
-    planCard.innerHTML = `
-      <div class="plan-name">Plan PRO</div>
-      <div class="plan-price">
-        <span class="price-amount">$${precio} USD</span>
-        <span class="price-period">POR ${i} NÚMEROS / MES</span>
-      </div>
-      <div class="plan-features">
-        <ul>
-          <li>Acceso a links multiagente</li>
-          <li>Soporte técnico por WhatsApp</li>
-          <li>Estadísticas de uso</li>
-          <li>Panel de administración</li>
-          <li>Distribución equitativa de mensajes</li>
-          <li>Personalización de links</li>
-        </ul>
-      </div>
-      <div class="plan-actions">
-        <!-- Botón de WhatsApp -->
-        <a href="https://wa.me/+5491123456789?text=Hola%2C%20quiero%20contratar%20el%20plan%20de%20${i}%20números" class="whatsapp-button" target="_blank">
-          <img src="https://thumbs.dreamstime.com/b/logotipo-de-icono-whatsapp-verde-medios-sociales-puedes-usar-donde-quieras-234325955.jpg" alt="WhatsApp Logo" class="button-icon">
-          Contratar por WhatsApp
-        </a>
+      planCard.innerHTML = `
+        <div class="plan-row-info">
+          <span class="plan-row-name">${i} número${i > 1 ? 's' : ''}</span>
+          <span class="plan-row-price">$${precio} USD<small> /mes</small></span>
+        </div>
+        <div class="plan-row-actions">
+          <a href="https://wa.me/+5491165388118?text=Hola%2C%20quiero%20contratar%20el%20plan%20de%20${i}%20n%C3%BAmeros" class="whatsapp-button" target="_blank" aria-label="Contratar por WhatsApp">
+            <img src="https://thumbs.dreamstime.com/b/logotipo-de-icono-whatsapp-verde-medios-sociales-puedes-usar-donde-quieras-234325955.jpg" alt="" class="button-icon">
+            WhatsApp
+          </a>
+          <button class="mercadopago-button" data-plan="${planId}" aria-label="Pagar con Mercado Pago">
+            <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="" class="button-icon">
+            Mercado Pago
+          </button>
+        </div>
+      `;
 
-        <!-- Botón de Mercado Pago -->
-        <button class="mercadopago-button" data-plan="${planId}">
-          <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="Mercado Pago Logo" class="button-icon">
-          Pagar con Mercado Pago
-        </button>
+      plansContainer.appendChild(planCard);
+    }
 
-        
+    document.querySelectorAll('.mercadopago-button').forEach(button => {
+      button.addEventListener('click', async function (e) {
+        e.preventDefault();
+        const plan = this.getAttribute('data-plan');
+        const email = localStorage.getItem('usuarioEmail');
 
-      </div>
-    `;
+        try {
+          this.innerHTML = '<span class="loading"></span> Procesando...';
+          this.disabled = true;
 
-    plansContainer.appendChild(planCard);
+          const res = await fetch('/api/generar-link', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ plan, email })
+          });
+
+          const data = await res.json();
+
+          if (data.init_point) {
+            window.location.href = data.init_point;
+          } else {
+            showNotification('Error generando el link de pago', 'error');
+            console.error('Error en la respuesta:', data);
+          }
+        } catch (error) {
+          console.error('Error en el pago:', error);
+          showNotification('Hubo un problema al generar el link de pago.', 'error');
+        } finally {
+          this.innerHTML = `
+            <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="" class="button-icon">
+            Mercado Pago
+          `;
+          this.disabled = false;
+        }
+      });
+    });
   }
 
-  // Agrega event listeners a los botones de Mercado Pago
-  document.querySelectorAll('.mercadopago-button').forEach(button => {
-    button.addEventListener('click', async function(e) {
-      e.preventDefault();
-      const plan = this.getAttribute('data-plan');
-      const email = localStorage.getItem('usuarioEmail');
-      
-      try {
-        // Mostrar estado de carga
-        this.innerHTML = '<span class="loading"></span> Procesando...';
-        this.disabled = true;
+  document.addEventListener('DOMContentLoaded', generarPlanesPro);
 
-        const res = await fetch('/api/generar-link', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan, email })
-        });
-
-        const data = await res.json();
-
-        if (data.init_point) {
-          window.location.href = data.init_point; // Redirige a Mercado Pago
-        } else {
-          showNotification('Error generando el link de pago', 'error');
-          console.error('Error en la respuesta:', data);
-        }
-      } catch (error) {
-        console.error('Error en el pago:', error);
-        showNotification('Hubo un problema al generar el link de pago.', 'error');
-      } finally {
-        // Restaurar el botón
-        this.innerHTML = `
-          <img src="https://pbs.twimg.com/profile_images/1701275944873328640/xIaRABr1_400x400.jpg" alt="Mercado Pago Logo" class="button-icon">
-          Pagar con Mercado Pago
-        `;
-        this.disabled = false;
-      }
-    });
-  });
-  // 👉 Botones Débito Automático (Suscripción)
-document.querySelectorAll(".debito-button").forEach(button => {
-  button.addEventListener("click", async function(e) {
+  document.getElementById('registro-form').addEventListener('submit', async function (e) {
     e.preventDefault();
-    const plan = this.getAttribute("data-plan");
-    const email = localStorage.getItem("usuarioEmail");
+
+    const email = document.getElementById('registro-email').value.trim();
+    const password = document.getElementById('registro-password').value.trim();
+    const telefono = document.getElementById('registro-telefono').value.trim();
+
+    if (!email || !password || !telefono) {
+      showNotification('Por favor, completá todos los campos.', 'error');
+      return;
+    }
 
     try {
-      this.innerHTML = '<span class="loading"></span> Procesando...';
-      this.disabled = true;
-
-      const resp = await fetch("/api/generar-link2", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, plan })
-      });
-
-      const data = await resp.json();
-      if (data.init_point) {
-        window.location.href = data.init_point; // redirige a la suscripción
-      } else {
-        showNotification("Error generando el link de débito automático", "error");
-      }
-    } catch (error) {
-      console.error("Error en débito automático:", error);
-      showNotification("Hubo un problema con el débito automático", "error");
-    } finally {
-      this.innerHTML = `
-        <img src="https://cdn-icons-png.flaticon.com/512/633/633611.png" alt="Tarjeta" class="button-icon">
-        Débito Automático
-      `;
-      this.disabled = false;
-    }
-  });
-});
-}
-
-// Llamar a la función para generar los planes al cargar la página
-document.addEventListener('DOMContentLoaded', generarPlanesPro);
-
-// Escuchar el submit del formulario de registro
-document.getElementById('registro-form').addEventListener('submit', async function (e) {
-  e.preventDefault(); // Evita el refresh
-
-  const email = document.getElementById('registro-email').value.trim();
-  const password = document.getElementById('registro-password').value.trim();
-  const telefono = document.getElementById('registro-telefono').value.trim();
-
-  if (!email || !password || !telefono) {
-    alert('Por favor, completá todos los campos.');
-    return;
-  }
-
-  try {
-    // Enviar POST para crear la cuenta
-    const registroResponse = await fetch(`${window.location.origin}/api/registro`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, telefono })
-    });
-
-    const registroData = await registroResponse.json();
-
-    if (registroResponse.ok) {
-      // Intentar iniciar sesión automáticamente
-      const loginResponse = await fetch('/api/login', {
+      const registroResponse = await fetch(`${window.location.origin}/api/registro`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, telefono })
       });
 
-      const loginData = await loginResponse.json();
+      const registroData = await registroResponse.json();
 
-      if (loginResponse.ok) {
-        showNotification('🎉 Registro completado e inicio de sesión exitoso');
-        window.location.href = '/';
+      if (registroResponse.ok) {
+        const loginResponse = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const loginData = await loginResponse.json();
+
+        if (loginResponse.ok) {
+          showNotification('🎉 Registro completado e inicio de sesión exitoso');
+          window.location.href = '/';
+        } else {
+          showNotification('Cuenta creada, pero no se pudo iniciar sesión automáticamente', 'error');
+        }
       } else {
-        showNotification('Cuenta creada, pero no se pudo iniciar sesión automáticamente', 'error');
+        showNotification(registroData.error || 'No se pudo crear la cuenta.', 'error');
       }
-
-    } else {
-      alert(registroData.error || 'No se pudo crear la cuenta.');
+    } catch (error) {
+      console.error('Error:', error);
+      showNotification('Error de conexión al crear la cuenta.', 'error');
     }
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Error de conexión al crear la cuenta.');
-  }
-});
+  });
 
   document.getElementById('crear-cuenta-link').addEventListener('click', function (e) {
-  e.preventDefault();
-  document.getElementById('login-container').style.display = 'none';
-  document.getElementById('registro-container').style.display = 'block';
-});
- function togglePassword(inputId, iconElement) {
-    const input = document.getElementById(inputId);
-    if (input.type === "password") {
-      input.type = "text";
-      iconElement.textContent = "🙈"; // icono cuando se muestra
-    } else {
-      input.type = "password";
-      iconElement.textContent = "👁"; // icono cuando está oculto
-    }
-  }
-  // 👉 Listener del botón Débito Automático
-  document.getElementById("btn-debito-automatico").addEventListener("click", async (e) => {
     e.preventDefault();
-    const email = localStorage.getItem("usuarioEmail");
-    const resp = await fetch("/api/generar-link2", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, plan: "Plan Pro - Suscripción" })
-    });
-    const data = await resp.json();
-    if (data.init_point) window.open(data.init_point, "_blank");
+    document.getElementById('login-container').style.display = 'none';
+    document.getElementById('login-info').style.display = 'none';
+    document.getElementById('registro-container').style.display = 'block';
   });
 
+  const ICONO_OJO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const ICONO_OJO_TACHADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a20.7 20.7 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a20.7 20.7 0 0 1-3.22 4.44M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+
+  function togglePassword(inputId, iconElement) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+      input.type = 'text';
+      iconElement.innerHTML = ICONO_OJO_TACHADO;
+      iconElement.setAttribute('aria-label', 'Ocultar contraseña');
+    } else {
+      input.type = 'password';
+      iconElement.innerHTML = ICONO_OJO;
+      iconElement.setAttribute('aria-label', 'Mostrar contraseña');
+    }
+  }
+
+  document.querySelectorAll('.toggle-password').forEach(icon => { icon.innerHTML = ICONO_OJO; });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      document.body.classList.add('is-mobile');
+      document.querySelectorAll('button').forEach(button => {
+        button.addEventListener('touchstart', function () { this.style.transform = 'scale(0.98)'; });
+        button.addEventListener('touchend', function () { this.style.transform = ''; });
+      });
+    }
+
+    document.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', function (e) {
+        if (this.getAttribute('href') === '#') e.preventDefault();
+      });
+    });
+  });
   </script>
-  <style>
-/* Media queries mejoradas para móviles */
-@media (max-width: 768px) {
-  body {
-    font-size: 14px;
-    padding: 0;
-    overflow-x: hidden;
-  }
-
-  .container {
-    max-width: 100% !important;
-    padding: 0 10px;
-  }
-
-  header {
-    padding: 12px 15px;
-    position: relative;
-  }
-
-  .logo {
-    height: 50px !important;
-  }
-
-  .plans-button {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-  }
-
-  .premium-badge {
-    font-size: 0.6rem;
-    padding: 2px 5px;
-  }
-
-  h1 {
-    font-size: 1.8rem !important;
-    margin: 20px 0;
-  }
-
-  h2 {
-    font-size: 1.5rem !important;
-  }
-
-  h3 {
-    font-size: 1.2rem !important;
-  }
-
-  /* Formularios */
-  form {
-    padding: 20px 15px !important;
-    margin: 20px 0 !important;
-    border-radius: 15px;
-  }
-
-  form input[type="text"],
-  form input[type="email"],
-  form input[type="password"],
-  .numero {
-    padding: 14px 16px !important;
-    font-size: 16px !important; /* Evita zoom en iOS */
-  }
-
-  /* Login container */
-  #login-container {
-    margin: 30px auto !important;
-    padding: 30px 20px !important;
-    width: 95% !important;
-  }
-
-  /* Botones */
-  .button-group {
-    flex-direction: column;
-    gap: 15px;
-  }
-
-  .button-group button {
-    width: 100%;
-    max-width: 100% !important;
-  }
-
-  form button[onclick="generarLink()"] {
-    width: 100%;
-    max-width: 100% !important;
-    padding: 16px !important;
-  }
-
-  /* Números container */
-  .numbers-grid {
-    gap: 15px;
-  }
-
-  .numero-container {
-    padding: 12px;
-  }
-
-  .bandera {
-    width: 28px !important;
-    height: 20px !important;
-  }
-
-  /* User section */
-  .user-section {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-    padding: 15px;
-  }
-
-  .logout-button {
-    align-self: stretch;
-    text-align: center;
-    padding: 12px;
-  }
-
-  /* Output section */
-  .output {
-    padding: 20px;
-    margin: 20px 0;
-  }
-
-  /* Editar link container */
-  #editar-link-container {
-    transform: none !important;
-    width: 95% !important;
-    margin: 20px auto !important;
-    padding: 20px;
-  }
-
-  /* Modal */
-  .modal-container {
-    width: 95% !important;
-    padding: 20px;
-    margin: 20px auto;
-  }
-
-  .plan-actions {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .whatsapp-button,
-  .mercadopago-button,
-  .debito-button {
-    justify-content: center;
-    padding: 12px 16px;
-    font-size: 1rem;
-  }
-
-  /* Footer */
-  footer {
-    padding: 20px 0;
-    margin-top: 40px;
-  }
-
-  .footer-links {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  footer a:not(:last-child)::after {
-    display: none;
-  }
-}
-
-/* Ajustes específicos para pantallas muy pequeñas */
-@media (max-width: 480px) {
-  .container {
-    padding: 0 5px;
-  }
-
-  form {
-    padding: 15px 10px !important;
-  }
-
-  #login-container {
-    padding: 20px 15px !important;
-  }
-
-  .logo {
-    height: 45px !important;
-  }
-
-  h1 {
-    font-size: 1.6rem !important;
-  }
-
-  .user-avatar {
-    width: 40px !important;
-    height: 40px !important;
-    font-size: 1.2rem !important;
-  }
-}
-
-/* Mejoras de usabilidad para dispositivos táctiles */
-button, 
-a, 
-input[type="button"], 
-input[type="submit"] {
-  min-height: 44px; /* Tamaño mínimo para elementos táctiles */
-  touch-action: manipulation; /* Mejora la respuesta táctil */
-}
-
-input, 
-textarea {
-  font-size: 16px !important; /* Evita el zoom en iOS */
-}
-
-/* Prevenir zoom en inputs en iOS */
-@media screen and (max-width: 768px) {
-  input[type="text"],
-  input[type="email"],
-  input[type="password"],
-  textarea {
-    font-size: 16px !important;
-  }
-}
-</style>
-
-<script>
-// Script para mejorar la experiencia móvil
-document.addEventListener('DOMContentLoaded', function() {
-  // Detectar si es un dispositivo móvil
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  
-  if (isMobile) {
-    // Añadir clase al body para targeting específico
-    document.body.classList.add('is-mobile');
-    
-    // Mejorar el comportamiento de los dropdowns y elementos interactivos
-    const allButtons = document.querySelectorAll('button');
-    allButtons.forEach(button => {
-      button.addEventListener('touchstart', function() {
-        this.style.transform = 'scale(0.98)';
-      });
-      
-      button.addEventListener('touchend', function() {
-        this.style.transform = '';
-      });
-    });
-  }
-  
-  // Prevenir acciones por defecto en enlaces
-  document.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', function(e) {
-      if (this.getAttribute('href') === '#') {
-        e.preventDefault();
-      }
-    });
-  });
-});
-</script>
-<style>
-  /* Ajustar el ancho del contenedor de editar link */
-  #editar-link-container {
-    max-width: 500px !important;
-    width: 90% !important;
-    transform: none !important;
-    margin: 30px auto !important;
-    padding: 20px !important;
-  }
-
-  /* Centrar el botón de planes en el header */
-  .logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  /* Asegurar que el botón no se corte en móviles */
-  .plans-button {
-    white-space: nowrap;
-    padding: 10px 15px;
-    font-size: 0.9rem;
-  }
-
-  /* Ajustes específicos para móviles en el header */
-  @media (max-width: 768px) {
-    .logo-container {
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    
-    .plans-button {
-      margin: 0 auto;
-      order: 2;
-      width: 100%;
-      max-width: 200px;
-      text-align: center;
-    }
-    
-    .logo {
-      margin: 0 auto;
-      order: 1;
-    }
-  }
-
-  /* Ajustar inputs dentro del editor */
-  #editar-numeros-container .numero-container {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  #editar-numeros-container .bandera-container {
-    align-self: flex-start;
-  }
-
-  /* Textarea más compacto */
-  #editar-mensaje {
-    min-height: 80px;
-    resize: vertical;
-  }
-</style>
-
-<script>
-  // Script para mejorar el layout en diferentes tamaños de pantalla
-  function adjustLayout() {
-    const screenWidth = window.innerWidth;
-    const editContainer = document.getElementById('editar-link-container');
-    
-    if (screenWidth < 768) {
-      // Ajustes adicionales para móviles
-      if (editContainer) {
-        editContainer.style.padding = '15px';
-        editContainer.style.margin = '20px auto';
-      }
-    }
-  }
-
-  // Ejecutar al cargar y al redimensionar
-  window.addEventListener('load', adjustLayout);
-  window.addEventListener('resize', adjustLayout);
-</script>
-<style>
-  /* Estilo mejorado para los detalles del link */
-  #detalles-link {
-    background: linear-gradient(135deg, #1c2541 0%, #2d3b62 100%) !important;
-    border: 2px solid #25d366 !important;
-    border-radius: 15px !important;
-    padding: 25px !important;
-    box-shadow: 0 10px 30px rgba(37, 211, 102, 0.2) !important;
-    position: relative;
-    overflow: hidden;
-  }
-
-  #detalles-link::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(to right, #25d366, #4fc3f7);
-  }
-
-  #detalles-link h3 {
-    color: #25d366 !important;
-    font-size: 1.4rem !important;
-    margin-bottom: 20px !important;
-    text-align: center;
-    font-weight: bold;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  }
-
-  #detalles-link p {
-    margin: 15px 0;
-    padding: 12px 15px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    border-left: 3px solid #4fc3f7;
-    transition: all 0.3s ease;
-  }
-
-  #detalles-link p:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateX(5px);
-  }
-
-  #detalles-link strong {
-    color: #4fc3f7;
-    font-weight: 600;
-  }
-
-  #detalles-link a {
-    color: #25d366 !important;
-    font-weight: bold;
-    text-decoration: none;
-    background: rgba(37, 211, 102, 0.1);
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid rgba(37, 211, 102, 0.3);
-    transition: all 0.3s ease;
-    display: inline-block;
-    margin-top: 5px;
-    word-break: break-all;
-  }
-
-  #detalles-link a:hover {
-    background: rgba(37, 211, 102, 0.2);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
-  }
-
-  
-
-
-
-  @keyframes shine {
-    0% {
-      left: -100%;
-    }
-    100% {
-      left: 100%;
-    }
-  }
-
-  /* Responsive para móviles */
-  @media (max-width: 768px) {
-    #detalles-link {
-      padding: 20px 15px !important;
-      margin: 20px 0 !important;
-    }
-
-    #detalles-link h3 {
-      font-size: 1.2rem !important;
-    }
-
-    #detalles-link p {
-      padding: 10px;
-      margin: 12px 0;
-    }
-
-    #detalles-link a {
-      font-size: 0.9rem;
-      padding: 6px 10px;
-    }
-  }
-</style>
-<style>
-/* Ajustes específicos para el botón de planes en escritorio */
-@media (min-width: 769px) {
-  .logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    box-sizing: border-box;
-  }
-
-  .plans-button {
-    margin-left: auto;
-    margin-right: 20px; /* Ajusta este valor según necesites */
-    white-space: nowrap;
-  }
-}
-
-/* Asegurar que el logo y el botón se mantengan alineados */
-.logo {
-  height: 60px;
-  margin-right: 15px;
-}
-
-/* Mantener los estilos existentes para móviles */
-@media (max-width: 768px) {
-  .logo-container {
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-  }
-  
-  .plans-button {
-    margin: 0 auto;
-    order: 2;
-    width: 100%;
-    max-width: 200px;
-    text-align: center;
-  }
-}
-</style>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const boton = document.getElementById('buttons-plnbuttons');
-    const email = localStorage.getItem('usuarioEmail'); // Se guarda al iniciar sesión
-    if (window.location.pathname === '/panel' && email) {
-      boton.style.display = 'block';
-    }
-  });
-</script>
-
-
-
-
- 
-
-  
 </body>
 </html>

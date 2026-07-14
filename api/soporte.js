@@ -108,12 +108,32 @@ export default async function handler(req, res) {
     try {
       const { data: linkData, error } = await supabase
         .from('link')
-        .select('numeros, mensaje')
+        .select('numeros, mensaje, email')
         .eq('id', id)
         .single();
 
       if (error || !linkData) {
-        return res.status(404).json({ error: 'No se encontró el link.' });
+        return res.status(404).send('404 - Not Found');
+      }
+
+      // Verificar que la suscripción del dueño del link siga vigente.
+      // Si venció, el link deja de funcionar (404) sin borrar ni tocar nada
+      // en Supabase; en cuanto la suscripción vuelva a estar activa, el
+      // mismo link funciona de nuevo automáticamente.
+      const { data: usuario, error: errorUsuario } = await supabase
+        .from('usuarios')
+        .select('suscripcion_valida_hasta')
+        .eq('email', linkData.email)
+        .single();
+
+      const suscripcionVencida =
+        errorUsuario ||
+        !usuario ||
+        !usuario.suscripcion_valida_hasta ||
+        new Date(usuario.suscripcion_valida_hasta) < new Date();
+
+      if (suscripcionVencida) {
+        return res.status(404).send('404 - Not Found');
       }
 
       // Registrar el click (asincrónicamente)

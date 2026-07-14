@@ -26,9 +26,9 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Usuario no encontrado o sin suscripción.' });
     }
 
-    const hoy = new Date().toISOString().split('T')[0];
+    const hoy = new Date();
     if (
-      usuario.suscripcion_valida_hasta && 
+      usuario.suscripcion_valida_hasta &&
       new Date(usuario.suscripcion_valida_hasta) < hoy
     ) {
       return res.status(403).json({ error: 'La suscripción ha expirado. Por favor, renueva tu plan.' });

@@ -7,6 +7,16 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY
 const client = new MercadoPagoConfig({ accessToken: process.env.MERCADO_PAGO_TOKEN });
 const paymentClient = new Payment(client);
 
+// Determina cuántos números incluye el plan pagado, leyendo la descripción del pago
+// (mismo mecanismo que ya funcionaba para los planes de 1 a 4 números), extendido
+// para reconocer cualquier cantidad. Si no matchea nada, usa 1 por defecto.
+function extraerEmailYPlan(payment) {
+  const email = payment.external_reference;
+  const descripcion = payment.description || '';
+  const matchDescripcion = descripcion.match(/(\d+)\s+números?/i);
+  return { email, limiteNumeros: matchDescripcion ? parseInt(matchDescripcion[1], 10) : 1 };
+}
+
 export default async function handler(req, res) {
   try {
     console.log("Webhook recibido:", req.body);
@@ -22,15 +32,8 @@ export default async function handler(req, res) {
       console.log("Detalles del pago único:", payment);
 
       if (payment && payment.status === "approved") {
-        const email = payment.external_reference;
-        const descripcion = payment.description || "";
-        console.log(`Pago único aprobado para: ${email}, Plan: ${descripcion}`);
-
-        // Determinar limiteNumeros según el plan
-        let limiteNumeros = 1;
-        if (descripcion.includes("2 números")) limiteNumeros = 2;
-        if (descripcion.includes("3 números")) limiteNumeros = 3;
-        if (descripcion.includes("4 números")) limiteNumeros = 4;
+        const { email, limiteNumeros } = extraerEmailYPlan(payment);
+        console.log(`Pago único aprobado para: ${email}, limiteNumeros: ${limiteNumeros}`);
 
         // Calcular nueva fecha (un mes desde hoy)
         const nuevaFecha = new Date();
@@ -64,15 +67,8 @@ export default async function handler(req, res) {
       console.log("Detalles del pago recurrente:", payment);
 
       if (payment && payment.status === "approved") {
-        const email = payment.external_reference;
-        const descripcion = payment.description || "";
-        console.log(`Pago recurrente aprobado para: ${email}, Plan: ${descripcion}`);
-
-        // Determinar limiteNumeros según el plan
-        let limiteNumeros = 1;
-        if (descripcion.includes("2 números")) limiteNumeros = 2;
-        if (descripcion.includes("3 números")) limiteNumeros = 3;
-        if (descripcion.includes("4 números")) limiteNumeros = 4;
+        const { email, limiteNumeros } = extraerEmailYPlan(payment);
+        console.log(`Pago recurrente aprobado para: ${email}, limiteNumeros: ${limiteNumeros}`);
 
         // Calcular nueva fecha (un mes desde hoy)
         const nuevaFecha = new Date();
