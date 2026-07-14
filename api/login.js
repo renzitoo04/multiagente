@@ -34,21 +34,12 @@ export default async function handler(req, res) {
     let passwordValida;
 
     if (ES_HASH_BCRYPT.test(passwordGuardada)) {
+      // Cuentas que ya habían quedado migradas a hash: se siguen validando así,
+      // para no dejarlas sin poder entrar (el hash no se puede revertir a texto plano).
       passwordValida = await bcrypt.compare(passwordIngresada, passwordGuardada);
     } else {
-      // Cuenta creada antes de que hubiera hash: comparamos en texto plano
-      // y migramos la contraseña a hash de forma transparente si coincide.
+      // El resto de las cuentas: contraseña en texto plano, sin migrar a hash.
       passwordValida = passwordGuardada === passwordIngresada;
-      if (passwordValida) {
-        const nuevoHash = await bcrypt.hash(passwordIngresada, 10);
-        supabase
-          .from('usuarios')
-          .update({ password: nuevoHash })
-          .eq('email', email.trim())
-          .then(({ error: errorMigracion }) => {
-            if (errorMigracion) console.error('No se pudo migrar la contraseña a hash:', errorMigracion);
-          });
-      }
     }
 
     if (!passwordValida) {
